@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TFT Static Champion Schema",
+  "description": "Schema for TFT champion static data",
+  "type": "object",
+  "additionalProperties": {
+    "type": "object",
+    "properties": {
+      "name": { "type": "string" },
+      "cost": { "type": "integer", "minimum": 1, "maximum": 5 },
+      "traits": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "abilities": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "type": { "type": "string", "enum": ["active", "passive", "summon"] },
+          "mana_cost": { "type": "integer" },
+          "description": { "type": "string" }
+        }
+      },
+      "stats": {
+        "type": "object",
+        "properties": {
+          "health": { "type": "integer" },
+          "armor": { "type": "integer" },
+          "mr": { "type": "integer" },
+          "attack_damage": { "type": "number" },
+          "attack_speed": { "type": "number" },
+          "crit_chance": { "type": "number" },
+          "range": { "type": "integer" }
+        }
+      }
+    }
+  }
+}
