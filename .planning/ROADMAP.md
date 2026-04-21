@@ -12,7 +12,7 @@
 - [x] **Phase 1: Environment Setup** - Ollama + Supabase + Database Schema
 - [x] **Phase 2: Backend Core** - FastAPI skeleton, session API, non-streaming chat
 - [x] **Phase 3: Frontend Chat** - React + Vite + SSE streaming + mode toggle
-- [ ] **Phase 4: RAG Foundation** - Obsidian ingest, hybrid search, Coach prompts
+- [x] **Phase 4: RAG Foundation** - Obsidian ingest, hybrid search, Coach prompts
 - [ ] **Phase 5: TFT Static Data** - Riot + CommunityDragon ingestion, metadata filtering
 - [ ] **Phase 6: Automation** - n8n workflows, ngrok, patch monitoring
 - [ ] **Phase 7: Polish & Smoke Test** - Caching, GPU monitoring, 20-question eval
@@ -184,7 +184,7 @@ Plans:
 | 1. Environment Setup | 5/5 | Complete | 2026-04-22 |
 | 2. Backend Core | 4/4 | Complete | 2026-04-22 |
 | 3. Frontend Chat | N/N | Complete | 2026-04-22 |
-| 4. RAG Foundation | 0/N | Not started | - |
+| 4. RAG Foundation | 3/3 | Complete | 2026-04-22 |
 | 5. TFT Static Data | 0/N | Not started | - |
 | 6. Automation | 0/N | Not started | - |
 | 7. Polish & Smoke Test | 0/N | Not started | - |
@@ -221,4 +221,4 @@ All phases must comply with Riot TFT policy:
 ---
 
 *Last updated: 2026-04-22*
-*Completed: Phase 3 — Frontend Chat (2026-04-22)*
+*Completed: Phase 4 — RAG Foundation (2026-04-22)*

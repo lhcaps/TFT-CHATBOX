@@ -1,4 +1,4 @@
-feat(phase-4-finalize): add SearchResult models and typed search endpoint
+docs(phase-4): mark RAG Foundation complete in ROADMAP.md
 
-- models.py: add ChunkResult and SearchResult Pydantic models
-- search.py: use response_model=SearchResult and return SearchResult instance
+- Mark Phase 4 as complete (3/3 plans)
+- Update last updated timestamp
