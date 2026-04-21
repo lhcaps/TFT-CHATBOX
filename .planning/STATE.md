@@ -15,13 +15,13 @@
 
 ## Current Position
 
-**Active Phase:** Phase 1 - Environment Setup (planning complete, ready to execute)
+**Active Phase:** Phase 2 - Backend Core (plans TBD)
 
-**Milestone Progress:** 0/7 phases complete
+**Milestone Progress:** 1/7 phases complete
 
 ```
-[ Phase 1 ] [ Phase 2 ] [ Phase 3 ] [ Phase 4 ] [ Phase 5 ] [ Phase 6 ] [ Phase 7 ]
-    ○          ○          ○          ○          ○          ○          ○
+[x Phase 1 ] [ Phase 2  ] [ Phase 3 ] [ Phase 4 ] [ Phase 5 ] [ Phase 6 ] [ Phase 7 ]
+    ✓           ○          ○          ○          ○          ○          ○
 ```
 
 ---
@@ -155,11 +155,11 @@ When resuming work:
 - [x] Set up .env file with all required environment variables
 - [x] Enable Windows long path support
 - [x] Configure git line endings (.gitattributes)
-- [ ] Install Ollama + pull models (qwen3:8b, qwen3-embedding:4b)
-- [ ] Install Supabase local CLI + start
-- [ ] Create database schema (4 tables, indexes, hybrid_search_chunks function)
-- [ ] Set up Docker Compose (backend + frontend + n8n)
-- [ ] Create healthcheck endpoint
+- [x] Install Ollama + pull models (qwen3:8b, qwen3-embedding:4b)
+- [x] Install Supabase local CLI + start
+- [x] Create database schema (4 tables, indexes, hybrid_search_chunks function)
+- [x] Set up Docker Compose (backend + frontend + n8n)
+- [x] Create healthcheck endpoint
 
 ---
 
@@ -174,3 +174,4 @@ When resuming work:
 ---
 
 *State tracked: 2026-04-22*
+*Last updated: 2026-04-22*

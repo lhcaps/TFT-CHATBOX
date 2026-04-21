@@ -9,7 +9,7 @@
 
 ## Phases
 
-- [ ] **Phase 1: Environment Setup** - Ollama + Supabase + Database Schema
+- [x] **Phase 1: Environment Setup** - Ollama + Supabase + Database Schema
 - [ ] **Phase 2: Backend Core** - FastAPI skeleton, session API, non-streaming chat
 - [ ] **Phase 3: Frontend Chat** - React + Vite + SSE streaming + mode toggle
 - [ ] **Phase 4: RAG Foundation** - Obsidian ingest, hybrid search, Coach prompts
@@ -37,7 +37,14 @@
 5. `docker compose ps` shows backend and n8n containers running
 6. All Python scripts use `pathlib` and paths work on Windows
 
-**Plans:** TBD
+**Plans:** 5 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Ollama + Supabase Installation
+- [ ] 01-02-PLAN.md — Database Schema Migration
+- [ ] 01-03-PLAN.md — Docker Compose Setup
+- [ ] 01-04-PLAN.md — Healthcheck Endpoint
+- [ ] 01-05-PLAN.md — Directory Structure + Windows Config
 
 ---
 
@@ -161,7 +168,7 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Environment Setup | 0/N | Not started | - |
+| 1. Environment Setup | 5/5 | Complete | 2026-04-22 |
 | 2. Backend Core | 0/N | Not started | - |
 | 3. Frontend Chat | 0/N | Not started | - |
 | 4. RAG Foundation | 0/N | Not started | - |
@@ -201,3 +208,4 @@ All phases must comply with Riot TFT policy:
 ---
 
 *Last updated: 2026-04-22*
+*Completed: 2026-04-22*
