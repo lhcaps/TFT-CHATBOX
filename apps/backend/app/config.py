@@ -42,6 +42,9 @@ class Settings(BaseSettings):
     # Ollama keep_alive
     ollama_keep_alive: str = "15m"
 
+    # Chat
+    chat_history_window: int = 10
+
     # CORS
     allowed_origins: list[str] = ["http://localhost:5173"]
 
