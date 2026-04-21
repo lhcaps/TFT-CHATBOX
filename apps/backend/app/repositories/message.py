@@ -66,3 +66,16 @@ class MessageRepository:
                 content,
             )
             return dict(row)
+
+    async def get_all(self, session_id: str) -> list[dict]:
+        """Get all messages for a session in chronological order."""
+        async with self.pool.acquire() as conn:
+            rows = await conn.fetch(
+                """
+                SELECT role, content, created_at FROM messages
+                WHERE session_id = $1
+                ORDER BY created_at ASC
+                """,
+                session_id,
+            )
+            return [dict(row) for row in rows]

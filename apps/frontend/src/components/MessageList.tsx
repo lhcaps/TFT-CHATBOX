@@ -1,15 +1,5 @@
-interface Message {
-  role: 'user' | 'assistant' | 'system' | 'tool';
-  content: string;
-  citations?: Citation[];
-}
-
-interface Citation {
-  id: string;
-  source: string;
-  text: string;
-  similarity: number;
-}
+import { useEffect, useRef } from 'react';
+import type { Message } from '../api/types';
 
 interface MessageListProps {
   messages: Message[];
@@ -17,8 +7,25 @@ interface MessageListProps {
 }
 
 export function MessageList({ messages, isStreaming }: MessageListProps) {
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isStreaming]);
+
   return (
-    <div className="flex-1 overflow-y-auto space-y-4 p-4">
+    <div className="flex-1 overflow-y-auto space-y-4 p-6">
+      {messages.length === 0 && !isStreaming && (
+        <div className="flex flex-col items-center justify-center h-full text-gray-500 gap-3 py-16">
+          <svg className="w-12 h-12 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          </svg>
+          <p className="text-sm">Ask about TFT strategies, comps, augments, or patch notes.</p>
+          <p className="text-xs text-gray-600">Switch modes above to search notes or get coaching.</p>
+        </div>
+      )}
+
       {messages.map((msg, i) => (
         <div
           key={i}
@@ -27,14 +34,14 @@ export function MessageList({ messages, isStreaming }: MessageListProps) {
           <div
             className={`max-w-[70%] rounded-2xl px-4 py-3 ${
               msg.role === 'user'
-                ? 'bg-blue-600 text-white'
+                ? 'bg-blue-600 text-white rounded-br-md'
                 : msg.role === 'assistant'
-                ? 'bg-gray-800 text-gray-100'
+                ? 'bg-gray-800 text-gray-100 rounded-bl-md'
                 : 'bg-gray-700 text-gray-300'
             }`}
           >
             <div className="prose prose-invert prose-sm max-w-none">
-              <p className="whitespace-pre-wrap">{msg.content}</p>
+              <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
             </div>
             {msg.citations && msg.citations.length > 0 && (
               <div className="mt-2 pt-2 border-t border-gray-700 text-xs text-gray-400">
@@ -44,9 +51,10 @@ export function MessageList({ messages, isStreaming }: MessageListProps) {
           </div>
         </div>
       ))}
+
       {isStreaming && (
         <div className="flex justify-start">
-          <div className="bg-gray-800 rounded-2xl px-4 py-3">
+          <div className="bg-gray-800 rounded-2xl rounded-bl-md px-4 py-3">
             <div className="flex gap-1">
               <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
               <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -55,6 +63,8 @@ export function MessageList({ messages, isStreaming }: MessageListProps) {
           </div>
         </div>
       )}
+
+      <div ref={bottomRef} />
     </div>
   );
 }
