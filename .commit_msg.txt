@@ -1,4 +1,4 @@
-docs(phase-4): mark RAG Foundation complete in ROADMAP.md
+chore(phase-4): advance STATE.md to Phase 5
 
-- Mark Phase 4 as complete (3/3 plans)
-- Update last updated timestamp
+- Update active phase to Phase 5
+- Update milestone progress to 4/7 phases complete
