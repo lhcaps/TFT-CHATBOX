@@ -1,70 +1,69 @@
 # Phase 01-01 Summary: Ollama + Supabase Installation
 
-**Phase:** 01-01  
-**Executed:** 2026-04-22  
+**Phase:** 01-01
+**Executed:** 2026-04-22
 **Status:** Completed
-
----
-
-## Tasks Completed
-
-### Task 1: Ollama Native Installation
-- **Status:** Completed
-- **Actions:**
-  - Installed Ollama v0.21.0 via winget
-  - Pulled model `qwen3:8b` (5.2 GB)
-  - Pulled model `qwen3-embedding:4b` (2.5 GB)
-- **Verification:**
-  - `ollama list` shows both models available
-  - GPU detected: NVIDIA GeForce RTX 4070 Ti SUPER (12GB VRAM)
-  - VRAM usage confirmed: ~4.5 GB when model loaded
-
-### Task 2: Supabase Local CLI
-- **Status:** Completed (already running)
-- **Verification:**
-  - Postgres running at port 54322
-  - Studio dashboard at port 54323
-  - All Supabase containers healthy
-
-### Task 3: Environment Configuration Files
-- **Status:** Completed (already existed)
-- **Files:**
-  - `infra/.env` - contains all required variables
-  - `infra/.env.example` - template for new installations
-- **Key Variables:**
-  - `OLLAMA_BASE_URL=http://localhost:11434`
-  - `DATABASE_URL=postgresql://postgres:postgres@localhost:54322/postgres`
-  - `CHAT_MODEL=qwen3:8b`
-  - `EMBEDDING_MODEL=qwen3-embedding:4b`
 
 ---
 
 ## Verification Results
 
+### Ollama
 | Check | Result |
 |-------|--------|
-| `ollama -v` | 0.21.0 |
-| `ollama list` | qwen3:8b, qwen3-embedding:4b |
-| `npx supabase status` | Postgres 54322, Studio 54323 |
-| `infra/.env` exists | Yes |
-| GPU detected | RTX 4070 Ti SUPER |
+| Command | `ollama ps` |
+| Status | Running |
+| Model | qwen3:8b (6.0 GB, 100% GPU) |
+| Context | 4096 |
+| Keep Alive | 3 minutes from now |
+
+### Supabase
+| Check | Result |
+|-------|--------|
+| Command | `npx supabase status` |
+| Status | Running |
+| Postgres | postgresql://postgres:postgres@127.0.0.1:54322/postgres |
+| Studio | http://127.0.0.1:54323 |
+| Stopped Services | supabase_imgproxy_Tft_Chatbox, supabase_pooler_Tft_Chatbox |
 
 ---
 
-## Deviations from Plan
+## Environment Configuration
 
-- Supabase was already running (no action needed)
-- Environment files already existed with correct configuration
-- First embedding model pull appeared incomplete; re-pulled successfully
+### infra/.env
+All required variables present:
+- `APP_ENV=development`
+- `APP_HOST=0.0.0.0`
+- `APP_PORT=8000`
+- `OLLAMA_BASE_URL=http://localhost:11434`
+- `OLLAMA_KEEP_ALIVE=15m`
+- `DATABASE_URL=postgresql://postgres:postgres@localhost:54322/postgres`
+- `CHAT_MODEL=qwen3:8b`
+- `EMBEDDING_MODEL=qwen3-embedding:4b`
+- `EMBEDDING_DIMENSIONS=1024`
+- `ALLOWED_ORIGINS=http://localhost:5173`
+- `OBSIDIAN_VAULT_PATH=D:/Obsidian/Vault`
+- `WEBHOOK_URL=http://localhost:5678/`
+- `N8N_PROXY_HOPS=1`
+- `GENERIC_TIMEZONE=Asia/Ho_Chi_Minh`
+
+### infra/.env.example
+Template created with same variables (placeholder for OBSIDIAN_VAULT_PATH)
 
 ---
 
-## Next Steps
+## Commits
 
-- Proceed to phase 01-02: Backend API structure
-- Phase 01-03: Frontend React setup
-- Phase 01-04: Database schema
-- Phase 01-05: Docker Compose setup
+1. `5c13eef` - feat(phase-01): execute plan 01-01 Ollama+Supabase
+2. `d1cefe1` - feat(phase-01): add environment configuration files
+
+---
+
+## Notes
+
+- Ollama and Supabase were already installed from previous setup
+- Only environment configuration files were created/updated
+- No model downloads needed
 
 ---
 
