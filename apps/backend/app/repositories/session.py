@@ -4,17 +4,18 @@ from __future__ import annotations
 import uuid
 from typing import Optional
 
-import asyncpg
+from asyncpg import Pool
 
 
 class SessionRepository:
-    """Repository for session CRUD operations."""
+    """Repository for session CRUD operations using asyncpg."""
 
-    def __init__(self, pool: asyncpg.Pool) -> None:
+    def __init__(self, pool: Pool) -> None:
         self.pool = pool
 
     async def create(self, title: Optional[str], mode: str) -> dict:
-        """Create a new session."""
+        """Create a new session and return it as a dict."""
+        session_id = uuid.uuid4().hex[:8]
         async with self.pool.acquire() as conn:
             row = await conn.fetchrow(
                 """
@@ -22,14 +23,14 @@ class SessionRepository:
                 VALUES ($1, $2, $3)
                 RETURNING id, title, mode, created_at, updated_at
                 """,
-                uuid.uuid4().hex[:8],
+                session_id,
                 title,
                 mode,
             )
             return dict(row)
 
     async def get(self, session_id: str) -> Optional[dict]:
-        """Get a session by ID."""
+        """Get a session by ID, or None if not found."""
         async with self.pool.acquire() as conn:
             row = await conn.fetchrow(
                 "SELECT id, title, mode, created_at, updated_at FROM sessions WHERE id = $1",

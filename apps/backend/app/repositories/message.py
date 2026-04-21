@@ -3,13 +3,13 @@ from __future__ import annotations
 
 from typing import Optional
 
-import asyncpg
+from asyncpg import Pool
 
 
 class MessageRepository:
-    """Repository for message CRUD operations."""
+    """Repository for message CRUD operations using asyncpg."""
 
-    def __init__(self, pool: asyncpg.Pool) -> None:
+    def __init__(self, pool: Pool) -> None:
         self.pool = pool
 
     async def create(
@@ -19,7 +19,7 @@ class MessageRepository:
         content: str,
         metadata: Optional[dict] = None,
     ) -> dict:
-        """Create a new message in a session."""
+        """Create a new message and return it as a dict."""
         async with self.pool.acquire() as conn:
             row = await conn.fetchrow(
                 """
@@ -35,10 +35,9 @@ class MessageRepository:
             return dict(row)
 
     async def get_recent(self, session_id: str, limit: int) -> list[dict]:
-        """Get the most recent N messages for a session in chronological order.
-        
-        Excludes system messages from the window so the system prompt is never
-        counted against the history limit.
+        """Get recent messages for a session, excluding system messages.
+
+        Returns messages in chronological order (oldest first).
         """
         async with self.pool.acquire() as conn:
             rows = await conn.fetch(
@@ -51,8 +50,18 @@ class MessageRepository:
                 session_id,
                 limit,
             )
-            return [dict(r) for r in reversed(rows)]
+            return [dict(row) for row in reversed(rows)]
 
     async def create_system(self, session_id: str, content: str) -> dict:
-        """Create a system message in a session."""
-        return await self.create(session_id, "system", content)
+        """Create a system message for a session."""
+        async with self.pool.acquire() as conn:
+            row = await conn.fetchrow(
+                """
+                INSERT INTO messages (session_id, role, content)
+                VALUES ($1, 'system', $2)
+                RETURNING id, session_id, role, content, metadata, created_at
+                """,
+                session_id,
+                content,
+            )
+            return dict(row)
