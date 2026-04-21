@@ -1,4 +1,4 @@
-fix(phase-4): correct ingest.py import paths and pass overlap parameter
+feat(phase-4-finalize): add SearchResult models and typed search endpoint
 
-- Fix app.scripts.* -> scripts.* import paths (correct relative import)
-- Pass rag_chunk_overlap to ingest_vault() call
+- models.py: add ChunkResult and SearchResult Pydantic models
+- search.py: use response_model=SearchResult and return SearchResult instance

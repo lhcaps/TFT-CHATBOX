@@ -44,3 +44,20 @@ class SearchRequest(BaseModel):
     """Search request for RAG retrieval."""
     query: str
     top_k: int = 8
+
+
+class ChunkResult(BaseModel):
+    """Single retrieved chunk in a search result."""
+    id: str
+    source: str
+    heading: str = ""
+    text: str
+    score: float
+
+
+class SearchResult(BaseModel):
+    """Response from the search endpoint."""
+    query: str
+    top_k: int
+    chunks: list[ChunkResult]
+    count: int
