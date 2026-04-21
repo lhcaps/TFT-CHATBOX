@@ -28,6 +28,26 @@ class OllamaService:
             data = response.json()
             return data.get("embedding", [])
 
+    async def generate_embeddings(self, texts: list[str]) -> list[list[float]]:
+        """Generate embeddings for multiple texts in one batch request."""
+        async with httpx.AsyncClient(timeout=120.0) as client:
+            payload = {
+                "model": self.embedding_model,
+                "input": texts,
+                "truncate": True,
+            }
+            response = await client.post(
+                f"{self.base_url}/api/embed",
+                json=payload,
+                timeout=120.0,
+            )
+            response.raise_for_status()
+            data = response.json()
+            embeddings = data.get("embeddings", [])
+            if not isinstance(embeddings, list):
+                raise ValueError(f"Expected embeddings list, got {type(embeddings)}")
+            return embeddings
+
     async def chat(self, messages: list[dict[str, Any]], stream: bool = True) -> httpx.Response:
         """Send a chat request to Ollama."""
         async with httpx.AsyncClient(timeout=120.0) as client:

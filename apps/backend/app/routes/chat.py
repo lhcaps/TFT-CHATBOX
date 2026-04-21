@@ -15,6 +15,7 @@ from app.models import ChatRequest
 from app.prompts import get_system_prompt
 from app.repositories.message import MessageRepository
 
+
 router = APIRouter(prefix="/chat", tags=["chat"])
 
 
@@ -23,7 +24,7 @@ async def build_messages(
     user_message: str,
     mode: str,
 ) -> list[dict]:
-    """Build the messages array for Ollama: system + recent history + user."""
+    """Build the messages array for Ollama: system + recent history + optional RAG context."""
     pool = await get_pool()
     repo = MessageRepository(pool)
 
@@ -40,6 +41,23 @@ async def build_messages(
     for msg in recent:
         messages.append({"role": msg["role"], "content": msg["content"]})
 
+    # Inject RAG context for rag/coach modes
+    if mode in ("rag", "coach"):
+        from app.services.retrieval import retrieve_chunks
+        chunks = await retrieve_chunks(user_message, top_k=settings.rag_top_k)
+        if chunks:
+            context_lines = ["---CONTEXT---"]
+            for i, chunk in enumerate(chunks, 1):
+                heading = chunk.get("metadata", {}).get("heading_path", "")
+                source = chunk.get("source", "unknown")
+                heading_str = f" > {heading}" if heading else ""
+                context_lines.append(f"[{i}] From: {source}{heading_str}")
+                context_lines.append(chunk["content"][:500])  # truncate for prompt safety
+                context_lines.append("")
+            context_lines.append("---CONTEXT---")
+            context_block = "\n".join(context_lines)
+            messages.append({"role": "user", "content": context_block})
+
     # Add current user message
     messages.append({"role": "user", "content": user_message})
 
@@ -49,10 +67,29 @@ async def build_messages(
 async def stream_ollama_tokens(
     messages: list[dict],
     session_id: str,
+    mode: str = "normal",
+    user_message: str = "",
 ) -> AsyncIterable[str]:
-    """Stream tokens from Ollama as structured SSE events."""
+    """Stream tokens from Ollama as structured SSE events.
+
+    Emits citation events for rag/coach modes before the first token.
+    """
     full_text = ""
     usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
+
+    # Emit citation events BEFORE streaming begins (rag/coach modes only)
+    if mode in ("rag", "coach") and user_message:
+        from app.services.retrieval import retrieve_chunks
+        chunks = await retrieve_chunks(user_message, top_k=settings.rag_top_k)
+        for chunk in chunks:
+            citation_data = {
+                "id": chunk["id"],
+                "source": chunk["source"],
+                "heading": chunk.get("metadata", {}).get("heading_path", ""),
+                "text": chunk["content"],
+                "score": chunk["score"],
+            }
+            yield f"event: citation\ndata: {json.dumps({'citation': citation_data})}\n\n"
 
     async with httpx.AsyncClient(timeout=120.0) as client:
         payload = {
@@ -159,7 +196,7 @@ async def chat(request: ChatRequest) -> StreamingResponse | JSONResponse:
     """
     Chat endpoint with streaming and non-streaming modes.
 
-    - stream=true: SSE with token/done/usage events
+    - stream=true: SSE with token/done/usage events (citation events for rag/coach)
     - stream=false: JSON with text/usage/done_reason/citations
 
     Per D-09: Single endpoint with stream parameter (default True).
@@ -167,7 +204,7 @@ async def chat(request: ChatRequest) -> StreamingResponse | JSONResponse:
     if request.session_id is None:
         raise HTTPException(status_code=400, detail="session_id is required")
 
-    # Build messages array with system prompt + history
+    # Build messages array with system prompt + history + optional RAG context
     messages = await build_messages(
         session_id=request.session_id,
         user_message=request.message,
@@ -187,8 +224,8 @@ async def chat(request: ChatRequest) -> StreamingResponse | JSONResponse:
     if request.stream:
         # Streaming mode: SSE with structured events
         return StreamingResponse(
-            stream_ollama_tokens(messages, request.session_id),
-            media_type="text/event-stream"
+            stream_ollama_tokens(messages, request.session_id, request.mode, request.message),
+            media_type="text/event-stream",
         )
     else:
         # Non-streaming mode: return complete JSON
