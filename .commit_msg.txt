@@ -1,6 +1,4 @@
-feat(phase-4-w3): citation display and mode label improvements
+fix(phase-4): correct ingest.py import paths and pass overlap parameter
 
-- types.ts: align Citation interface with backend {id, source, heading, text, score}
-- CitationCard.tsx: render heading path and score percentage; truncate source on overflow
-- MessageList.tsx: render CitationCard grid below assistant messages for RAG responses
-- ModeTabs.tsx: rename "RAG" tab to "Notes" with descriptive tooltips
+- Fix app.scripts.* -> scripts.* import paths (correct relative import)
+- Pass rag_chunk_overlap to ingest_vault() call

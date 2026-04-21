@@ -20,10 +20,10 @@ async def ingest_obsidian() -> dict:
     if not Path(vault_path).exists():
         raise HTTPException(status_code=404, detail="Vault path not found")
 
-    from app.scripts.ingest_obsidian import ingest_vault
+    from scripts.ingest_obsidian import ingest_vault
 
     try:
-        result = await ingest_vault(vault_path, settings.rag_chunk_size)
+        result = await ingest_vault(vault_path, settings.rag_chunk_size, settings.rag_chunk_overlap)
         return {"status": "ok", "result": result}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -32,7 +32,7 @@ async def ingest_obsidian() -> dict:
 @router.post("/tft-static")
 async def ingest_tft_static() -> dict:
     """Trigger TFT static data ingestion."""
-    from app.scripts.ingest_tft_static import ingest_tft_static as do_ingest
+    from scripts.ingest_tft_static import ingest_tft_static as do_ingest
 
     try:
         result = await do_ingest()
