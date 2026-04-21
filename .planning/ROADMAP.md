@@ -10,7 +10,7 @@
 ## Phases
 
 - [x] **Phase 1: Environment Setup** - Ollama + Supabase + Database Schema
-- [ ] **Phase 2: Backend Core** - FastAPI skeleton, session API, non-streaming chat
+- [x] **Phase 2: Backend Core** - FastAPI skeleton, session API, non-streaming chat
 - [ ] **Phase 3: Frontend Chat** - React + Vite + SSE streaming + mode toggle
 - [ ] **Phase 4: RAG Foundation** - Obsidian ingest, hybrid search, Coach prompts
 - [ ] **Phase 5: TFT Static Data** - Riot + CommunityDragon ingestion, metadata filtering
@@ -177,7 +177,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Environment Setup | 5/5 | Complete | 2026-04-22 |
-| 2. Backend Core | 0/N | Not started | - |
+| 2. Backend Core | 4/4 | Complete | 2026-04-22 |
 | 3. Frontend Chat | 0/N | Not started | - |
 | 4. RAG Foundation | 0/N | Not started | - |
 | 5. TFT Static Data | 0/N | Not started | - |

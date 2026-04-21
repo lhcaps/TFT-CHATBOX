@@ -15,13 +15,13 @@
 
 ## Current Position
 
-**Active Phase:** Phase 2 - Backend Core (context gathered, ready for planning)
+**Active Phase:** Phase 3 - Frontend Chat (pending planning)
 
-**Milestone Progress:** 1/7 phases complete
+**Milestone Progress:** 2/7 phases complete
 
 ```
-[x Phase 1 ] [ Phase 2  ] [ Phase 3 ] [ Phase 4 ] [ Phase 5 ] [ Phase 6 ] [ Phase 7 ]
-    ✓           ○          ○          ○          ○          ○          ○
+[x Phase 1 ] [x Phase 2  ] [ Phase 3 ] [ Phase 4 ] [ Phase 5 ] [ Phase 6 ] [ Phase 7 ]
+    ✓           ✓          ○          ○          ○          ○          ○
 ```
 
 ---
@@ -146,6 +146,7 @@ When resuming work:
    ollama ps
    npx supabase status
    curl http://localhost:8000/health
+   curl http://localhost:8000/sessions
    ```
 
 ### TODO
