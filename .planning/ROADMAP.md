@@ -114,7 +114,12 @@ Plans:
 5. Re-ingesting changed files updates chunks without duplicating (hash-based)
 6. Batch embedding processes 16 chunks per request without VRAM overflow
 
-**Plans:** TBD
+**Plans:** 3 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — RAG Retrieval (chat pipeline wiring, hybrid_search, citation SSE, search endpoint)
+- [ ] 04-02-PLAN.md — Obsidian Ingest (2000-char chunks, batch embedding, heading metadata)
+- [ ] 04-03-PLAN.md — Citation Display (frontend citation cards, mode labels)
 
 ---
 
