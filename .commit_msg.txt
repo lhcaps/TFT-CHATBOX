@@ -1,7 +1,6 @@
-feat(phase-4-w2): Obsidian ingest pipeline with batch embedding and heading metadata
+feat(phase-4-w3): citation display and mode label improvements
 
-- config.py: add rag_chunk_size=2000 and rag_chunk_overlap=500 settings
-- markdown.py: replace word-count splitter with char-based overlapping splitter
-  (preserves paragraph > sentence > hard boundaries)
-- ingest_obsidian.py: batch embed 16 chunks per Ollama call, store heading_path
-  in metadata JSONB, skip unchanged files via content_hash
+- types.ts: align Citation interface with backend {id, source, heading, text, score}
+- CitationCard.tsx: render heading path and score percentage; truncate source on overflow
+- MessageList.tsx: render CitationCard grid below assistant messages for RAG responses
+- ModeTabs.tsx: rename "RAG" tab to "Notes" with descriptive tooltips

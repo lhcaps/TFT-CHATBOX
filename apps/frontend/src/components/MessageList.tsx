@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { Message } from '../api/types';
+import { CitationCard } from './CitationCard';
 
 interface MessageListProps {
   messages: Message[];
@@ -44,8 +45,22 @@ export function MessageList({ messages, isStreaming }: MessageListProps) {
               <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
             </div>
             {msg.citations && msg.citations.length > 0 && (
-              <div className="mt-2 pt-2 border-t border-gray-700 text-xs text-gray-400">
-                {msg.citations.length} source{msg.citations.length !== 1 ? 's' : ''}
+              <div className="mt-2 pt-2 border-t border-gray-700">
+                <div className="text-xs text-gray-400 mb-2 font-medium">
+                  {msg.citations.length} source{msg.citations.length !== 1 ? 's' : ''}
+                </div>
+                <div className="grid gap-2">
+                  {msg.citations.map((c) => (
+                    <CitationCard
+                      key={c.id}
+                      id={c.id}
+                      source={c.source}
+                      heading={c.heading}
+                      text={c.text}
+                      score={c.score}
+                    />
+                  ))}
+                </div>
               </div>
             )}
           </div>

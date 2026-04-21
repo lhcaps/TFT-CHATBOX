@@ -4,8 +4,9 @@ export type Mode = 'normal' | 'rag' | 'coach';
 export interface Citation {
   id: string;
   source: string;
+  heading: string;
   text: string;
-  similarity: number;
+  score: number;
 }
 
 export interface Message {
