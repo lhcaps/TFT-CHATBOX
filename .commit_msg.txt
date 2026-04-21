@@ -1,0 +1,10 @@
+feat(phase 1): Add complete project directory structure and placeholder files
+
+- Create flat directory structure: apps/, infra/, n8n/, supabase/, docs/
+- Add backend scaffold: FastAPI app with routes, services, utils, and scripts
+- Add frontend scaffold: React 18 + Vite 6 + Tailwind 4 with components
+- Add Dockerfiles for both backend (Python 3.11) and frontend (Node 20)
+- Add database schema with pgvector HNSW index and hybrid search function
+- Add n8n workflow templates for obsidian ingest and patch check
+- Add .env template and docker-compose.yml
+- All Python scripts use pathlib for cross-platform path handling
