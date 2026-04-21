@@ -42,3 +42,7 @@ app.add_middleware(
 )
 
 from app.routes import health, sessions, chat  # noqa: E402, F401
+
+app.include_router(health.router)
+app.include_router(sessions.router)
+app.include_router(chat.router)
