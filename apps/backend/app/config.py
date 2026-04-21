@@ -29,7 +29,8 @@ class Settings(BaseSettings):
 
     # RAG
     rag_top_k: int = 6
-    rag_chunk_size: int = 512
+    rag_chunk_size: int = 2000
+    rag_chunk_overlap: int = 500
 
     # Obsidian
     obsidian_vault_path: str = ""
