@@ -70,6 +70,7 @@
 - [x] Ollama `/api/embed` batch endpoint verified working via curl
 - [x] Citation SSE format matches frontend `Citation` type
 - [x] Import paths corrected in `ingest.py`
+- [x] Phase 3 shadcn/ui refactor adopted (CitationCard, MessageList, ModeTabs use shadcn/ui primitives)
 
 ---
 
@@ -81,7 +82,7 @@
 | Backend services | `ollama.generate_embeddings()`, `retrieve_chunks()` reimplemented |
 | Backend models | `SearchResult`, `ChunkResult` added |
 | Backend scripts | `ingest_obsidian.py` fully rewritten |
-| Frontend components | `CitationCard`, `MessageList`, `ModeTabs` updated |
+| Frontend components | `CitationCard`, `MessageList`, `ModeTabs` updated; Phase 3 shadcn/ui adopted post-RAG-04 |
 | Frontend types | `Citation` interface updated |
 | Config | `rag_chunk_size`, `rag_chunk_overlap` added |
 
