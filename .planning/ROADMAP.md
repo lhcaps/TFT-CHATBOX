@@ -63,7 +63,13 @@ Plans:
 4. CORS allows requests from http://localhost:5173; requests from other origins are blocked
 5. Chat messages are persisted to database and retrievable by session_id
 
-**Plans:** TBD
+**Plans:** 4 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Repository Layer (SessionRepository + MessageRepository + CHAT_HISTORY_WINDOW config)
+- [ ] 02-02-PLAN.md — Sessions API (Replace in-memory with DB-backed SessionRepository)
+- [ ] 02-03-PLAN.md — Chat Endpoint (Structured SSE + history windowing + non-streaming)
+- [ ] 02-04-PLAN.md — End-to-End Verification (Health, sessions, chat, CORS)
 
 **UI hint:** yes
 
