@@ -23,11 +23,11 @@ Build the RAG pipeline end-to-end: Obsidian vault ingestion with chunking + embe
 
 ### Citation Event Format (D-04 to D-05)
 - **D-04:** Backend emits `event: citation\ndata: {json}\n\n` for each retrieved chunk before the first token event. Format: `{"citation": {"id": str, "source": str, "heading": str, "text": str, "score": float}}`.
-- **D-05:** Frontend `onCitation` handler already wired in `useStreamingMessages.ts` — no frontend changes needed for citation display. Citations append to the last message's `citations` array.
+- **D-05:** Frontend SSE parser in `apps/frontend/src/api/chat.ts` already handles `event: citation`. The `useChat.ts` hook wires `onCitation` to accumulate citations on the streaming message. Frontend DID need changes: `Citation` type updated from `{similarity}` to `{heading, score}`, `CitationCard` refactored to show heading + score %, `MessageList` updated to render citation cards (not just a text label).
 
 ### Obsidian Ingest (D-06 to D-08)
 - **D-06:** Chunking: 2000 char chunks with 500 char overlap. Update `rag_chunk_size: int = 2000` in `config.py`. Update `split_into_chunks()` in `app/utils/markdown.py` to add overlap parameter.
-- **D-07:** Batch embedding: 16 chunks per Ollama `/api/embeddings` request. Update `ingest_obsidian.py` to batch-collect chunks, call `ollama.generate_embeddings()` (array input), then bulk-insert. Add `generate_embeddings()` to `app/services/ollama.py`.
+- **D-07:** Batch embedding: 16 chunks per Ollama `/api/embed` request (not `/api/embeddings`). Batch endpoint confirmed working via curl — returns `{"model": "...", "embeddings": [[...], [...]]}`. Update `ingest_obsidian.py` to batch-collect chunks, call `ollama.generate_embeddings()` (array input), then bulk-insert. Add `generate_embeddings()` to `app/services/ollama.py`.
 - **D-08:** Incremental re-ingest: hash-based deduplication already in `ingest_obsidian.py` via `content_hash`. When file changes → new hash → re-insert. When file unchanged → skip. No ON CONFLICT needed; existing skip logic is sufficient.
 
 ### Prompt Injection (D-09 to D-10)
@@ -41,7 +41,7 @@ Build the RAG pipeline end-to-end: Obsidian vault ingestion with chunking + embe
 - **D-12:** The `chunks` table (from `0001_initial_schema.sql`) has `source VARCHAR(255)`. The `hybrid_search_chunks` returns `source VARCHAR(255)` and `metadata JSONB`. Store heading path in `metadata` as `{"heading_path": "..."}`. Do NOT alter the table schema — store heading in metadata JSONB.
 
 ### Claude's Discretion
-- Ollama API endpoint: use `/api/embeddings` (singular) — already in `ollama.py`. The plural `/api/embed` is also available; use whichever Ollama version accepts. Verify with `curl` test before implementing batch.
+- Ollama API endpoint for batch: use `/api/embed` (singular, supports array `input` field) — NOT `/api/embeddings` (plural, single-text only). Verified working via curl — returns `{"model": "...", "embeddings": [[...], [...]]}`.
 - `ef_search` for HNSW: default 40 is fine. Do not tune unless retrieval latency > 500ms.
 - Whether to use Ollama's native batch embedding or sequential single embeds: batch (D-07) is recommended — reduces HTTP overhead. Single embeds are the fallback if batch API is unreliable.
 
@@ -69,8 +69,8 @@ Build the RAG pipeline end-to-end: Obsidian vault ingestion with chunking + embe
 - `apps/backend/scripts/ingest_obsidian.py` — existing ingest to update for batch + overlap
 - `apps/backend/app/utils/markdown.py` — `split_into_chunks()` to add overlap parameter
 - `apps/backend/app/config.py` — `rag_chunk_size` default to update to 2000
-- `apps/frontend/src/hooks/useStreamingMessages.ts` — `onCitation` handler (already wired)
-- `apps/frontend/src/api/chat.ts` — SSE parser already handles `citation` event
+- `apps/frontend/src/hooks/useChat.ts` — `onCitation` handler wires citations to streaming message
+- `apps/frontend/src/api/chat.ts` — SSE parser already handles `citation` event type
 - `supabase/migrations/0001_initial_schema.sql` — `chunks` table + `hybrid_search_chunks` function
 
 ### Research findings
@@ -86,9 +86,10 @@ Build the RAG pipeline end-to-end: Obsidian vault ingestion with chunking + embe
 - `app/routes/chat.py` `build_messages()` — modify to prepend context block
 - `app/services/retrieval.py` `retrieve_chunks()` — replace inner query with `hybrid_search_chunks` call
 - `app/services/ollama.py` `OllamaService.generate_embedding()` — add `generate_embeddings()` for batch
-- `app/scripts/ingest_obsidian.py` — existing file walker, frontmatter extraction, hash dedup — update chunking + batching
+- `scripts/ingest_obsidian.py` — existing file walker, frontmatter extraction, hash dedup — update chunking + batching
 - `app/utils/markdown.py` `split_into_chunks()` — add overlap parameter
-- `apps/frontend/src/hooks/useStreamingMessages.ts` `onCitation` — already wired, no changes needed
+- `apps/frontend/src/hooks/useChat.ts` `onCitation` — already wired, accumulates citations on the streaming message
+- `apps/frontend/src/api/chat.ts` — SSE parser already handles `citation` event type, `extractEvents()` splits on `\n\n`
 
 ### Established Patterns
 - All async DB calls use `pool.acquire()` context manager pattern
@@ -134,6 +135,10 @@ Build the RAG pipeline end-to-end: Obsidian vault ingestion with chunking + embe
 - n8n scheduled ingest — Phase 6 scope
 - GPU monitoring in frontend — Phase 7 scope
 - Query embedding cache — Phase 7 scope (POLY-01)
+
+### Bugfixes Found During Implementation
+- `apps/backend/app/routes/ingest.py`: fixed `app.scripts.*` → `scripts.*` import paths (correct relative import from `app/` module), added `rag_chunk_overlap` parameter to `ingest_vault()` call.
+- `apps/frontend/src/api/types.ts`: updated `Citation` interface from `{similarity}` to `{heading, score}` to match backend emission format.
 
 </deferred>
 

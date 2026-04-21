@@ -1,4 +1,12 @@
-chore(phase-4): advance STATE.md to Phase 5
+chore(git): update GSD artifacts — Phase 3 retroactive + Phase 4 finalize
 
-- Update active phase to Phase 5
-- Update milestone progress to 4/7 phases complete
+Phase 3 (retroactive GSD compliance):
+- Add 03-DISCUSSION-LOG.md — audit trail of implementation assumptions
+- Add 03-01-PLAN.md — React app scaffold plan
+- Add 03-02-PLAN.md — SSE streaming and session management plan
+- Add 03-MANIFEST.md — phase manifest with all changes
+
+Phase 4:
+- Update 04-CONTEXT.md — correct Ollama batch endpoint (/api/embed), hook name
+  (useChat.ts), frontend changes required (Citation type, CitationCard, MessageList)
+- Add 04-MANIFEST.md — phase manifest with all 6 commits
