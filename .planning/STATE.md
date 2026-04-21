@@ -15,7 +15,7 @@
 
 ## Current Position
 
-**Active Phase:** Planning (ROADMAP.md created)
+**Active Phase:** Phase 1 - Environment Setup (planning complete, ready to execute)
 
 **Milestone Progress:** 0/7 phases complete
 
@@ -150,11 +150,16 @@ When resuming work:
 
 ### TODO
 
-- [ ] Initialize git repository (currently not a git repo)
-- [ ] Create project directory structure (apps/backend, apps/frontend)
-- [ ] Set up .env file with all required environment variables
-- [ ] Enable Windows long path support
-- [ ] Configure git line endings (.gitattributes)
+- [x] Initialize git repository
+- [x] Create project directory structure (apps/backend, apps/frontend)
+- [x] Set up .env file with all required environment variables
+- [x] Enable Windows long path support
+- [x] Configure git line endings (.gitattributes)
+- [ ] Install Ollama + pull models (qwen3:8b, qwen3-embedding:4b)
+- [ ] Install Supabase local CLI + start
+- [ ] Create database schema (4 tables, indexes, hybrid_search_chunks function)
+- [ ] Set up Docker Compose (backend + frontend + n8n)
+- [ ] Create healthcheck endpoint
 
 ---
 
