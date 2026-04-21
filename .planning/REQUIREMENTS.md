@@ -16,9 +16,10 @@
 
 ### Backend
 
-- [ ] **BACK-01**: FastAPI app exposes GET /health, POST /api/sessions, GET /api/sessions, POST /api/chat/stream, POST /api/search, POST /api/ingest/obsidian, POST /api/ingest/tft-static
-- [ ] **BACK-02**: POST /api/chat/stream returns SSE with token events and done event with usage stats
-- [ ] **BACK-03**: Session persistence: chat_sessions + chat_messages tables with proper indexes
+- [ ] **BACK-01**: FastAPI app exposes GET /health, POST /sessions, GET /sessions, POST /chat, POST /search, POST /ingest/obsidian, POST /ingest/tft-static
+  *(Note: Phase 2 covers /health, /sessions, and /chat. The remaining endpoints are implemented in Phase 4.)*
+- [ ] **BACK-02**: POST /chat with stream=true returns SSE with token events and done event with usage stats; stream=false returns complete JSON
+- [ ] **BACK-03**: Session persistence: sessions + messages tables with proper indexes; messages persisted to DB and retrievable by session_id
 - [ ] **BACK-04**: CORS configured to allow http://localhost:5173 explicitly (no wildcard)
 
 ### Frontend

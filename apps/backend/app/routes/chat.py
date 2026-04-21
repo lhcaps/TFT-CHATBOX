@@ -6,8 +6,8 @@ from collections.abc import AsyncIterable
 
 import httpx
 from fastapi import APIRouter, HTTPException
-from fastapi.responses import JSONResponse
-from fastapi.sse import EventSourceResponse, ServerSentEvent
+from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.sse import ServerSentEvent
 
 from app.config import settings
 from app.db import get_pool
@@ -49,7 +49,7 @@ async def build_messages(
 async def stream_ollama_tokens(
     messages: list[dict],
     session_id: str,
-) -> AsyncIterable[ServerSentEvent]:
+) -> AsyncIterable[str]:
     """Stream tokens from Ollama as structured SSE events."""
     full_text = ""
     usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
@@ -68,10 +68,7 @@ async def stream_ollama_tokens(
             json=payload,
         ) as response:
             if response.status_code != 200:
-                yield ServerSentEvent(
-                    data={"error": "Ollama unavailable"},
-                    event="error",
-                )
+                yield f"event: error\ndata: {json.dumps({'error': 'Ollama unavailable'})}\n\n"
                 return
 
             async for line in response.aiter_lines():
@@ -83,7 +80,7 @@ async def stream_ollama_tokens(
                     if content:
                         full_text += content
                         # Per D-04: token event format
-                        yield ServerSentEvent(data={"token": content}, event="token")
+                        yield f"event: token\ndata: {json.dumps({'token': content})}\n\n"
 
                     # Capture usage stats from done chunk (per D-06, D-07)
                     if chunk.get("done"):
@@ -92,14 +89,7 @@ async def stream_ollama_tokens(
                         usage["total_tokens"] = usage["prompt_tokens"] + usage["completion_tokens"]
                         done_reason = chunk.get("done_reason", "stop")
                         # Per D-05: done event format
-                        yield ServerSentEvent(
-                            data={
-                                "done": True,
-                                "done_reason": done_reason,
-                                "usage": usage,
-                            },
-                            event="done",
-                        )
+                        yield f"event: done\ndata: {json.dumps({'done': True, 'done_reason': done_reason, 'usage': usage})}\n\n"
                 except json.JSONDecodeError:
                     continue
 
@@ -165,7 +155,7 @@ async def chat_non_streaming(
 
 
 @router.post("", response_model=None)
-async def chat(request: ChatRequest) -> EventSourceResponse | JSONResponse:
+async def chat(request: ChatRequest) -> StreamingResponse | JSONResponse:
     """
     Chat endpoint with streaming and non-streaming modes.
 
@@ -196,7 +186,10 @@ async def chat(request: ChatRequest) -> EventSourceResponse | JSONResponse:
 
     if request.stream:
         # Streaming mode: SSE with structured events
-        return EventSourceResponse(stream_ollama_tokens(messages, request.session_id))
+        return StreamingResponse(
+            stream_ollama_tokens(messages, request.session_id),
+            media_type="text/event-stream"
+        )
     else:
         # Non-streaming mode: return complete JSON
         result = await chat_non_streaming(messages, request.session_id)

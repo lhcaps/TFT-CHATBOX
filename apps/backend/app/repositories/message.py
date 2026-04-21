@@ -1,6 +1,7 @@
 """Message repository for database persistence."""
 from __future__ import annotations
 
+import json
 from typing import Optional
 
 from asyncpg import Pool
@@ -24,13 +25,13 @@ class MessageRepository:
             row = await conn.fetchrow(
                 """
                 INSERT INTO messages (session_id, role, content, metadata)
-                VALUES ($1, $2, $3, $4)
+                VALUES ($1, $2, $3, $4::jsonb)
                 RETURNING id, session_id, role, content, metadata, created_at
                 """,
                 session_id,
                 role,
                 content,
-                metadata or {},
+                json.dumps(metadata or {}),
             )
             return dict(row)
 

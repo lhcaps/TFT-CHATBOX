@@ -1,119 +1,40 @@
-version: "3.9"
-
+# ============================================
+# TFT Local Copilot - Docker Compose
+# ============================================
 services:
-  # ============================================
-  # Backend: FastAPI application
-  # ============================================
   backend:
     build:
       context: ../apps/backend
       dockerfile: Dockerfile
-    container_name: tft-backend
-    environment:
-      APP_ENV: development
-      APP_HOST: 0.0.0.0
-      APP_PORT: 8000
-      # Access native Ollama on host (D-09)
-      OLLAMA_BASE_URL: http://host.docker.internal:11434
-      OLLAMA_KEEP_ALIVE: 15m
-      # Access Supabase on host (D-09)
-      DATABASE_URL: postgresql://postgres:postgres@host.docker.internal:54322/postgres
-      # AI Models
-      CHAT_MODEL: qwen3:8b
-      EMBEDDING_MODEL: qwen3-embedding:4b
-      EMBEDDING_DIMENSIONS: 1024
-      # CORS configuration (per BACK-04)
-      ALLOWED_ORIGINS: http://localhost:5173
-      # Vault mount
-      OBSIDIAN_VAULT_PATH: /vault
     ports:
       - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@host.docker.internal:54322/postgres
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
     volumes:
-      # Mount backend source for hot reload
       - ../apps/backend:/app
-      # Mount Obsidian vault (read-only)
-      - ${OBSIDIAN_VAULT_PATH:-../vault}:/vault:ro
     extra_hosts:
-      # Ensure host.docker.internal resolves on Windows
       - "host.docker.internal:host-gateway"
-    command: >
-      sh -c "pip install -r requirements.txt &&
-             uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
 
-  # ============================================
-  # Frontend: React/Vite application
-  # ============================================
   frontend:
     build:
       context: ../apps/frontend
       dockerfile: Dockerfile
-    container_name: tft-frontend
-    environment:
-      VITE_API_BASE_URL: http://localhost:8000
     ports:
       - "5173:5173"
-    volumes:
-      # Mount frontend source for hot reload
-      - ../apps/frontend:/app
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    command: >
-      sh -c "npm install &&
-             npm run dev -- --host 0.0.0.0 --port 5173"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5173"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 20s
+    depends_on:
+      - backend
 
-  # ============================================
-  # n8n: Automation workflow engine
-  # ============================================
   n8n:
-    image: docker.n8n.io/n8nio/n8n:1.85  # D-10: Pinned version
-    container_name: tft-n8n
+    image: n8nio/n8n:latest
     ports:
       - "5678:5678"
     environment:
-      # Timezone configuration (D-10)
-      N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: "true"
-      GENERIC_TIMEZONE: Asia/Ho_Chi_Minh
-      TZ: Asia/Ho_Chi_Minh
-      # Webhook configuration
-      WEBHOOK_URL: ${WEBHOOK_URL:-http://localhost:5678/}
-      N8N_PROXY_HOPS: "1"
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=tft-copilot
+      - N8N_HOST=localhost
+      - N8N_PROTOCOL=http
     volumes:
-      # Persist n8n data
-      - n8n_data:/home/node/.n8n
-      # Mount n8n workflows directory
-      - ../n8n/workflows:/workflows:ro
-      # Mount local files
-      - ../n8n/local-files:/files:ro
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5678/healthz"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-# ============================================
-# Volumes for persistent data
-# ============================================
-volumes:
-  n8n_data:
-    driver: local
-
-# ============================================
-# Network configuration
-# ============================================
-networks:
-  default:
-    name: tft-network
+      - ../n8n/workflows:/home/node/.n8n/workflows
+      - ../n8n/local-files:/files

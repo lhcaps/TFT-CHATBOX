@@ -58,10 +58,12 @@ Plans:
 
 **Success Criteria** (what must be TRUE):
 1. GET /health returns {"ollama": "healthy", "database": "healthy"} when services are running
-2. POST /api/sessions creates a new session and returns UUID; GET /api/sessions lists sessions
-3. POST /api/chat with non-streaming mode returns a complete response from Ollama
+2. POST /sessions creates a new session and returns UUID; GET /sessions lists sessions
+3. POST /chat with non-streaming mode (stream=false) returns a complete response from Ollama
 4. CORS allows requests from http://localhost:5173; requests from other origins are blocked
 5. Chat messages are persisted to database and retrievable by session_id
+
+**Phase 2 endpoint scope:** /health, /sessions, and /chat are implemented in Phase 2. The remaining endpoints (/search, /ingest/obsidian, /ingest/tft-static) are Phase 4 scope.
 
 **Plans:** 4 plans
 
