@@ -34,5 +34,22 @@ class Settings(BaseSettings):
     # Obsidian
     obsidian_vault_path: str = ""
 
+    # App (env)
+    app_env: str = "development"
+    app_host: str = "0.0.0.0"
+    app_port: int = 8000
+
+    # Ollama keep_alive
+    ollama_keep_alive: str = "15m"
+
+    # CORS
+    allowed_origins: list[str] = ["http://localhost:5173"]
+
+    # n8n
+    webhook_url: str = "http://localhost:5678/"
+    n8n_proxy_hops: int = 1
+    generic_timezone: str = "Asia/Ho_Chi_Minh"
+    tz: str = "Asia/Ho_Chi_Minh"
+
 
 settings = Settings()
