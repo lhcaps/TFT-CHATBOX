@@ -12,7 +12,7 @@
 
 ### Commit bddb4ef — `feat(03-frontend): React chat UI with streaming, sessions, and mode tabs`
 
-**Commits:** 1 of 2 in Phase 3
+**Commits:** 1 of 3 in Phase 3
 
 ---
 
@@ -343,9 +343,281 @@ grep -n "messages" apps/backend/app/routes/sessions.py
 
 ---
 
+### Wave 4 — shadcn/ui integration
+
+> **Added 2026-04-22:** Phase 3 was previously complete but lacked shadcn/ui. This wave adds shadcn/ui setup and refactors UI components to use shadcn/ui primitives.
+
+#### `apps/frontend/package.json` (modified)
+
+**Change:** Added shadcn/ui dependencies.
+
+Added: `clsx`, `tailwind-merge`, `lucide-react`, `bits-ui`, `tailwind-variants`, `class-variance-authority`
+
+```json
+{
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.5.4",
+    "lucide-react": "^0.460.0"
+  },
+  "devDependencies": {
+    "tailwind-variants": "^0.3.0",
+    "bits-ui": "^0.21.16",
+    "class-variance-authority": "^0.7.0"
+  }
+}
+```
+
+**Verification:**
+```bash
+grep -n "clsx" apps/frontend/package.json
+grep -n "tailwind-merge" apps/frontend/package.json
+grep -n "lucide-react" apps/frontend/package.json
+```
+
+---
+
+#### `apps/frontend/components.json` (new file)
+
+**Change:** Created shadcn/ui CLI configuration at project root.
+
+```json
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "new-york",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "src/index.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "aliases": {
+    "components": "src/components",
+    "utils": "src/lib/utils",
+    "ui": "src/components/ui",
+    "lib": "src/lib",
+    "hooks": "src/hooks"
+  }
+}
+```
+
+**Verification:**
+```bash
+grep -n "shadcn" apps/frontend/components.json
+grep -n "src/components" apps/frontend/components.json
+```
+
+---
+
+#### `apps/frontend/src/lib/utils.ts` (new file)
+
+**Change:** Created `cn()` utility for classname merging (shadcn/ui standard).
+
+```typescript
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+```
+
+**Verification:**
+```bash
+grep -n "export.*cn" apps/frontend/src/lib/utils.ts
+grep -n "twMerge" apps/frontend/src/lib/utils.ts
+```
+
+---
+
+#### `apps/frontend/src/index.css` (modified)
+
+**Change:** Added `@theme inline` block with shadcn/ui CSS variables.
+
+Added at end of file:
+```css
+@theme inline {
+  --color-background: var(--color-bg);
+  --color-foreground: var(--color-text);
+  --color-card: var(--color-surface);
+  --color-card-foreground: var(--color-text);
+  --color-primary: var(--color-accent);
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #374151;
+  --color-destructive: #dc2626;
+  --color-border: var(--color-border);
+  --radius: 0.625rem;
+}
+```
+
+**Verification:**
+```bash
+grep -n "@theme inline" apps/frontend/src/index.css
+grep -n "background" apps/frontend/src/index.css | head -3
+```
+
+---
+
+#### `apps/frontend/src/components/ui/button.tsx` (new file)
+
+**Change:** Created shadcn/ui Button component with variants.
+
+```typescript
+// Exports: Button, buttonVariants
+// Variants: default (blue), destructive (red), outline, secondary, ghost, link
+// Sizes: default, sm, lg, icon
+```
+
+**Verification:**
+```bash
+grep -n "export.*Button" apps/frontend/src/components/ui/button.tsx
+grep -n "buttonVariants" apps/frontend/src/components/ui/button.tsx
+```
+
+---
+
+#### `apps/frontend/src/components/ui/card.tsx` (new file)
+
+**Change:** Created shadcn/ui Card components.
+
+```typescript
+// Exports: Card, CardHeader, CardTitle, CardContent
+// Card: rounded-xl border bg-gray-800 text-gray-100
+```
+
+**Verification:**
+```bash
+grep -n "export.*Card" apps/frontend/src/components/ui/card.tsx
+grep -n "CardHeader" apps/frontend/src/components/ui/card.tsx
+```
+
+---
+
+#### `apps/frontend/src/components/ui/textarea.tsx` (new file)
+
+**Change:** Created shadcn/ui Textarea component.
+
+```typescript
+// Exports: Textarea
+// Base styles: min-h-[48px], max-h-[120px], rounded-xl, bg-gray-700, resize-none
+```
+
+**Verification:**
+```bash
+grep -n "export.*Textarea" apps/frontend/src/components/ui/textarea.tsx
+grep -n "min-h" apps/frontend/src/components/ui/textarea.tsx
+```
+
+---
+
+#### `apps/frontend/src/components/Composer.tsx` (modified)
+
+**Change:** Refactored to use shadcn/ui `Button` and `Textarea` components.
+
+- Import `Button` from `~/components/ui/button`
+- Import `Textarea` from `~/components/ui/textarea`
+- Import `Send` icon from `lucide-react`
+- Replace raw `<textarea>` with `<Textarea>` component
+- Replace raw send `<button>` with `<Button>` with Send icon
+- All logic unchanged: auto-grow via scrollHeight, Enter-to-send, disabled state, clear on send
+
+**Verification:**
+```bash
+grep -n "from.*components/ui/button" apps/frontend/src/components/Composer.tsx
+grep -n "from.*components/ui/textarea" apps/frontend/src/components/Composer.tsx
+grep -n "Textarea" apps/frontend/src/components/Composer.tsx
+```
+
+---
+
+#### `apps/frontend/src/components/CitationCard.tsx` (modified)
+
+**Change:** Refactored to use shadcn/ui `Card`, `CardHeader`, `CardContent`.
+
+- Import `Card`, `CardHeader`, `CardContent` from `~/components/ui/card`
+- Replace raw outer `<div>` with `<Card>`
+- Show source + match % in `CardHeader`
+- Show heading + text in `CardContent`
+- `onClick` handler preserved on Card root
+- `line-clamp-3` preserved for text truncation
+
+**Verification:**
+```bash
+grep -n "from.*components/ui/card" apps/frontend/src/components/CitationCard.tsx
+grep -n "Card" apps/frontend/src/components/CitationCard.tsx
+```
+
+---
+
+#### `apps/frontend/src/components/ChatShell.tsx` (modified)
+
+**Change:** Refactored to use shadcn/ui `Button` for New Chat, Delete, and Stop buttons.
+
+- Import `Button` from `~/components/ui/button`
+- Import icons from `lucide-react`: `Plus`, `Trash2`, `Square`
+- New Chat button: `<Button onClick={onNewSession}><Plus /> New Chat</Button>`
+- Delete button: `<Button variant="ghost" size="icon" onClick={...}><Trash2 /></Button>`
+- Stop button: `<Button variant="destructive" onClick={onAbort}><Square /> Stop</Button>`
+- All inline SVG icons removed from button locations
+- All layout unchanged
+
+**Verification:**
+```bash
+grep -n "from.*components/ui/button" apps/frontend/src/components/ChatShell.tsx
+grep -n "Plus" apps/frontend/src/components/ChatShell.tsx
+grep -n "Trash2" apps/frontend/src/components/ChatShell.tsx
+grep -n "Square" apps/frontend/src/components/ChatShell.tsx
+```
+
+---
+
+#### `apps/frontend/src/components/ModeTabs.tsx` (modified)
+
+**Change:** Refactored to use shadcn/ui `Button` for mode toggle.
+
+- Import `Button` from `~/components/ui/button`
+- Replace raw `<button>` elements with `<Button>` components
+- Active tab: `variant="default"` (blue background)
+- Inactive tabs: `variant="secondary"`
+- Keep `size="sm"` for compact pill size
+- `title` attribute added for accessibility (mode descriptions)
+- All logic unchanged
+
+**Verification:**
+```bash
+grep -n "from.*components/ui/button" apps/frontend/src/components/ModeTabs.tsx
+grep -n "variant" apps/frontend/src/components/ModeTabs.tsx
+```
+
+---
+
+#### `apps/frontend/src/components/MessageList.tsx` (modified)
+
+**Change:** Minor styling updates with shadcn/ui CSS variables. All logic unchanged.
+
+- Auto-scroll logic unchanged (`bottomRef`, `scrollIntoView`)
+- Streaming dots animation unchanged
+- Empty state layout unchanged
+- CitationCard rendering unchanged
+- Message alignment unchanged
+- `whitespace-pre-wrap` preserved
+- Streaming dots color updated to use muted-foreground
+
+**Verification:**
+```bash
+grep -n "scrollIntoView" apps/frontend/src/components/MessageList.tsx
+grep -n "bottomRef" apps/frontend/src/components/MessageList.tsx
+grep -n "CitationCard" apps/frontend/src/components/MessageList.tsx
+```
+
+---
+
 ### Commit 1154692 — `docs(phase-3): mark Frontend Chat complete in roadmap and add phase context`
 
-**Commits:** 2 of 2 in Phase 3
+**Commits:** 2 of 3 in Phase 3
 
 #### `.planning/ROADMAP.md` (modified)
 
@@ -361,33 +633,57 @@ grep -n "messages" apps/backend/app/routes/sessions.py
 
 ## File Inventory (Phase 3)
 
-| File | Type | Commit | Status |
-|------|------|--------|--------|
-| `apps/frontend/src/api/types.ts` | new | bddb4ef | ✅ |
-| `apps/frontend/src/api/chat.ts` | modified | bddb4ef | ✅ |
-| `apps/frontend/src/api/sessions.ts` | new | bddb4ef | ✅ |
-| `apps/frontend/src/hooks/useSession.ts` | new | bddb4ef | ✅ |
-| `apps/frontend/src/hooks/useStreamingMessages.ts` | new | bddb4ef | ✅ |
-| `apps/frontend/src/App.tsx` | modified | bddb4ef | ✅ |
-| `apps/frontend/src/components/ChatShell.tsx` | modified | bddb4ef | ✅ |
-| `apps/frontend/src/components/Composer.tsx` | modified | bddb4ef | ✅ |
-| `apps/frontend/src/components/MessageList.tsx` | modified | bddb4ef | ✅ |
-| `apps/frontend/src/components/ModeTabs.tsx` | modified | bddb4ef | ✅ |
-| `apps/frontend/src/components/CitationCard.tsx` | modified | bddb4ef | ✅ |
-| `apps/frontend/index.html` | modified | bddb4ef | ✅ |
-| `apps/frontend/src/index.css` | modified | bddb4ef | ✅ |
-| `apps/frontend/vite.config.ts` | modified | bddb4ef | ✅ |
-| `apps/frontend/package-lock.json` | modified | bddb4ef | ✅ |
-| `apps/backend/app/repositories/message.py` | modified | bddb4ef | ✅ |
-| `apps/backend/app/routes/sessions.py` | modified | bddb4ef | ✅ |
-| `.planning/ROADMAP.md` | modified | 1154692 | ✅ |
-| `.planning/phases/03-frontend-chat/03-CONTEXT.md` | new | 1154692 | ✅ |
+|| File | Type | Commit | Status |
+||------|------|--------|--------|
+|| `apps/frontend/src/api/types.ts` | new | bddb4ef | ✅ |
+|| `apps/frontend/src/api/chat.ts` | modified | bddb4ef | ✅ |
+|| `apps/frontend/src/api/sessions.ts` | new | bddb4ef | ✅ |
+|| `apps/frontend/src/hooks/useSession.ts` | new | bddb4ef | ✅ |
+|| `apps/frontend/src/hooks/useStreamingMessages.ts` | new | bddb4ef | ✅ |
+|| `apps/frontend/src/App.tsx` | modified | bddb4ef | ✅ |
+|| `apps/frontend/src/components/ChatShell.tsx` | modified | bddb4ef + wave-4 | ✅ |
+|| `apps/frontend/src/components/Composer.tsx` | modified | bddb4ef + wave-4 | ✅ |
+|| `apps/frontend/src/components/MessageList.tsx` | modified | bddb4ef + wave-4 | ✅ |
+|| `apps/frontend/src/components/ModeTabs.tsx` | modified | bddb4ef + wave-4 | ✅ |
+|| `apps/frontend/src/components/CitationCard.tsx` | modified | bddb4ef + wave-4 | ✅ |
+|| `apps/frontend/index.html` | modified | bddb4ef | ✅ |
+|| `apps/frontend/src/index.css` | modified | bddb4ef + wave-4 | ✅ |
+|| `apps/frontend/vite.config.ts` | modified | bddb4ef | ✅ |
+|| `apps/frontend/package.json` | modified | wave-4 | ✅ |
+|| `apps/frontend/components.json` | new | wave-4 | ✅ |
+|| `apps/frontend/src/lib/utils.ts` | new | wave-4 | ✅ |
+|| `apps/frontend/src/components/ui/button.tsx` | new | wave-4 | ✅ |
+|| `apps/frontend/src/components/ui/card.tsx` | new | wave-4 | ✅ |
+|| `apps/frontend/src/components/ui/textarea.tsx` | new | wave-4 | ✅ |
+|| `apps/frontend/package-lock.json` | modified | bddb4ef | ✅ |
+|| `apps/backend/app/repositories/message.py` | modified | bddb4ef | ✅ |
+|| `apps/backend/app/routes/sessions.py` | modified | bddb4ef | ✅ |
+|| `.planning/ROADMAP.md` | modified | 1154692 | ✅ |
+|| `.planning/phases/03-frontend-chat/03-CONTEXT.md` | new | 1154692 | ✅ |
 
 > **Note:** `Sidebar.tsx` and `EmptyState.tsx` are **not** separate files. The sidebar markup is inline within `ChatShell.tsx` (as an `<aside>` element), and the empty state is inline within `MessageList.tsx`.
 
 ---
 
 ## Verification Checklist
+
+### Wave 4 — shadcn/ui
+
+```bash
+# Verify all shadcn/ui component imports exist
+grep -rn "from.*components/ui" apps/frontend/src/components/Composer.tsx
+grep -rn "from.*components/ui" apps/frontend/src/components/CitationCard.tsx
+grep -rn "from.*components/ui" apps/frontend/src/components/ChatShell.tsx
+grep -rn "from.*components/ui" apps/frontend/src/components/ModeTabs.tsx
+
+# Verify utils.ts exists and exports cn
+grep -n "export.*cn" apps/frontend/src/lib/utils.ts
+
+# Verify all components have expected exports
+grep -n "export.*Button" apps/frontend/src/components/ui/button.tsx
+grep -n "export.*Card" apps/frontend/src/components/ui/card.tsx
+grep -n "export.*Textarea" apps/frontend/src/components/ui/textarea.tsx
+```
 
 ### TypeScript
 ```bash
@@ -399,19 +695,13 @@ Expected: 0 errors
 ```bash
 cd apps/frontend && npm run build
 ```
-Expected: Clean production build (35 modules, ~158 KB JS gzipped ~50 KB per commit notes)
+Expected: Clean production build
 
-### Backend (sessions/messages endpoint)
-```bash
-cd apps/backend && python -c "from app.routes.sessions import router; print('OK')"
-```
-Expected: `OK`
-
-### Functional checks
+### Functional checks (from original Phase 3)
 - [ ] App loads at `http://localhost:5173`
 - [ ] Session list loads in sidebar on mount
 - [ ] New Chat creates a session and switches to it
-- [ ] Mode tabs switch between Normal/RAG/Coach
+- [ ] Mode tabs switch between Normal/Notes/Coach
 - [ ] Typing a message and pressing Enter (not Shift) sends it
 - [ ] Assistant response streams in real-time with animated dots
 - [ ] Stop button (shown during streaming) aborts the stream
@@ -420,8 +710,15 @@ Expected: `OK`
 - [ ] TypeScript compiles with 0 errors
 - [ ] Vite production build succeeds
 
+### shadcn/ui specific checks
+- [ ] Composer uses shadcn/ui Button + Textarea
+- [ ] CitationCard uses shadcn/ui Card
+- [ ] ChatShell uses shadcn/ui Button for New Chat, Delete, Stop
+- [ ] ModeTabs uses shadcn/ui Button with variant-based active state
+- [ ] All icons from lucide-react (Plus, Send, Trash2, Square)
+
 ---
 
 *Phase: 03-frontend-chat*
-*Status: Complete*
+*Status: Complete (Wave 4 shadcn/ui added)*
 *Commits: bddb4ef, 1154692*

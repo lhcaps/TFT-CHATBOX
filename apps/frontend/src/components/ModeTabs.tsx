@@ -1,3 +1,5 @@
+import { Button } from '~/components/ui/button';
+
 type Mode = 'normal' | 'rag' | 'coach';
 
 interface ModeTabsProps {
@@ -15,18 +17,16 @@ export function ModeTabs({ value, onChange }: ModeTabsProps) {
   return (
     <div className="flex gap-1 bg-gray-800 rounded-xl p-1">
       {MODES.map(mode => (
-        <button
+        <Button
           key={mode.id}
+          variant={value === mode.id ? 'default' : 'secondary'}
+          size="sm"
           onClick={() => onChange(mode.id)}
-          className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors
-                     ${value === mode.id
-                       ? 'bg-blue-600 text-white'
-                       : 'text-gray-400 hover:text-white hover:bg-gray-700'
-                     }`}
           title={mode.description}
+          className="flex-1"
         >
           {mode.label}
-        </button>
+        </Button>
       ))}
     </div>
   );
