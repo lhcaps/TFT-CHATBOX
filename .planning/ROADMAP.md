@@ -11,7 +11,8 @@
 
 - ✅ **v1.0 MVP** — Phases 1-7 (shipped 2026-04-22) — 60/60 smoke test PASS
 - ✅ **v1.1 TFT Meta Mastery** — Phase 8 (shipped 2026-04-22) — PATCH-01..05 complete
-- 📋 **v1.2 MetaTFT Real-time Intelligence** — Phase 9 (planning) — META-01..05
+- ✅ **v1.2 MetaTFT Real-time Intelligence** — Phase 9 (shipped 2026-04-23) — META-01..05 complete
+- ✅ **v1.3 Hardening & Polish** — Phase 10 (shipped 2026-04-23) — HARD-01..05 + 2 root causes fixed
 
 ---
 
@@ -51,30 +52,41 @@ Full details: [.planning/milestones/v1.1-ROADMAP.md](.planning/milestones/v1.1-R
 </details>
 
 <details>
-<summary>📋 v1.2 MetaTFT Real-time Intelligence (Phase 9) — planning</summary>
+<summary>✅ v1.2 MetaTFT Real-time Intelligence (Phase 9) — SHIPPED 2026-04-23</summary>
 
-- [ ] Phase 9: MetaTFT Real-time Intelligence
-  - META-01: MetaTFT scraper endpoint (`POST /api/ingest/metatft`)
-  - META-02: MetaTFT data → Markdown transformer
-  - META-03: Full Space Gods set data ingest (patch 17.1 + set overview)
-  - META-04: n8n daily MetaTFT refresh (12:00 noon)
-  - META-05: Frontend CompCard component
+- [x] Phase 9: MetaTFT Real-time Intelligence
+  - META-01: MetaTFT scraper endpoint (`POST /api/ingest/metatft`) ✅
+  - META-02: MetaTFT data → Markdown transformer ✅
+  - META-03: Full Space Gods set data ingest (patch 17.1 + set overview) ✅
+  - META-04: n8n daily MetaTFT refresh (12:00 noon) ✅
+  - META-05: Frontend CompCard component ✅
 
-**Plans:** 3 plans
+**Plans:** 3 plans (all shipped)
+- [x] 09-01-PLAN.md — MetaTFT Scraper + Backend Ingest Endpoint ✅
+- [x] 09-02-PLAN.md — n8n Daily MetaTFT Trigger ✅
+- [x] 09-03-PLAN.md — Frontend CompCard Component ✅
 
-**Plan list:**
-- [ ] 09-01-PLAN.md — MetaTFT Scraper + Backend Ingest Endpoint
-- [ ] 09-02-PLAN.md — n8n Daily MetaTFT Trigger
-- [ ] 09-03-PLAN.md — Frontend CompCard Component
-
-**Canonical sources:**
-- `https://www.metatft.com/comps` — comp tiers, winrates, carries, items
-- `https://teamfighttactics.leagueoflegends.com/en-us/news/game-updates/teamfight-tactics-patch-17-1/`
-- `https://teamfighttactics.leagueoflegends.com/en-us/set-overview/tft-set-17-space-gods/`
-
-**No browser automation.** httpx + regex JSON extraction only.
+**Details:** MetaTFT comp data scraped daily, Space Gods set overview loaded, n8n cron triggers ingest, Discord notifications sent, CompCard component renders styled tier/carry/item info.
 
 Full details: [.planning/phases/09-metatft-intelligence/](.planning/phases/09-metatft-intelligence/)
+
+</details>
+
+<details>
+<summary>✅ v1.3 Hardening & Polish (Phase 10) — SHIPPED 2026-04-23</summary>
+
+- [x] Phase 10: Hardening & Polish
+  - HARD-01: Session switch loading state (spinner) ✅
+  - HARD-02: Frontend request timeout (60s) ✅
+  - HARD-03: Pydantic validation bounds ✅
+  - HARD-04: CompCard component (Phase 9 gap) ✅
+  - HARD-05: Toast notification system ✅
+
+**Root causes fixed (2026-04-23):**
+- Fix A: GPU status SyntaxError — `/health/gpu` → `/api/health/gpu`
+- Fix B: PatchStatus CORS block — hardcoded URL → `/api/patch/status`
+
+Full details: [.planning/phases/10-hardening-polish/](.planning/phases/10-hardening-polish/)
 
 </details>
 
@@ -92,7 +104,8 @@ Full details: [.planning/phases/09-metatft-intelligence/](.planning/phases/09-me
 | 6. Automation | v1.0 | 4/4 | Complete | 2026-04-22 |
 | 7. Polish & Smoke Test | v1.0 | 4/4 | Complete | 2026-04-22 |
 | 8. Patch Meta Mastery | v1.1 | 4/4 | Complete | 2026-04-22 |
-| 9. MetaTFT Intelligence | v1.2 | 0/N | Planning | — |
+| 9. MetaTFT Intelligence | v1.2 | 3/3 | Complete | 2026-04-23 |
+| 10. Hardening & Polish | v1.3 | 5/5 | Complete | 2026-04-23 |
 
 ---
 
@@ -164,5 +177,5 @@ All phases comply with Riot TFT policy:
 
 ---
 
-*Last updated: 2026-04-22*
-*Completed: v1.0 MVP + v1.1 TFT Meta Mastery — Phases 1-8 (shipped 2026-04-22)*
+*Last updated: 2026-04-23*
+*Completed: v1.0 MVP + v1.1 TFT Meta Mastery + v1.2 MetaTFT Intelligence + v1.3 Hardening & Polish — Phases 1-10 (shipped 2026-04-23)*

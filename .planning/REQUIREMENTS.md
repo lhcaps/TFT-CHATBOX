@@ -108,21 +108,43 @@
 
 ### MetaTFT Intelligence
 
-- [ ] **META-01**: `POST /api/ingest/metatft` — httpx scrape of `https://www.metatft.com/comps`, regex JSON extraction, Markdown transform, ingest into chunks table with `source='metatft'`
-- [ ] **META-02**: MetaTFT data transformer — comp name, tier, top4 rate, carry, items → Vietnamese Markdown
-- [ ] **META-03**: Full Space Gods data ingest — patch 17.1 full content + set overview from Riot (champions, traits, items, augments, artifacts)
-- [ ] **META-04**: n8n daily trigger at 12:00 noon calling `POST /api/ingest/metatft`
-- [ ] **META-05**: Frontend `CompCard` component — tier badges, champion names, item color coding from Markdown
+- [x] **META-01**: `POST /api/ingest/metatft` — httpx scrape of `https://www.metatft.com/comps`, regex JSON extraction, Markdown transform, ingest into chunks table with `source='metatft'`
+- [x] **META-02**: MetaTFT data transformer — comp name, tier, top4 rate, carry, items → Vietnamese Markdown
+- [x] **META-03**: Full Space Gods data ingest — patch 17.1 full content + set overview from Riot (champions, traits, items, augments, artifacts)
+- [x] **META-04**: n8n daily trigger at 12:00 noon calling `POST /api/ingest/metatft`
+- [x] **META-05**: Frontend `CompCard` component — tier badges, champion names, item color coding from Markdown
 
 ### Traceability
 
-|| Requirement | Phase | Status |
+| Requirement | Phase | Status |
 |-------------|-------|--------|
-| META-01 | Phase 9 | Pending |
-| META-02 | Phase 9 | Pending |
-| META-03 | Phase 9 | Pending |
-| META-04 | Phase 9 | Pending |
-| META-05 | Phase 9 | Pending |
+| META-01 | Phase 9 | Complete ✅ |
+| META-02 | Phase 9 | Complete ✅ |
+| META-03 | Phase 9 | Complete ✅ |
+| META-04 | Phase 9 | Complete ✅ |
+| META-05 | Phase 9 | Complete ✅ |
+
+---
+
+## v1.3 Requirements (Hardening & Polish)
+
+### Hardening & Polish
+
+- [x] **HARD-01**: Session switch loading state — spinner overlay on ChatShell when `messagesLoading === true`
+- [x] **HARD-02**: Frontend request timeout — 60s `AbortSignal.timeout(60_000)` on `/api/chat` fetch
+- [x] **HARD-03**: Pydantic validation bounds — `top_k` Field(ge=1, le=50), session_id regex validator
+- [x] **HARD-04**: CompCard component — Phase 9 META-05 gap, styled tier/carry/item cards in MessageList
+- [x] **HARD-05**: Toast notification system — success/error/info toasts with auto-dismiss in App.tsx
+
+### Traceability
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| HARD-01 | Phase 10 | Complete ✅ |
+| HARD-02 | Phase 10 | Complete ✅ |
+| HARD-03 | Phase 10 | Complete ✅ |
+| HARD-04 | Phase 10 | Complete ✅ |
+| HARD-05 | Phase 10 | Complete ✅ |
 
 ---
 
@@ -189,7 +211,10 @@
 - v1 requirements: 35 total
 - Mapped to phases: 35
 - Unmapped: 0 ✓
+- v1.2 (META-01..05): 5/5 complete ✅
+- v1.3 (HARD-01..05): 5/5 complete ✅
 
 ---
+
 *Requirements defined: 2026-04-22*
-*Last updated: 2026-04-22 after initial definition*
+*Last updated: 2026-04-23 after Phase 9 + Phase 10 completion*
