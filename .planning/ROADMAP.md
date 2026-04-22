@@ -149,19 +149,25 @@ Plans:
 
 ### Phase 6: Automation
 
-**Goal:** n8n workflows handle scheduled ingest and patch monitoring; ngrok exposes webhooks reliably.
+**Goal:** n8n workflows handle manual Obsidian ingest, patch monitoring with state, Bearer auth on endpoints, and Discord notifications on failure. *(ngrok dropped per user decision)*
 
 **Depends on:** Phase 5
 
-**Requirements:** AUTO-01, AUTO-02, AUTO-03, AUTO-04
+**Requirements:** AUTO-01, AUTO-02, AUTO-04
 
 **Success Criteria** (what must be TRUE):
-1. n8n workflow for Obsidian ingest triggers every 4 hours when active
-2. n8n workflow checks Riot versions.json every 6 hours and triggers ingest on patch change
-3. ngrok tunnel starts and refreshes WEBHOOK_URL in n8n without manual intervention
+1. n8n Obsidian ingest workflow triggers via manual webhook (no schedule)
+2. n8n patch monitor checks Riot versions.json every 6 hours and triggers ingest on patch change
+3. All ingest endpoints require Bearer token auth
 4. All workflows run in Asia/Ho_Chi_Minh timezone as configured
 
-**Plans:** TBD
+**Plans:** 4 plans
+
+Plans:
+- [ ] 06-01-PLAN.md — Backend Auth Middleware + Patch State Endpoint
+- [ ] 06-02-PLAN.md — Docker Compose n8n Timezone + Env Vars
+- [ ] 06-03-PLAN.md — n8n Obsidian Ingest Workflow (Manual Trigger)
+- [ ] 06-04-PLAN.md — n8n Patch Monitor Workflow
 
 ---
 
@@ -192,7 +198,7 @@ Plans:
 | 3. Frontend Chat | N/N | Complete | 2026-04-22 |
 | 4. RAG Foundation | 3/3 | Complete | 2026-04-22 |
 | 5. TFT Static Data | 4/4 | Complete | 2026-04-22 |
-| 6. Automation | 0/N | Not started | - |
+| 6. Automation | 0/4 | Not started | - |
 | 7. Polish & Smoke Test | 0/N | Not started | - |
 
 ---
@@ -208,7 +214,7 @@ Plans:
 | RAG Pipeline | RAG-01, RAG-02, RAG-03, RAG-04, RAG-05, RAG-06, RAG-07 | Phase 4 |
 | Prompt Modes | PROMPT-01, PROMPT-02, PROMPT-03 | Phase 4 |
 | TFT Static Data | RAG-05, RAG-06, POLY-02 | Phase 5 |
-| Automation | AUTO-01, AUTO-02, AUTO-03, AUTO-04 | Phase 6 |
+| Automation | AUTO-01, AUTO-02, AUTO-04 | Phase 6 |
 | Polish | POLY-01, POLY-03, POLY-04, POLY-05 | Phase 1, 7 |
 
 **Total:** 35/35 requirements mapped ✓
