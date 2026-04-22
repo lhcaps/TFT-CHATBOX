@@ -16,10 +16,11 @@ async def search(request: SearchRequest) -> SearchResult:
     Returns top chunks with scores for debugging retrieval quality.
     """
     try:
-        chunks = await retrieve_chunks(request.query, top_k=request.top_k)
+        chunks = await retrieve_chunks(request.query, top_k=request.top_k, patch=request.patch)
         return SearchResult(
             query=request.query,
             top_k=request.top_k,
+            patch=request.patch,
             chunks=[
                 {
                     "id": c["id"],

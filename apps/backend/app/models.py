@@ -44,6 +44,7 @@ class SearchRequest(BaseModel):
     """Search request for RAG retrieval."""
     query: str
     top_k: int = 8
+    patch: Optional[str] = None
 
 
 class ChunkResult(BaseModel):
@@ -59,5 +60,6 @@ class SearchResult(BaseModel):
     """Response from the search endpoint."""
     query: str
     top_k: int
+    patch: Optional[str] = None
     chunks: list[ChunkResult]
     count: int

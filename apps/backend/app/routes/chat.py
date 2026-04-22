@@ -23,6 +23,7 @@ async def build_messages(
     session_id: str,
     user_message: str,
     mode: str,
+    patch: str | None = None,
 ) -> list[dict]:
     """Build the messages array for Ollama: system + recent history + optional RAG context."""
     pool = await get_pool()
@@ -44,7 +45,7 @@ async def build_messages(
     # Inject RAG context for rag/coach modes
     if mode in ("rag", "coach"):
         from app.services.retrieval import retrieve_chunks
-        chunks = await retrieve_chunks(user_message, top_k=settings.rag_top_k)
+        chunks = await retrieve_chunks(user_message, top_k=settings.rag_top_k, patch=patch)
         if chunks:
             context_lines = ["---CONTEXT---"]
             for i, chunk in enumerate(chunks, 1):
@@ -209,6 +210,7 @@ async def chat(request: ChatRequest) -> StreamingResponse | JSONResponse:
         session_id=request.session_id,
         user_message=request.message,
         mode=request.mode,
+        patch=request.patch,
     )
 
     # Persist the user message BEFORE streaming (so it appears in history)
