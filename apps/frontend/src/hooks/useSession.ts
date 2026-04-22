@@ -53,7 +53,7 @@ export function useSession(): UseSessionReturn {
     }
   }, []);
 
-  const newSession = useCallback(async (mode: Mode = 'normal'): Promise<Session> => {
+  const newSession = useCallback(async (mode: Mode = 'rag'): Promise<Session> => {
     const s = await createSession(undefined, mode);
     setSessions((prev) => [s, ...prev]);
     setCurrentSession(s);

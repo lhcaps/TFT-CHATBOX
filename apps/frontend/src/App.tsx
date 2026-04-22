@@ -95,7 +95,7 @@ export default function App() {
         onNewSession={handleNewSession}
         onSelectSession={handleSelectSession}
         onDeleteSession={handleDeleteSession}
-        currentMode={currentSession?.mode ?? 'normal'}
+        currentMode={currentSession?.mode ?? 'rag'}
         onModeChange={handleModeChange}
         error={chatError ?? sessionsError}
         onClearError={clearError}

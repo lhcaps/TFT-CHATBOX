@@ -8,9 +8,9 @@ interface ModeTabsProps {
 }
 
 const MODES: { id: Mode; label: string; description: string }[] = [
-  { id: 'normal', label: 'Normal', description: 'Free chat with the AI' },
-  { id: 'rag', label: 'Notes', description: 'Search your Obsidian notes' },
-  { id: 'coach', label: 'Coach', description: 'Strategic advice grounded in your notes' },
+  { id: 'normal', label: 'Normal', description: 'Free chat with the AI — no knowledge base' },
+  { id: 'rag', label: 'RAG', description: 'Grounded answers using patch notes, comp data & set info' },
+  { id: 'coach', label: 'Coach', description: 'Strategic advice with meta comps and play lines' },
 ];
 
 export function ModeTabs({ value, onChange }: ModeTabsProps) {

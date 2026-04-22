@@ -9,7 +9,7 @@ export async function listSessions(): Promise<Session[]> {
   return res.json();
 }
 
-export async function createSession(title?: string, mode: Mode = 'normal'): Promise<Session> {
+export async function createSession(title?: string, mode: Mode = 'rag'): Promise<Session> {
   const res = await fetch(`${BASE}/sessions`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
