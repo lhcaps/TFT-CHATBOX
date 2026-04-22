@@ -30,12 +30,37 @@ async def ingest_obsidian() -> dict:
 
 
 @router.post("/tft-static")
-async def ingest_tft_static() -> dict:
-    """Trigger TFT static data ingestion."""
+async def ingest_tft_static_route(patch: str | None = None) -> dict:
+    """Trigger TFT static data ingestion.
+
+    Args:
+        patch: Optional patch version (e.g. "17.1"). If omitted, uses latest.
+    """
     from scripts.ingest_tft_static import ingest_tft_static as do_ingest
 
     try:
-        result = await do_ingest()
+        result = await do_ingest(patch=patch)
         return {"status": "ok", "result": result}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/tft-static/version")
+async def get_tft_version() -> dict:
+    """Get the current/latest TFT Data Dragon version and cached version."""
+    from scripts.ingest_tft_static import (
+        get_latest_version,
+        get_cached_version,
+        get_cache_dir,
+    )
+
+    latest = await get_latest_version()
+    cached = await get_cached_version()
+    cache_dir = str(get_cache_dir(latest)) if latest else None
+
+    return {
+        "latest": latest,
+        "cached": cached,
+        "cache_dir": str(Path(settings.tft_cache_dir)),
+        "is_stale": latest != cached if latest and cached else True,
+    }
