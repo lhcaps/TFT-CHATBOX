@@ -1,11 +1,22 @@
 """Ollama service for LLM and embedding calls."""
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Any
 
 import httpx
 
 from app.config import settings
+
+
+@dataclass
+class RetrievedChunk:
+    """A retrieved chunk from the vector database."""
+    id: str
+    content: str
+    source: str
+    metadata: dict[str, Any]
+    similarity: float
 
 
 class OllamaService:

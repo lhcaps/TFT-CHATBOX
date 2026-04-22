@@ -55,6 +55,10 @@ class Settings(BaseSettings):
     # TFT Cache
     tft_cache_dir: str = str(Path.home() / ".tft-copilot" / "cache")
 
+    # Embedding cache (POLY-01)
+    embedding_cache_max_size: int = 500
+    embedding_cache_ttl_seconds: int = 1800  # 30 minutes
+
     # API Auth
     api_secret_key: str = ""
 
