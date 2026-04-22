@@ -71,6 +71,28 @@
     },
     {
       "parameters": {
+        "url": "={{ $credentials.discordWebhook }}",
+        "method": "POST",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "content",
+              "value": "={{ 'TFT Patch **' + $('Get Riot Version').item.json[0] + '** detected! Starting ingest...' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "credentials": {
+        "discordWebhook": "discordWebhook"
+      },
+      "name": "Discord: Ingest Started",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1000, 100]
+    },
+    {
+      "parameters": {
         "url": "http://backend:8000/api/ingest/tft-static",
         "method": "POST",
         "authentication": "genericCredentialType",
@@ -80,7 +102,7 @@
       "credentials": {
         "httpHeaderAuth": "tftBackendApi"
       },
-      "name": "Trigger TFT Ingest",
+      "name": "Trigger Static Ingest",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
       "position": [1000, 200],
@@ -89,6 +111,44 @@
           "index": 0
         }
       ]
+    },
+    {
+      "parameters": {
+        "url": "={{ 'http://backend:8000/api/ingest/patch-notes?patch=' + $('Get Riot Version').item.json[0] }}",
+        "method": "POST",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "credentials": {
+        "httpHeaderAuth": "tftBackendApi"
+      },
+      "name": "Trigger Patch Notes Ingest",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1000, 350]
+    },
+    {
+      "parameters": {
+        "url": "={{ $credentials.discordWebhook }}",
+        "method": "POST",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "content",
+              "value": "={{ 'TFT Patch **' + $('Get Riot Version').item.json[0] + '** ingest complete! Static: ' + $('Trigger Static Ingest').item.json.result.status + ' | Patch Notes: ' + $('Trigger Patch Notes Ingest').item.json.status }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "credentials": {
+        "discordWebhook": "discordWebhook"
+      },
+      "name": "Discord: Ingest Success",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1250, 200]
     },
     {
       "parameters": {
@@ -102,7 +162,7 @@
             },
             {
               "name": "embeds",
-              "value": "[{\"title\":\"TFT Patch Ingest Failed\",\"color\":15158332,\"fields\":[{\"name\":\"Patch\",\"value\":\"{{ $('Get Riot Version').item.json[0] }}\",\"inline\":true},{\"name\":\"Error\",\"value\":\"{{ $('Trigger TFT Ingest').error.message }}\",\"inline\":false},{\"name\":\"Action\",\"value\":\"Manual intervention required\",\"inline\":false}],\"timestamp\":\"{{ $now.iso }}\"}]"
+              "value": "[{\"title\":\"TFT Patch Ingest Failed\",\"color\":15158332,\"fields\":[{\"name\":\"Patch\",\"value\":\"{{ $('Get Riot Version').item.json[0] }}\",\"inline\":true},{\"name\":\"Error\",\"value\":\"{{ $json.error.message || 'Unknown error' }}\",\"inline\":false},{\"name\":\"Action\",\"value\":\"Manual intervention required\",\"inline\":false}],\"timestamp\":\"{{ $now.iso }}\"}]"
             }
           ]
         },
@@ -111,10 +171,10 @@
       "credentials": {
         "discordWebhook": "discordWebhook"
       },
-      "name": "Notify Discord (Ingest Failed)",
+      "name": "Discord: Ingest Failed",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
-      "position": [1000, 500]
+      "position": [1250, 500]
     },
     {
       "parameters": {
@@ -123,7 +183,7 @@
       "name": "Log: No Change",
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
-      "position": [1000, 400]
+      "position": [1250, 400]
     }
   ],
   "connections": {
@@ -141,18 +201,49 @@
     },
     "Version Mismatch?": {
       "main": [
-        [{"node": "Trigger TFT Ingest", "type": "main", "index": 0}],
-        [{"node": "Log: No Change", "type": "main", "index": 0}]
+        [
+          {"node": "Discord: Ingest Started", "type": "main", "index": 0}
+        ],
+        [
+          {"node": "Log: No Change", "type": "main", "index": 0}
+        ]
       ],
       "errorOutput": [
-        [{"node": "Notify Discord (Ingest Failed)", "type": "main", "index": 0}]
+        [
+          {"node": "Discord: Ingest Failed", "type": "main", "index": 0}
+        ]
       ]
     },
-    "Trigger TFT Ingest": {
-      "main": [[{"node": "Log: No Change", "type": "main", "index": 0}]]
+    "Discord: Ingest Started": {
+      "main": [[{"node": "Trigger Static Ingest", "type": "main", "index": 0}]]
+    },
+    "Trigger Static Ingest": {
+      "main": [[{"node": "Trigger Patch Notes Ingest", "type": "main", "index": 0}]],
+      "errorOutput": [
+        [
+          {"node": "Discord: Ingest Failed", "type": "main", "index": 0}
+        ]
+      ]
+    },
+    "Trigger Patch Notes Ingest": {
+      "main": [[{"node": "Discord: Ingest Success", "type": "main", "index": 0}]],
+      "errorOutput": [
+        [
+          {"node": "Discord: Ingest Failed", "type": "main", "index": 0}
+        ]
+      ]
+    },
+    "Discord: Ingest Success": {
+      "main": [[]]
+    },
+    "Discord: Ingest Failed": {
+      "main": [[]]
+    },
+    "Log: No Change": {
+      "main": [[]]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {},
   "id": "patch-monitor"
 }

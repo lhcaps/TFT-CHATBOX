@@ -4,6 +4,7 @@ import { useSession } from './hooks/useSession';
 import { useStreamingMessages } from './hooks/useStreamingMessages';
 import { ChatShell } from './components/ChatShell';
 import { GpuStatusBadge } from './components/GpuBadge';
+import { PatchStatus } from './components/PatchStatus';
 
 export default function App() {
   const {
@@ -72,6 +73,7 @@ export default function App() {
     <div className="flex flex-col h-screen">
       <header className="flex items-center justify-end px-4 py-1 border-b border-gray-700 bg-gray-800 gap-4 shrink-0">
         <GpuStatusBadge />
+        <PatchStatus />
       </header>
       <ChatShell
         messages={messages}
