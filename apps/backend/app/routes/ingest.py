@@ -4,15 +4,16 @@ from __future__ import annotations
 import asyncio
 from pathlib import Path
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 
 from app.config import settings
+from app.middleware.auth import verify_api_key
 
 router = APIRouter(prefix="/ingest", tags=["ingest"])
 
 
 @router.post("/obsidian")
-async def ingest_obsidian() -> dict:
+async def ingest_obsidian(_: str = Depends(verify_api_key)) -> dict:
     """Trigger Obsidian vault ingestion."""
     vault_path = settings.obsidian_vault_path
     if not vault_path:
@@ -30,7 +31,10 @@ async def ingest_obsidian() -> dict:
 
 
 @router.post("/tft-static")
-async def ingest_tft_static_route(patch: str | None = None) -> dict:
+async def ingest_tft_static_route(
+    patch: str | None = None,
+    _: str = Depends(verify_api_key),
+) -> dict:
     """Trigger TFT static data ingestion.
 
     Args:
