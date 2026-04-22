@@ -1,0 +1,158 @@
+{
+  "name": "Patch Monitor Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 */6 * * *"
+            }
+          ]
+        }
+      },
+      "name": "Scheduled Trigger",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://ddragon.leagueoflegends.com/api/versions.json",
+        "method": "GET",
+        "options": {}
+      },
+      "name": "Get Riot Version",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [500, 200]
+    },
+    {
+      "parameters": {
+        "url": "http://backend:8000/api/patch/current",
+        "method": "GET",
+        "options": {}
+      },
+      "name": "Get Backend Cached Version",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [500, 400]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "version-mismatch",
+              "leftValue": "={{ $json[0] }}",
+              "rightValue": "={{ $('Get Backend Cached Version').item.json.version }}",
+              "operator": {
+                "type": "notEquals",
+                "operation": "notEquals",
+                "nodeTypes": "string"
+              }
+            }
+          ],
+          "options": {}
+        },
+        "options": {}
+      },
+      "name": "Version Mismatch?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [750, 300],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "url": "http://backend:8000/api/ingest/tft-static",
+        "method": "POST",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "credentials": {
+        "httpHeaderAuth": "tftBackendApi"
+      },
+      "name": "Trigger TFT Ingest",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1000, 200],
+      "onError": [
+        {
+          "index": 0
+        }
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $credentials.discordWebhook }}",
+        "method": "POST",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "content",
+              "value": ""
+            },
+            {
+              "name": "embeds",
+              "value": "[{\"title\":\"TFT Patch Ingest Failed\",\"color\":15158332,\"fields\":[{\"name\":\"Patch\",\"value\":\"{{ $('Get Riot Version').item.json[0] }}\",\"inline\":true},{\"name\":\"Error\",\"value\":\"{{ $('Trigger TFT Ingest').error.message }}\",\"inline\":false},{\"name\":\"Action\",\"value\":\"Manual intervention required\",\"inline\":false}],\"timestamp\":\"{{ $now.iso }}\"}]"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "credentials": {
+        "discordWebhook": "discordWebhook"
+      },
+      "name": "Notify Discord (Ingest Failed)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1000, 500]
+    },
+    {
+      "parameters": {
+        "message": "={{ $json.message || 'No new patch detected' }}"
+      },
+      "name": "Log: No Change",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [1000, 400]
+    }
+  ],
+  "connections": {
+    "Scheduled Trigger": {
+      "main": [[
+        {"node": "Get Riot Version", "type": "main", "index": 0},
+        {"node": "Get Backend Cached Version", "type": "main", "index": 0}
+      ]]
+    },
+    "Get Riot Version": {
+      "main": [[{"node": "Version Mismatch?", "type": "main", "index": 0}]]
+    },
+    "Get Backend Cached Version": {
+      "main": [[{"node": "Version Mismatch?", "type": "main", "index": 0}]]
+    },
+    "Version Mismatch?": {
+      "main": [
+        [{"node": "Trigger TFT Ingest", "type": "main", "index": 0}],
+        [{"node": "Log: No Change", "type": "main", "index": 0}]
+      ],
+      "errorOutput": [
+        [{"node": "Notify Discord (Ingest Failed)", "type": "main", "index": 0}]
+      ]
+    },
+    "Trigger TFT Ingest": {
+      "main": [[{"node": "Log: No Change", "type": "main", "index": 0}]]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "id": "patch-monitor"
+}
