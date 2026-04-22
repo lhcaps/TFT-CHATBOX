@@ -283,18 +283,21 @@ def format_patch_data(data: TFTStaticData, patch: str) -> dict[str, tuple[str, d
     """Format all TFT static data into chunk-ready text with metadata.
 
     Returns dict: { "champions": (text, metadata), "traits": (text, metadata), ... }
+    Only includes types that are present in the data dict.
     metadata = { "season": "SET17", "patch": "17.1", "type": "champions", ... }
     """
     season = _extract_season_from_patch(patch)
-    formatted = {
-        "champions": _format_champions(data["champions"], patch),
-        "traits": _format_traits(data["traits"], patch),
-        "items": _format_items(data["items"], patch),
-        "augments": _format_augments(data["augments"], patch),
-    }
 
     chunks = {}
-    for data_type, text in formatted.items():
+    for data_type, formatter in [
+        ("champions", _format_champions),
+        ("traits", _format_traits),
+        ("items", _format_items),
+        ("augments", _format_augments),
+    ]:
+        if data_type not in data:
+            continue
+        text = formatter(data[data_type], patch)
         metadata = {
             "season": season,
             "patch": patch,
@@ -305,14 +308,18 @@ def format_patch_data(data: TFTStaticData, patch: str) -> dict[str, tuple[str, d
     return chunks
 
 
-async def ingest_tft_static(patch: str | None = None) -> dict[str, int | list]:
-    """Download, cache, and parse TFT static data.
+async def ingest_tft_static(patch: str | None = None) -> dict[str, int | str]:
+    """Download, cache, parse, embed, and ingest TFT static data into DB.
+
+    Per-patch folder cache avoids re-downloading unchanged patch data (POLY-02).
+    Hash-based deduplication avoids re-inserting unchanged chunks (RAG-05).
 
     Returns dict with:
       - patch: version string
-      - status: "downloaded" or "cached"
-      - types: list of data type names
-      - chunks: list of {type, text, hash, metadata} dicts for downstream processing
+      - status: "downloaded" | "cached"
+      - ingested: number of chunks actually inserted
+      - skipped: number of chunks skipped (hash match)
+      - total: total chunks processed
     """
     # Determine latest version first to check cache status
     if patch is None:
@@ -331,21 +338,65 @@ async def ingest_tft_static(patch: str | None = None) -> dict[str, int | list]:
     # Format into readable text chunks
     formatted_chunks = format_patch_data(data, version)
 
-    # Compute hashes for deduplication
-    result_chunks = []
+    # Build chunk list with hashes and metadata
+    chunks_to_embed: list[dict] = []
     for data_type, (text, metadata) in formatted_chunks.items():
-        result_chunks.append({
+        chunks_to_embed.append({
             "type": data_type,
             "text": text,
             "hash": content_hash(text),
             "metadata": metadata,
         })
 
+    if not chunks_to_embed:
+        return {
+            "patch": version,
+            "status": "cached" if was_cached else "downloaded",
+            "ingested": 0,
+            "skipped": 0,
+            "total": 0,
+        }
+
+    # Batch embed via Ollama
+    texts = [c["text"] for c in chunks_to_embed]
+    embeddings = await ollama.generate_embeddings(texts)
+
+    # Insert into database with hash deduplication
+    pool = await get_pool()
+    stats = {"ingested": 0, "skipped": 0, "total": len(chunks_to_embed)}
+
+    async with pool.acquire() as conn:
+        for chunk, embedding in zip(chunks_to_embed, embeddings):
+            source = f"tft_static:{chunk['type']}:{version}"
+
+            # Check if already exists (hash dedup per D-09)
+            existing = await conn.fetchval(
+                "SELECT 1 FROM chunks WHERE source = $1 AND content_hash = $2",
+                source,
+                chunk["hash"],
+            )
+            if existing:
+                stats["skipped"] += 1
+                continue
+
+            await conn.execute(
+                """
+                INSERT INTO chunks (content, content_hash, source, metadata, embedding)
+                VALUES ($1, $2, $3, $4, $5::vector)
+                ON CONFLICT (source, content_hash) DO NOTHING
+                """,
+                chunk["text"],
+                chunk["hash"],
+                source,
+                chunk["metadata"],
+                embedding,
+            )
+            stats["ingested"] += 1
+
     return {
         "patch": version,
         "status": "cached" if was_cached else "downloaded",
-        "types": ["champions", "traits", "items", "augments"],
-        "chunks": result_chunks,
+        **stats,
     }
 
 
