@@ -68,7 +68,7 @@ A TFT player can ask comp questions, patch notes, augment choices, or pivot stra
 
 ## Current State
 
-**v1.1 TFT Meta Mastery shipped** — 2026-04-22
+**v1.2 MetaTFT Real-time Intelligence shipped** — 2026-04-22
 
 | Metric | Value |
 |--------|-------|

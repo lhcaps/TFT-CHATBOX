@@ -163,3 +163,53 @@ async def ingest_patch_notes_route(
             status_code=500,
             detail=f"Patch notes ingest failed: {e}",
         )
+
+
+@router.post("/metatft")
+async def ingest_metatft_route(
+    source: str | None = None,
+    patch: str | None = None,
+) -> dict:
+    """Ingest MetaTFT comps and/or Space Gods set overview.
+
+    Args:
+        source: What to ingest — "comps" | "set-overview" | "patch" | "all" (default "all")
+        patch: Optional patch version for comps (e.g. "17.1")
+
+    D-05: POST /api/ingest/metatft endpoint
+    D-06: Calls both metatft scraper and set overview scraper
+    """
+    from scripts.scrape_metatft import scrape_and_ingest as scrape_metatft
+    from scripts.scrape_set_overview import scrape_and_ingest_all as scrape_set_overview_all
+
+    source_mode = source or "all"
+    stats = {}
+
+    try:
+        if source_mode in ("comps", "all"):
+            metatft_stats = await scrape_metatft(patch=patch)
+            stats["metatft"] = metatft_stats
+
+        if source_mode in ("set-overview", "patch", "all"):
+            # "patch" = set-overview + patch17.1 notes (all Space Gods content)
+            set_stats = await scrape_set_overview_all()
+            stats["set_overview"] = set_stats
+
+        return {
+            "status": "ok",
+            "source": source_mode,
+            "patch": patch,
+            "stats": stats,
+            "total_ingested": sum(
+                s.get("ingested", 0) for s in stats.values()
+            ),
+            "total_skipped": sum(
+                s.get("skipped", 0) for s in stats.values()
+            ),
+        }
+    except Exception as e:
+        logger.exception("MetaTFT ingest failed")
+        raise HTTPException(
+            status_code=500,
+            detail=f"MetaTFT ingest failed: {e}",
+        )

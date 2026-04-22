@@ -1,6 +1,8 @@
 import { useEffect, useRef } from 'react';
 import type { Message } from '../api/types';
 import { CitationCard } from './CitationCard';
+import { CompCard } from './CompCard';
+import { parseCompBlocks, parseCompCard } from '../utils/compParser';
 
 interface MessageListProps {
   messages: Message[];
@@ -42,7 +44,7 @@ export function MessageList({ messages, isStreaming }: MessageListProps) {
             }`}
           >
             <div className="prose prose-invert prose-sm max-w-none">
-              <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+              <MessageContent content={msg.content} />
             </div>
             {msg.citations && msg.citations.length > 0 && (
               <div className="mt-2 pt-2 border-t border-gray-700">
@@ -83,3 +85,31 @@ export function MessageList({ messages, isStreaming }: MessageListProps) {
     </div>
   );
 }
+
+// ─── MessageContent ────────────────────────────────────────────────────────────
+
+function MessageContent({ content }: { content: string }) {
+  const blocks = parseCompBlocks(content);
+
+  return (
+    <>
+      {blocks.map((block, i) => {
+        if (block.type === 'comp') {
+          const parsed = parseCompCard(block.raw);
+          if (parsed) {
+            return <CompCard key={i} {...parsed} />;
+          }
+        }
+        return (
+          <p key={i} className="whitespace-pre-wrap leading-relaxed">
+            {block.raw.trim()}
+          </p>
+        );
+      })}
+    </>
+  );
+}
+
+// ─── Block Parser ───────────────────────────────────────────────────────────────
+// parseCompBlocks and parseCompCard are now in ../utils/compParser.ts
+

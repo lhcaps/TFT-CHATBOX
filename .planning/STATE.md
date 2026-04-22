@@ -9,13 +9,13 @@
 
 **Core Value:** A TFT player can ask comp questions, patch notes, augment choices, or pivot strategies — and get grounded, locally-sourced answers without leaving the game ecosystem.
 
-**Current Milestone:** v1.1 TFT Meta Mastery — planning in progress
+**Current Milestone:** v1.2 MetaTFT Real-time Intelligence — planned
 
 ---
 
 ## Current Position
 
-**Active Phase:** None (v1.1 shipped)
+**Active Phase:** None (v1.2 planned)
 
 **Milestone Progress:**
 ```

@@ -184,6 +184,113 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [1250, 400]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 12 * * *"
+            }
+          ]
+        }
+      },
+      "name": "MetaTFT Daily Trigger",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [250, 600]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.discordWebhook }}",
+        "method": "POST",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "content",
+              "value": ":arrows_counterclockwise: **MetaTFT Daily Refresh** started at 12:00 noon..."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "credentials": {
+        "discordWebhook": "discordWebhook"
+      },
+      "name": "Discord: MetaTFT Started",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [500, 550]
+    },
+    {
+      "parameters": {
+        "url": "http://backend:8000/api/ingest/metatft",
+        "method": "POST",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "credentials": {
+        "httpHeaderAuth": "tftBackendApi"
+      },
+      "name": "Trigger MetaTFT Ingest",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [750, 550],
+      "onError": [
+        {
+          "index": 0
+        }
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.discordWebhook }}",
+        "method": "POST",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "content",
+              "value": ":white_check_mark: **MetaTFT Daily Refresh** complete! Ingested: {{ $('Trigger MetaTFT Ingest').item.json.total_ingested || 0 }}, Skipped: {{ $('Trigger MetaTFT Ingest').item.json.total_skipped || 0 }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "credentials": {
+        "discordWebhook": "discordWebhook"
+      },
+      "name": "Discord: MetaTFT Success",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1000, 500]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.discordWebhook }}",
+        "method": "POST",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "content",
+              "value": ""
+            },
+            {
+              "name": "embeds",
+              "value": "[{\"title\":\"MetaTFT Daily Refresh Failed\",\"color\":15158332,\"fields\":[{\"name\":\"Error\",\"value\":\"{{ $json.error.message || 'Unknown error' }}\",\"inline\":false},{\"name\":\"Action\",\"value\":\"Check backend logs for details\",\"inline\":false}],\"timestamp\":\"{{ $now.iso }}\"}]"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "credentials": {
+        "discordWebhook": "discordWebhook"
+      },
+      "name": "Discord: MetaTFT Failed",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1000, 700]
     }
   ],
   "connections": {
@@ -240,6 +347,32 @@
       "main": [[]]
     },
     "Log: No Change": {
+      "main": [[]]
+    },
+    "MetaTFT Daily Trigger": {
+      "main": [[
+        {"node": "Discord: MetaTFT Started", "type": "main", "index": 0}
+      ]]
+    },
+    "Discord: MetaTFT Started": {
+      "main": [[
+        {"node": "Trigger MetaTFT Ingest", "type": "main", "index": 0}
+      ]]
+    },
+    "Trigger MetaTFT Ingest": {
+      "main": [[
+        {"node": "Discord: MetaTFT Success", "type": "main", "index": 0}
+      ]],
+      "errorOutput": [
+        [
+          {"node": "Discord: MetaTFT Failed", "type": "main", "index": 0}
+        ]
+      ]
+    },
+    "Discord: MetaTFT Success": {
+      "main": [[]]
+    },
+    "Discord: MetaTFT Failed": {
       "main": [[]]
     }
   },

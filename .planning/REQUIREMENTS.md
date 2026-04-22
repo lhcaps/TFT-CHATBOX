@@ -104,6 +104,28 @@
 
 ---
 
+## v1.2 Requirements (MetaTFT Intelligence)
+
+### MetaTFT Intelligence
+
+- [ ] **META-01**: `POST /api/ingest/metatft` — httpx scrape of `https://www.metatft.com/comps`, regex JSON extraction, Markdown transform, ingest into chunks table with `source='metatft'`
+- [ ] **META-02**: MetaTFT data transformer — comp name, tier, top4 rate, carry, items → Vietnamese Markdown
+- [ ] **META-03**: Full Space Gods data ingest — patch 17.1 full content + set overview from Riot (champions, traits, items, augments, artifacts)
+- [ ] **META-04**: n8n daily trigger at 12:00 noon calling `POST /api/ingest/metatft`
+- [ ] **META-05**: Frontend `CompCard` component — tier badges, champion names, item color coding from Markdown
+
+### Traceability
+
+|| Requirement | Phase | Status |
+|-------------|-------|--------|
+| META-01 | Phase 9 | Pending |
+| META-02 | Phase 9 | Pending |
+| META-03 | Phase 9 | Pending |
+| META-04 | Phase 9 | Pending |
+| META-05 | Phase 9 | Pending |
+
+---
+
 ## Out of Scope
 
 | Feature | Reason |

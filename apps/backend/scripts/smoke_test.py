@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
-Smoke test for TFT Local Copilot v1.0.
+Smoke test for TFT Local Copilot v1.2.
+Tests 25 questions across 5 TFT categories (5 each):
+  - comp:      team composition strategy
+  - item:      item slam/build advice
+  - augment:   augment tier and selection
+  - pivot:     pivot decision between two options
+  - meta:      MetaTFT real-time meta comps (Phase 9)
 
-Tests 20 questions across 4 TFT categories (5 each):
-  - comp: team composition strategy
-  - item: item slam/build advice
-  - augment: augment tier and selection
-  - pivot: pivot decision between two options
-
-Each question is tested in all 3 modes (Normal, RAG, Coach) = 60 total calls.
+Each question is tested in all 3 modes (Normal, RAG, Coach) = 75 total calls.
 A question PASSES if:
   - HTTP 200 response
   - No Python exception raised
@@ -100,9 +100,17 @@ QUESTIONS: list[Question] = [
     Question(18, "pivot", "When should I abandon a pre-level-8 reroll comp and fast 9 instead?"),
     Question(19, "pivot", "My board is mid. Do I roll at 50 gold or push levels?"),
     Question(20, "pivot", "I hit an early 2-star 4-cost. Should I grief my 3-cost reroll plan?"),
+
+    # --- Meta (5) — Phase 9: MetaTFT Real-time Intelligence ---
+    Question(21, "meta", "What's the current S-tier comps from MetaTFT? Show me with CompCard format."),
+    Question(22, "meta", "Which meta comp has the highest Top 4 rate right now? What's the best carry for it?"),
+    Question(23, "meta", "Is there any hidden gem comp with high winrate that most players overlook?"),
+    Question(24, "meta", "Compare the top 3 meta comps for patch 17.1 — which one is most flexible?"),
+    Question(25, "meta", "What are the best slamable items for the current MetaTFT top comps?"),
 ]
 
 MODES: list[Literal["normal", "rag", "coach"]] = ["normal", "rag", "coach"]
+# Phase 9: meta mode is tested the same way — the LLM uses MetaTFT chunks in RAG/coach
 
 
 # ─── Helpers ───────────────────────────────────────────────────────────────────
@@ -234,7 +242,7 @@ def print_summary(result: SmokeTestResult) -> None:
 # ─── Main ─────────────────────────────────────────────────────────────────────
 
 async def main() -> int:
-    print("TFT Copilot Smoke Test v1.0")
+    print("TFT Copilot Smoke Test v1.2")
     print(f"Backend: {BACKEND_BASE}")
     print(f"Questions: {len(QUESTIONS)} x {len(MODES)} modes = {len(QUESTIONS) * len(MODES)} calls")
     print()
