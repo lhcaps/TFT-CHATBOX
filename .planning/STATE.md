@@ -9,19 +9,18 @@
 
 **Core Value:** A TFT player can ask comp questions, patch notes, augment choices, or pivot strategies — and get grounded, locally-sourced answers without leaving the game ecosystem.
 
-**Current Milestone:** v1.0 — MVP with Normal/RAG/Coach modes
+**Current Milestone:** v1.0 MVP — SHIPPED 2026-04-22 (60/60 smoke test PASS)
 
 ---
 
 ## Current Position
 
-**Active Phase:** Phase 7 - Polish & Smoke Test (complete)
+**Active Phase:** v1.0 COMPLETE — milestone archived
 
-**Milestone Progress:** 7/7 phases complete — v1.0 MVP DONE
+**Milestone Progress:** v1.0 MVP DONE
 
 ```
-[x Phase 1 ] [x Phase 2  ] [x Phase 3 ] [x Phase 4 ] [x Phase 5 ] [x Phase 6 ] [x Phase 7 ]
-    ✓           ✓          ✓           ✓           ✓           ✓           ✓
+✅ v1.0 MVP — Phases 1-7 (shipped 2026-04-22)
 ```
 
 ---
@@ -32,8 +31,9 @@
 |--------|-------|-------|
 | Requirements mapped | 35/35 | 100% coverage |
 | Phases defined | 7 | Standard granularity |
-| v1 requirements | 35 | All phases mapped |
+| v1 requirements | 35 | All shipped |
 | v2 requirements | 20+ | Deferred scope |
+| Smoke test | 60/60 PASS | 20 questions × 3 modes |
 
 ---
 
@@ -42,10 +42,9 @@
 | Resource | Capacity | Usage |
 |-----------|----------|-------|
 | RAM | 64GB | Full system |
-| VRAM | 16GB (RTX 4070 Ti SUPER) | Chat + Embedding models |
-| Chat model | qwen3:8b | ~5.2GB VRAM |
-| Embedding model | qwen3-embedding:4b | ~2.5GB VRAM |
-| Optional | gemma3:12b | ~8.1GB VRAM (Coach mode) |
+| VRAM | 12GB (RTX 4070 Ti SUPER) | Chat + Embedding models |
+| Chat model | qwen3:1.7b | ~1.4GB VRAM |
+| Embedding model | qwen3-embedding:4b | ~2.5GB VRAM (2560 dims → 1024 truncated) |
 
 ---
 
@@ -55,10 +54,11 @@
 |-------|------------|-------|
 | Frontend | React 19 + Vite 6 + Tailwind 4 | Chat UI |
 | Backend | FastAPI + Uvicorn | API orchestration |
-| LLM | Ollama native (Windows) | qwen3:8b + qwen3-embedding:4b |
+| LLM | Ollama native (Windows) | qwen3:1.7b + qwen3-embedding:4b |
 | Database | Supabase local CLI (pgvector/HNSW) | 1024-dim embeddings |
 | Automation | n8n (Docker) | Scheduled workflows |
 | Knowledge | Obsidian vault | Markdown notes |
+| TFT Data | Riot CDN + CommunityDragon + Patch page scrape | Set 17 Space Gods, Patch 17.1 |
 
 ---
 
@@ -67,18 +67,16 @@
 | Decision | Rationale | Status |
 |----------|-----------|--------|
 | Ollama native (not containerized) | GPU passthrough friction on Windows | Locked |
-| 1024-dim embeddings | HNSW index limit 2000 dims | Locked |
+| 1024-dim embeddings | HNSW index limit 2000 dims, qwen3-embedding:4b truncates to 1024 | Locked |
 | Supabase local CLI | Postgres + pgvector without Docker complexity | Locked |
 | 3-mode chat (Normal/RAG/Coach) | TFT policy compliance | Locked |
 | Obsidian as knowledge source only | Vault is Markdown/text only | Locked |
 | n8n for automation | Cron ingest + webhook fan-out | Locked |
 | SSE for streaming | Sufficient for one-way streaming | Locked |
 | In-memory LRU cache | MVP scale doesn't need Redis | Locked |
-| Obsidian manual trigger only | No schedule, no file watcher — user controls timing | Locked (Phase 6) |
-| Patch monitor: backend holds state | `/api/patch/current` endpoint, state in cache | Locked (Phase 6) |
-| ngrok dropped | 100% local, no remote access needed | Locked (Phase 6) |
-| n8n ↔ backend: Bearer token auth | Defense in Depth, future-proof | Locked (Phase 6) |
-| Notification: Discord webhook | On CDN 403 failure | Locked (Phase 6) |
+| qwen3:1.7b chat model | Fits in 12GB VRAM alongside embedding model | Locked |
+| Bearer token auth | Defense in Depth, future-proof | Locked |
+| ngrok dropped | 100% local, no remote access needed | Locked |
 
 ---
 
@@ -86,7 +84,7 @@
 
 ### Critical Constraints
 
-1. **VRAM budget:** 16GB total — batch embedding capped at 16 chunks
+1. **VRAM budget:** 12GB total — qwen3:1.7b (~1.4GB) + qwen3-embedding:4b (~2.5GB) + overhead
 2. **TFT policy:** No real-time overlay, no opponent scouting, suggest not dictate
 3. **Windows native:** Ollama runs outside Docker for GPU access
 4. **Port assignments:**
@@ -97,28 +95,9 @@
    - Frontend: 5173
    - n8n: 5678
 
-### Phase Dependencies
+### Known Issues (Security Advisory)
 
-```
-Phase 1 (Foundation)
-    │
-    ├──► Phase 2 (Backend Core)
-    │         │
-    │         └──► Phase 3 (Frontend Chat)
-    │                   │
-    │                   └──► Phase 4 (RAG Foundation)
-    │                             │
-    │                             ├──► Phase 5 (TFT Static Data)
-    │                             │         │
-    │                             │         └──► Phase 6 (Automation)
-    │                             │                   │
-    │                             └──► ───────────────┘
-    │                                           │
-    │                                           ▼
-    │                                    Phase 7 (Polish)
-    │
-    └──► ──────────────────────────────────────┘
-```
+- ⚠️ **RLS disabled on DB tables** (`chunks`, `messages`, `sessions`) — any user with anon key can read/write all rows. User must decide whether to enable RLS with policies.
 
 ### Known Pitfalls (Pre-Phase Warnings)
 
@@ -131,9 +110,9 @@ Phase 1 (Foundation)
 | 2 | Ollama unreachable from Docker | Use `host.docker.internal` |
 | 3 | SSE parsing errors | Buffer accumulation, split on `\n\n` |
 | 3 | Abort doesn't work | Call `reader.cancel()`, release lock |
-| 4 | Wrong embedding dimensions | Always specify `dimensions: 1024` |
-| 4 | Duplicate chunks on re-ingest | DELETE before INSERT |
-| 5 | Coach TFT policy violations | No real-time, no scouting, suggest options |
+| 4 | Wrong embedding dimensions | Always truncate to 1024 dims (qwen3-embedding:4b creates 2560) |
+| 4 | Duplicate chunks on re-ingest | DELETE before re-INSERT |
+| 5 | Riot CDN 403 errors | Use User-Agent header, fallback to CommunityDragon + patch page scrape |
 | 6 | Workflow not activated | Save AND activate toggle |
 
 ---
@@ -144,39 +123,15 @@ Phase 1 (Foundation)
 
 When resuming work:
 1. Run `/gsd-progress` to check current state
-2. Start with lowest-numbered incomplete phase
+2. Start with planning v1.1 milestone
 3. Run health checks before starting:
    ```powershell
    ollama ps
    npx supabase status
-   curl http://localhost:8000/health
-   curl http://localhost:8000/sessions
+   curl http://localhost:8000/api/health
    ```
-
-### TODO
-
-- [x] Initialize git repository
-- [x] Create project directory structure (apps/backend, apps/frontend)
-- [x] Set up .env file with all required environment variables
-- [x] Enable Windows long path support
-- [x] Configure git line endings (.gitattributes)
-- [x] Install Ollama + pull models (qwen3:8b, qwen3-embedding:4b)
-- [x] Install Supabase local CLI + start
-- [x] Create database schema (4 tables, indexes, hybrid_search_chunks function)
-- [x] Set up Docker Compose (backend + frontend + n8n)
-- [x] Create healthcheck endpoint
-
----
-
-## Research Files Available
-
-| File | Purpose |
-|------|---------|
-| research/ARCHITECTURE.md | Component breakdown, data flow, build order |
-| research/STACK.md | Technology recommendations, SSE patterns |
-| research/PITFALLS.md | Common pitfalls per phase with mitigations |
 
 ---
 
 *State tracked: 2026-04-22*
-*Last updated: 2026-04-22*
+*Last updated: 2026-04-22 after v1.0 milestone completion*
