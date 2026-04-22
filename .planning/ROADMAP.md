@@ -137,7 +137,13 @@ Plans:
 3. On-disk TFT JSON cache exists and avoids re-downloading unchanged patch data
 4. Metadata filtering enables scoped retrieval (e.g., "show only 17.1 augments")
 
-**Plans:** TBD
+**Plans:** 4 plans
+
+Plans:
+- [ ] 05-01-PLAN.md — Download & Cache Pipeline (CDN download, version check, per-patch disk cache)
+- [ ] 05-02-PLAN.md — Parse & Chunk Pipeline (JSON parsing, markdown formatting, per-type chunking)
+- [ ] 05-03-PLAN.md — Embed & Ingest (batch embedding, DB bulk insert, metadata + source field)
+- [ ] 05-04-PLAN.md — Metadata Filtering & E2E (patch-aware hybrid search, search endpoint, E2E verification)
 
 ---
 
@@ -185,7 +191,7 @@ Plans:
 | 2. Backend Core | 4/4 | Complete | 2026-04-22 |
 | 3. Frontend Chat | N/N | Complete | 2026-04-22 |
 | 4. RAG Foundation | 3/3 | Complete | 2026-04-22 |
-| 5. TFT Static Data | 0/N | Not started | - |
+| 5. TFT Static Data | 0/4 | Not started | - |
 | 6. Automation | 0/N | Not started | - |
 | 7. Polish & Smoke Test | 0/N | Not started | - |
 
