@@ -19,16 +19,7 @@
         "url": "http://backend:8000/api/ingest/obsidian",
         "method": "POST",
         "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Authorization",
-              "value": "Bearer = Cre"
-            }
-          ]
-        }
+        "genericAuthType": "httpHeaderAuth"
       },
       "credentials": {
         "httpHeaderAuth": "tftBackendApi"

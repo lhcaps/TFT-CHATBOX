@@ -37,11 +37,6 @@ class Settings(BaseSettings):
     # Obsidian
     obsidian_vault_path: str = ""
 
-    # App (env)
-    app_env: str = "development"
-    app_host: str = "0.0.0.0"
-    app_port: int = 8000
-
     # Ollama keep_alive
     ollama_keep_alive: str = "15m"
 

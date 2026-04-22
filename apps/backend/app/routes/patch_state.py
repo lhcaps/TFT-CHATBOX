@@ -1,12 +1,14 @@
 """Patch state endpoint — returns currently ingested TFT patch version."""
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 from fastapi import APIRouter
 
 from app.config import settings
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/patch", tags=["patch"])
 
 
@@ -21,10 +23,10 @@ def _get_version_marker() -> Path | None:
 @router.get("/current")
 async def get_current_patch() -> dict:
     """Return the currently cached TFT patch version.
-    
+
     Reads from ~/.tft-copilot/cache/latest_version.txt (or wherever
     settings.tft_cache_dir points).
-    
+
     Returns:
         {"version": "17.1"} when a version has been ingested.
         {"version": None} when no version has been cached yet.
@@ -32,4 +34,8 @@ async def get_current_patch() -> dict:
     marker = _get_version_marker()
     if marker is None:
         return {"version": None}
-    return {"version": marker.read_text(encoding="utf-8").strip()}
+    try:
+        return {"version": marker.read_text(encoding="utf-8").strip()}
+    except (UnicodeDecodeError, PermissionError, OSError) as e:
+        logger.warning(f"Failed to read version marker: {e}")
+        return {"version": None}

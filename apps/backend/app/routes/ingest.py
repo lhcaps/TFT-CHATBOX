@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -10,6 +11,7 @@ from app.config import settings
 from app.middleware.auth import verify_api_key
 
 router = APIRouter(prefix="/ingest", tags=["ingest"])
+logger = logging.getLogger(__name__)
 
 
 @router.post("/obsidian")
@@ -27,7 +29,8 @@ async def ingest_obsidian(_: str = Depends(verify_api_key)) -> dict:
         result = await ingest_vault(vault_path, settings.rag_chunk_size, settings.rag_chunk_overlap)
         return {"status": "ok", "result": result}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.exception("Obsidian ingest failed")
+        raise HTTPException(status_code=500, detail="Ingestion failed — check server logs")
 
 
 @router.post("/tft-static")
@@ -46,7 +49,8 @@ async def ingest_tft_static_route(
         result = await do_ingest(patch=patch)
         return {"status": "ok", "result": result}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.exception("TFT static ingest failed")
+        raise HTTPException(status_code=500, detail="Ingestion failed — check server logs")
 
 
 @router.get("/tft-static/version")
