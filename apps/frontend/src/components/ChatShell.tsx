@@ -14,6 +14,7 @@ interface Session {
 interface ChatShellProps {
   messages: Message[];
   isStreaming: boolean;
+  messagesLoading?: boolean;
   onSend: (message: string) => void;
   onAbort: () => void;
   sessions: Session[];
@@ -31,6 +32,7 @@ interface ChatShellProps {
 export function ChatShell({
   messages,
   isStreaming,
+  messagesLoading = false,
   onSend,
   onAbort,
   sessions,
@@ -116,7 +118,17 @@ export function ChatShell({
         )}
 
         {/* Message list */}
-        <MessageList messages={messages} isStreaming={isStreaming} />
+        <div className="flex-1 relative">
+          {messagesLoading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-900/80 z-10">
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                <span className="text-xs text-gray-400">Loading...</span>
+              </div>
+            </div>
+          )}
+          <MessageList messages={messages} isStreaming={isStreaming} />
+        </div>
 
         {/* Composer */}
         <Composer

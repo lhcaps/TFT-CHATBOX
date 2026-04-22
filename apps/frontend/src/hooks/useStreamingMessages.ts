@@ -97,11 +97,16 @@ export function useStreamingMessages(history: MessageOut[]): UseStreamingMessage
             if (endedRef.current) return;
             endedRef.current = true;
             const isAbort = err.name === 'AbortError';
+            // True timeout = abort with zero tokens accumulated
+            const isTimeout = isAbort && !tokenAccRef.current;
             if (isAbort) {
               setMessages((prev) => {
                 const last = prev[prev.length - 1];
                 if (last?.isStreaming) {
-                  return [...prev.slice(0, -1), { ...last, content: tokenAccRef.current, isStreaming: false }];
+                  const msg = isTimeout
+                    ? 'Request timed out after 60s — Ollama may be slow. Try again.'
+                    : tokenAccRef.current;
+                  return [...prev.slice(0, -1), { ...last, content: msg, isStreaming: false }];
                 }
                 return prev;
               });
@@ -110,7 +115,10 @@ export function useStreamingMessages(history: MessageOut[]): UseStreamingMessage
               setMessages((prev) => {
                 const last = prev[prev.length - 1];
                 if (last?.isStreaming) {
-                  return [...prev.slice(0, -1), { ...last, content: `Error: ${err.message}`, isStreaming: false }];
+                  return [
+                    ...prev.slice(0, -1),
+                    { ...last, content: `Error: ${err.message}`, isStreaming: false },
+                  ];
                 }
                 return prev;
               });

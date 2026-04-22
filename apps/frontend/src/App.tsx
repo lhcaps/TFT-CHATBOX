@@ -2,9 +2,11 @@ import { useEffect, useCallback, useRef } from 'react';
 import type { Mode } from './api/types';
 import { useSession } from './hooks/useSession';
 import { useStreamingMessages } from './hooks/useStreamingMessages';
+import { useToast } from './hooks/useToast';
 import { ChatShell } from './components/ChatShell';
 import { GpuStatusBadge } from './components/GpuBadge';
 import { PatchStatus } from './components/PatchStatus';
+import { ToastContainer } from './components/ui/toast';
 
 export default function App() {
   const {
@@ -12,6 +14,7 @@ export default function App() {
     currentSession,
     messages: sessionMessages,
     loading,
+    messagesLoading,
     error: sessionsError,
     loadSessions,
     switchSession,
@@ -28,6 +31,8 @@ export default function App() {
     abort,
     clearError,
   } = useStreamingMessages(sessionMessages);
+
+  const { toasts, removeToast, success: toastSuccess } = useToast();
 
   // Track which session was streamed so we re-fetch the right one after stream ends.
   // This handles the case where the user switches sessions while a stream is running.
@@ -49,14 +54,18 @@ export default function App() {
 
   const handleNewSession = useCallback(async () => {
     await newSession();
-  }, [newSession]);
+    toastSuccess('Conversation started');
+  }, [newSession, toastSuccess]);
 
   const handleSelectSession = useCallback(
     async (id: string) => { await switchSession(id); },
     [switchSession],
   );
 
-  const handleDeleteSession = useCallback(async (id: string) => { await removeSession(id); }, [removeSession]);
+  const handleDeleteSession = useCallback(async (id: string) => {
+    await removeSession(id);
+    toastSuccess('Conversation deleted');
+  }, [removeSession, toastSuccess]);
 
   const handleModeChange = useCallback((mode: Mode) => { setCurrentMode(mode); }, [setCurrentMode]);
 
@@ -78,6 +87,7 @@ export default function App() {
       <ChatShell
         messages={messages}
         isStreaming={isStreaming}
+        messagesLoading={messagesLoading}
         onSend={handleSend}
         onAbort={abort}
         sessions={sessions}
@@ -91,6 +101,7 @@ export default function App() {
         onClearError={clearError}
         loading={loading}
       />
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>
   );
 }

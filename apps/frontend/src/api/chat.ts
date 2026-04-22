@@ -1,16 +1,30 @@
 import type { ChatOptions } from './types';
 
 const BASE = '/api';
+const CHAT_TIMEOUT_MS = 60_000;
 
 async function sendChatRequest(opts: ChatOptions): Promise<Response> {
-  const { sessionId, message, mode, stream = true } = opts;
+  const { sessionId, message, mode, stream = true, signal } = opts;
+
+  // Merge user-provided signal with a 60s timeout
+  const timeoutController = new AbortController();
+  const timeoutId = setTimeout(() => timeoutController.abort(), CHAT_TIMEOUT_MS);
+  const userSignal = signal;
+
+  let finalSignal: AbortSignal = timeoutController.signal;
+  if (userSignal) {
+    // Race the two signals: if either aborts, the request aborts
+    finalSignal = anySignal([timeoutController.signal, userSignal]);
+  }
 
   const res = await fetch(`${BASE}/chat`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ session_id: sessionId, message, mode, stream }),
-    signal: opts.signal,
+    signal: finalSignal,
   });
+
+  clearTimeout(timeoutId);
 
   if (!res.ok) {
     const detail = await res.text().catch(() => res.statusText);
@@ -18,6 +32,16 @@ async function sendChatRequest(opts: ChatOptions): Promise<Response> {
   }
 
   return res;
+}
+
+/** Combine multiple AbortSignals into one that aborts when any of them abort. */
+function anySignal(signals: AbortSignal[]): AbortSignal {
+  const controller = new AbortController();
+  for (const s of signals) {
+    if (s.aborted) { controller.abort(s.reason); return controller.signal; }
+    s.addEventListener('abort', () => controller.abort(s.reason));
+  }
+  return controller.signal;
 }
 
 export async function streamChat(
