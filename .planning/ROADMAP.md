@@ -198,7 +198,7 @@ Plans:
 | 3. Frontend Chat | N/N | Complete | 2026-04-22 |
 | 4. RAG Foundation | 3/3 | Complete | 2026-04-22 |
 | 5. TFT Static Data | 4/4 | Complete | 2026-04-22 |
-| 6. Automation | 4/4 | Planned | - |
+| 6. Automation | 1/4 | In Progress | - |
 | 7. Polish & Smoke Test | 0/N | Not started | - |
 
 ---
