@@ -3,24 +3,35 @@
   "nodes": [
     {
       "parameters": {
-        "rule": {
-          "interval": [
+        "httpMethod": "POST",
+        "path": "obsidian-ingest",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "Manual Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "obsidian-ingest"
+    },
+    {
+      "parameters": {
+        "url": "http://backend:8000/api/ingest/obsidian",
+        "method": "POST",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
             {
-              "field": "cronExpression",
-              "expression": "0 2 * * *"
+              "name": "Authorization",
+              "value": "Bearer = Cre"
             }
           ]
         }
       },
-      "name": "Scheduled Trigger",
-      "type": "n8n-nodes-base.cron",
-      "typeVersion": 1,
-      "position": [250, 300]
-    },
-    {
-      "parameters": {
-        "url": "http://backend:8000/ingest",
-        "method": "POST"
+      "credentials": {
+        "httpHeaderAuth": "tftBackendApi"
       },
       "name": "Trigger Backend Ingest",
       "type": "n8n-nodes-base.httpRequest",
@@ -29,7 +40,7 @@
     }
   ],
   "connections": {
-    "Scheduled Trigger": {
+    "Manual Webhook": {
       "main": [[{"node": "Trigger Backend Ingest", "type": "main", "index": 0}]]
     }
   },
