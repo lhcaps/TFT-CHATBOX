@@ -11,6 +11,7 @@
 
 - ✅ **v1.0 MVP** — Phases 1-7 (shipped 2026-04-22) — 60/60 smoke test PASS
 - ✅ **v1.1 TFT Meta Mastery** — Phase 8 (shipped 2026-04-22) — PATCH-01..05 complete
+- 📋 **v1.2 MetaTFT Real-time Intelligence** — Phase 9 (planning) — META-01..05
 
 ---
 
@@ -49,6 +50,34 @@ Full details: [.planning/milestones/v1.1-ROADMAP.md](.planning/milestones/v1.1-R
 
 </details>
 
+<details>
+<summary>📋 v1.2 MetaTFT Real-time Intelligence (Phase 9) — planning</summary>
+
+- [ ] Phase 9: MetaTFT Real-time Intelligence
+  - META-01: MetaTFT scraper endpoint (`POST /api/ingest/metatft`)
+  - META-02: MetaTFT data → Markdown transformer
+  - META-03: Full Space Gods set data ingest (patch 17.1 + set overview)
+  - META-04: n8n daily MetaTFT refresh (12:00 noon)
+  - META-05: Frontend CompCard component
+
+**Plans:** 3 plans
+
+**Plan list:**
+- [ ] 09-01-PLAN.md — MetaTFT Scraper + Backend Ingest Endpoint
+- [ ] 09-02-PLAN.md — n8n Daily MetaTFT Trigger
+- [ ] 09-03-PLAN.md — Frontend CompCard Component
+
+**Canonical sources:**
+- `https://www.metatft.com/comps` — comp tiers, winrates, carries, items
+- `https://teamfighttactics.leagueoflegends.com/en-us/news/game-updates/teamfight-tactics-patch-17-1/`
+- `https://teamfighttactics.leagueoflegends.com/en-us/set-overview/tft-set-17-space-gods/`
+
+**No browser automation.** httpx + regex JSON extraction only.
+
+Full details: [.planning/phases/09-metatft-intelligence/](.planning/phases/09-metatft-intelligence/)
+
+</details>
+
 ---
 
 ## Progress
@@ -63,6 +92,7 @@ Full details: [.planning/milestones/v1.1-ROADMAP.md](.planning/milestones/v1.1-R
 | 6. Automation | v1.0 | 4/4 | Complete | 2026-04-22 |
 | 7. Polish & Smoke Test | v1.0 | 4/4 | Complete | 2026-04-22 |
 | 8. Patch Meta Mastery | v1.1 | 4/4 | Complete | 2026-04-22 |
+| 9. MetaTFT Intelligence | v1.2 | 0/N | Planning | — |
 
 ---
 
