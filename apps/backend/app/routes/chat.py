@@ -23,6 +23,7 @@ async def build_messages(
     user_message: str,
     mode: str,
     patch: str | None = None,
+    top_k: int | None = None,
 ) -> list[dict]:
     """Build the messages array for Ollama: system + recent history + optional RAG context."""
     pool = await get_pool()
@@ -42,9 +43,10 @@ async def build_messages(
         messages.append({"role": msg["role"], "content": msg["content"]})
 
     # Inject RAG context for rag/coach modes
+    effective_top_k = top_k if top_k is not None else settings.rag_top_k
     if mode in ("rag", "coach"):
         from app.services.retrieval import retrieve_chunks
-        chunks = await retrieve_chunks(user_message, top_k=settings.rag_top_k, patch=patch)
+        chunks = await retrieve_chunks(user_message, top_k=effective_top_k, patch=patch)
         if chunks:
             context_lines = ["---CONTEXT---"]
             for i, chunk in enumerate(chunks, 1):
@@ -70,6 +72,7 @@ async def stream_ollama_tokens(
     mode: str = "normal",
     user_message: str = "",
     patch: str | None = None,
+    top_k: int | None = None,
 ) -> AsyncIterable[str]:
     """Stream tokens from Ollama as structured SSE events.
 
@@ -77,11 +80,12 @@ async def stream_ollama_tokens(
     """
     full_text = ""
     usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
+    effective_top_k = top_k if top_k is not None else settings.rag_top_k
 
     # Emit citation events BEFORE streaming begins (rag/coach modes only)
     if mode in ("rag", "coach") and user_message:
         from app.services.retrieval import retrieve_chunks
-        chunks = await retrieve_chunks(user_message, top_k=settings.rag_top_k, patch=patch)
+        chunks = await retrieve_chunks(user_message, top_k=effective_top_k, patch=patch)
         for chunk in chunks:
             citation_data = {
                 "id": chunk["id"],
@@ -215,6 +219,7 @@ async def chat(request: ChatRequest) -> StreamingResponse | JSONResponse:
             user_message=request.message,
             mode=request.mode,
             patch=request.patch,
+            top_k=request.top_k,
         )
     except Exception as e:
         logger.exception("build_messages failed")
@@ -245,7 +250,7 @@ async def chat(request: ChatRequest) -> StreamingResponse | JSONResponse:
     if request.stream:
         # Streaming mode: SSE with structured events
         return StreamingResponse(
-            stream_ollama_tokens(messages, request.session_id, request.mode, request.message, request.patch),
+            stream_ollama_tokens(messages, request.session_id, request.mode, request.message, request.patch, request.top_k),
             media_type="text/event-stream",
         )
     else:

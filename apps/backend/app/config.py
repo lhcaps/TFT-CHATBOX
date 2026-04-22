@@ -30,7 +30,7 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
 
     # RAG
-    rag_top_k: int = 6
+    rag_top_k: int = 15
     rag_chunk_size: int = 2000
     rag_chunk_overlap: int = 500
 

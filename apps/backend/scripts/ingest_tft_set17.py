@@ -218,10 +218,47 @@ def chunk_items(items: dict) -> list[dict]:
     return chunks
 
 
+def _enrich_comp(comp: dict) -> str:
+    """Build rich text content for a single comp for better embedding quality."""
+    name = comp.get("name", "Unknown")
+    carries = comp.get("carries", [])
+    leveling = comp.get("leveling", "N/A")
+    notes = comp.get("notes", [])
+    units = comp.get("units", [])
+    traits = comp.get("traits", [])
+    items = comp.get("items", [])
+    description = comp.get("description", "")
+
+    lines = [f"# Comp: {name}", ""]
+    lines.append(f"**Tier:** S-Tier | **Patch:** 17.1 | **Leveling:** {leveling}")
+    lines.append("")
+
+    if carries:
+        lines.append(f"**Primary Carry:** {', '.join(carries)}")
+    if units:
+        lines.append(f"**Core Units:** {', '.join(units)}")
+    if traits:
+        trait_str = ", ".join([f"{t.get('name','?')} {t.get('count','')}" for t in traits])
+        lines.append(f"**Key Traits:** {trait_str}")
+    if items:
+        lines.append(f"**Core Items:** {', '.join(items)}")
+    if description:
+        lines.append("")
+        lines.append(description)
+    if notes:
+        lines.append("")
+        lines.append("**Strategy Notes:**")
+        for n in notes:
+            lines.append(f"- {n}")
+    lines.append("")
+    lines.append(f"*Nguon: Mobalytics Meta Snapshot | Patch: 17.1 | Tier: S*")
+    return "\n".join(lines)
+
+
 def chunk_meta_comps(meta_comps: dict) -> list[dict]:
     chunks = []
 
-    # S-tier
+    # S-tier full summary
     s_tier = meta_comps.get("s_tier_snapshot_17_1", [])
     lines = ["# S-Tier Comps — Patch 17.1 Meta Snapshot", ""]
     lines.append("*Source: Mobalytics + Riot patch data — verified snapshot*")
@@ -257,20 +294,14 @@ def chunk_meta_comps(meta_comps: dict) -> list[dict]:
         "tags": ["set17", "meta", "a-tier", "patch17.1"],
     })
 
-    # Full meta comp cards
+    # Full meta comp cards — one chunk PER comp with rich content
     for comp in s_tier:
-        carries = comp.get("carries", [])
-        leveling = comp.get("leveling", "")
-        lines = [f"# Comp: {comp['name']}", ""]
-        lines.append(f"**Leveling:** {leveling}")
-        lines.append("")
-        lines.append(f"**Carries:** {', '.join(carries)}")
-        lines.append("")
-        lines.append(f"*Nguon: Mobalytics/SpaceGods | Patch: 17.1*")
+        slug = comp["name"].lower().replace(" ", "-").replace("&", "-").replace(".", "")
+        rich_content = _enrich_comp(comp)
         chunks.append({
             "title": f"Meta: {comp['name']}",
-            "content": "\n".join(lines),
-            "tags": ["set17", "meta", "comp", comp["name"].lower().replace(" ", "-")],
+            "content": rich_content,
+            "tags": ["set17", "meta", "comp", "s-tier", "patch17.1", slug],
         })
 
     return chunks
