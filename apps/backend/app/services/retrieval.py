@@ -3,9 +3,13 @@ from __future__ import annotations
 
 import json
 
+from app.config import settings
 from app.db import get_pool
 from app.services.cache import CacheEntry, embedding_cache
 from app.services.ollama import OllamaService, RetrievedChunk, ollama
+
+# Embedding dimensions used in the database (HNSW index limit = 2000)
+DB_EMBEDDING_DIMS = min(settings.ollama_embedding_dims, 1024)
 
 
 async def retrieve_chunks(
@@ -41,7 +45,9 @@ async def retrieve_chunks(
         ]
 
     # Cache miss — generate embedding and run search
-    embedding = await ollama.generate_embedding(query)
+    raw_embedding = await ollama.generate_embedding(query)
+    # Truncate to DB column dimensions (qwen3-embedding:4b creates 2560 dims > DB limit of 1024)
+    embedding = raw_embedding[:DB_EMBEDDING_DIMS]
 
     pool = await get_pool()
     async with pool.acquire() as conn:
@@ -67,7 +73,7 @@ async def retrieve_chunks(
             id=str(row["id"]),
             content=row["content"],
             source=row["source"],
-            metadata=row["metadata"] or {},
+            metadata=json.loads(row["metadata"]) if isinstance(row["metadata"], str) else (row["metadata"] or {}),
             similarity=float(row["similarity"]) if row["similarity"] is not None else 0.0,
         )
         for row in rows

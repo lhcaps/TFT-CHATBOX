@@ -1,0 +1,508 @@
+{
+  "total": 60,
+  "passed": 60,
+  "failed": 0,
+  "gpu_before": {
+    "gpu_available": false,
+    "vram_used_mb": null,
+    "vram_total_mb": null,
+    "percent_used": null,
+    "models_loaded": [
+      "qwen3:1.7b",
+      "qwen3-embedding:4b"
+    ]
+  },
+  "gpu_after": {
+    "gpu_available": false,
+    "vram_used_mb": null,
+    "vram_total_mb": null,
+    "percent_used": null,
+    "models_loaded": [
+      "qwen3:1.7b",
+      "qwen3-embedding:4b"
+    ]
+  },
+  "elapsed_seconds": 407.6,
+  "details": [
+    {
+      "question_id": 1,
+      "category": "comp",
+      "mode": "normal",
+      "passed": true,
+      "error": null,
+      "response_length": 1756
+    },
+    {
+      "question_id": 1,
+      "category": "comp",
+      "mode": "rag",
+      "passed": true,
+      "error": null,
+      "response_length": 1595
+    },
+    {
+      "question_id": 1,
+      "category": "comp",
+      "mode": "coach",
+      "passed": true,
+      "error": null,
+      "response_length": 2967
+    },
+    {
+      "question_id": 2,
+      "category": "comp",
+      "mode": "normal",
+      "passed": true,
+      "error": null,
+      "response_length": 1069
+    },
+    {
+      "question_id": 2,
+      "category": "comp",
+      "mode": "rag",
+      "passed": true,
+      "error": null,
+      "response_length": 2664
+    },
+    {
+      "question_id": 2,
+      "category": "comp",
+      "mode": "coach",
+      "passed": true,
+      "error": null,
+      "response_length": 2314
+    },
+    {
+      "question_id": 3,
+      "category": "comp",
+      "mode": "normal",
+      "passed": true,
+      "error": null,
+      "response_length": 980
+    },
+    {
+      "question_id": 3,
+      "category": "comp",
+      "mode": "rag",
+      "passed": true,
+      "error": null,
+      "response_length": 2243
+    },
+    {
+      "question_id": 3,
+      "category": "comp",
+      "mode": "coach",
+      "passed": true,
+      "error": null,
+      "response_length": 2758
+    },
+    {
+      "question_id": 4,
+      "category": "comp",
+      "mode": "normal",
+      "passed": true,
+      "error": null,
+      "response_length": 1323
+    },
+    {
+      "question_id": 4,
+      "category": "comp",
+      "mode": "rag",
+      "passed": true,
+      "error": null,
+      "response_length": 2534
+    },
+    {
+      "question_id": 4,
+      "category": "comp",
+      "mode": "coach",
+      "passed": true,
+      "error": null,
+      "response_length": 3058
+    },
+    {
+      "question_id": 5,
+      "category": "comp",
+      "mode": "normal",
+      "passed": true,
+      "error": null,
+      "response_length": 1503
+    },
+    {
+      "question_id": 5,
+      "category": "comp",
+      "mode": "rag",
+      "passed": true,
+      "error": null,
+      "response_length": 2490
+    },
+    {
+      "question_id": 5,
+      "category": "comp",
+      "mode": "coach",
+      "passed": true,
+      "error": null,
+      "response_length": 3012
+    },
+    {
+      "question_id": 6,
+      "category": "item",
+      "mode": "normal",
+      "passed": true,
+      "error": null,
+      "response_length": 295
+    },
+    {
+      "question_id": 6,
+      "category": "item",
+      "mode": "rag",
+      "passed": true,
+      "error": null,
+      "response_length": 1364
+    },
+    {
+      "question_id": 6,
+      "category": "item",
+      "mode": "coach",
+      "passed": true,
+      "error": null,
+      "response_length": 1649
+    },
+    {
+      "question_id": 7,
+      "category": "item",
+      "mode": "normal",
+      "passed": true,
+      "error": null,
+      "response_length": 664
+    },
+    {
+      "question_id": 7,
+      "category": "item",
+      "mode": "rag",
+      "passed": true,
+      "error": null,
+      "response_length": 2287
+    },
+    {
+      "question_id": 7,
+      "category": "item",
+      "mode": "coach",
+      "passed": true,
+      "error": null,
+      "response_length": 2299
+    },
+    {
+      "question_id": 8,
+      "category": "item",
+      "mode": "normal",
+      "passed": true,
+      "error": null,
+      "response_length": 768
+    },
+    {
+      "question_id": 8,
+      "category": "item",
+      "mode": "rag",
+      "passed": true,
+      "error": null,
+      "response_length": 2925
+    },
+    {
+      "question_id": 8,
+      "category": "item",
+      "mode": "coach",
+      "passed": true,
+      "error": null,
+      "response_length": 2593
+    },
+    {
+      "question_id": 9,
+      "category": "item",
+      "mode": "normal",
+      "passed": true,
+      "error": null,
+      "response_length": 1158
+    },
+    {
+      "question_id": 9,
+      "category": "item",
+      "mode": "rag",
+      "passed": true,
+      "error": null,
+      "response_length": 2677
+    },
+    {
+      "question_id": 9,
+      "category": "item",
+      "mode": "coach",
+      "passed": true,
+      "error": null,
+      "response_length": 1942
+    },
+    {
+      "question_id": 10,
+      "category": "item",
+      "mode": "normal",
+      "passed": true,
+      "error": null,
+      "response_length": 781
+    },
+    {
+      "question_id": 10,
+      "category": "item",
+      "mode": "rag",
+      "passed": true,
+      "error": null,
+      "response_length": 2741
+    },
+    {
+      "question_id": 10,
+      "category": "item",
+      "mode": "coach",
+      "passed": true,
+      "error": null,
+      "response_length": 3096
+    },
+    {
+      "question_id": 11,
+      "category": "augment",
+      "mode": "normal",
+      "passed": true,
+      "error": null,
+      "response_length": 309
+    },
+    {
+      "question_id": 11,
+      "category": "augment",
+      "mode": "rag",
+      "passed": true,
+      "error": null,
+      "response_length": 1144
+    },
+    {
+      "question_id": 11,
+      "category": "augment",
+      "mode": "coach",
+      "passed": true,
+      "error": null,
+      "response_length": 1539
+    },
+    {
+      "question_id": 12,
+      "category": "augment",
+      "mode": "normal",
+      "passed": true,
+      "error": null,
+      "response_length": 1027
+    },
+    {
+      "question_id": 12,
+      "category": "augment",
+      "mode": "rag",
+      "passed": true,
+      "error": null,
+      "response_length": 1313
+    },
+    {
+      "question_id": 12,
+      "category": "augment",
+      "mode": "coach",
+      "passed": true,
+      "error": null,
+      "response_length": 2782
+    },
+    {
+      "question_id": 13,
+      "category": "augment",
+      "mode": "normal",
+      "passed": true,
+      "error": null,
+      "response_length": 253
+    },
+    {
+      "question_id": 13,
+      "category": "augment",
+      "mode": "rag",
+      "passed": true,
+      "error": null,
+      "response_length": 1413
+    },
+    {
+      "question_id": 13,
+      "category": "augment",
+      "mode": "coach",
+      "passed": true,
+      "error": null,
+      "response_length": 2262
+    },
+    {
+      "question_id": 14,
+      "category": "augment",
+      "mode": "normal",
+      "passed": true,
+      "error": null,
+      "response_length": 1227
+    },
+    {
+      "question_id": 14,
+      "category": "augment",
+      "mode": "rag",
+      "passed": true,
+      "error": null,
+      "response_length": 2377
+    },
+    {
+      "question_id": 14,
+      "category": "augment",
+      "mode": "coach",
+      "passed": true,
+      "error": null,
+      "response_length": 2442
+    },
+    {
+      "question_id": 15,
+      "category": "augment",
+      "mode": "normal",
+      "passed": true,
+      "error": null,
+      "response_length": 724
+    },
+    {
+      "question_id": 15,
+      "category": "augment",
+      "mode": "rag",
+      "passed": true,
+      "error": null,
+      "response_length": 1969
+    },
+    {
+      "question_id": 15,
+      "category": "augment",
+      "mode": "coach",
+      "passed": true,
+      "error": null,
+      "response_length": 2289
+    },
+    {
+      "question_id": 16,
+      "category": "pivot",
+      "mode": "normal",
+      "passed": true,
+      "error": null,
+      "response_length": 355
+    },
+    {
+      "question_id": 16,
+      "category": "pivot",
+      "mode": "rag",
+      "passed": true,
+      "error": null,
+      "response_length": 1276
+    },
+    {
+      "question_id": 16,
+      "category": "pivot",
+      "mode": "coach",
+      "passed": true,
+      "error": null,
+      "response_length": 2316
+    },
+    {
+      "question_id": 17,
+      "category": "pivot",
+      "mode": "normal",
+      "passed": true,
+      "error": null,
+      "response_length": 475
+    },
+    {
+      "question_id": 17,
+      "category": "pivot",
+      "mode": "rag",
+      "passed": true,
+      "error": null,
+      "response_length": 1468
+    },
+    {
+      "question_id": 17,
+      "category": "pivot",
+      "mode": "coach",
+      "passed": true,
+      "error": null,
+      "response_length": 1856
+    },
+    {
+      "question_id": 18,
+      "category": "pivot",
+      "mode": "normal",
+      "passed": true,
+      "error": null,
+      "response_length": 651
+    },
+    {
+      "question_id": 18,
+      "category": "pivot",
+      "mode": "rag",
+      "passed": true,
+      "error": null,
+      "response_length": 2503
+    },
+    {
+      "question_id": 18,
+      "category": "pivot",
+      "mode": "coach",
+      "passed": true,
+      "error": null,
+      "response_length": 2145
+    },
+    {
+      "question_id": 19,
+      "category": "pivot",
+      "mode": "normal",
+      "passed": true,
+      "error": null,
+      "response_length": 536
+    },
+    {
+      "question_id": 19,
+      "category": "pivot",
+      "mode": "rag",
+      "passed": true,
+      "error": null,
+      "response_length": 2407
+    },
+    {
+      "question_id": 19,
+      "category": "pivot",
+      "mode": "coach",
+      "passed": true,
+      "error": null,
+      "response_length": 1989
+    },
+    {
+      "question_id": 20,
+      "category": "pivot",
+      "mode": "normal",
+      "passed": true,
+      "error": null,
+      "response_length": 289
+    },
+    {
+      "question_id": 20,
+      "category": "pivot",
+      "mode": "rag",
+      "passed": true,
+      "error": null,
+      "response_length": 1637
+    },
+    {
+      "question_id": 20,
+      "category": "pivot",
+      "mode": "coach",
+      "passed": true,
+      "error": null,
+      "response_length": 1752
+    }
+  ]
+}

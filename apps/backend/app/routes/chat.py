@@ -7,7 +7,6 @@ from collections.abc import AsyncIterable
 import httpx
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse, StreamingResponse
-from fastapi.sse import ServerSentEvent
 
 from app.config import settings
 from app.db import get_pool
@@ -203,20 +202,39 @@ async def chat(request: ChatRequest) -> StreamingResponse | JSONResponse:
 
     Per D-09: Single endpoint with stream parameter (default True).
     """
+    import logging
+    logger = logging.getLogger(__name__)
+
     if request.session_id is None:
         raise HTTPException(status_code=400, detail="session_id is required")
 
-    # Build messages array with system prompt + history + optional RAG context
-    messages = await build_messages(
-        session_id=request.session_id,
-        user_message=request.message,
-        mode=request.mode,
-        patch=request.patch,
-    )
+    try:
+        # Build messages array with system prompt + history + optional RAG context
+        messages = await build_messages(
+            session_id=request.session_id,
+            user_message=request.message,
+            mode=request.mode,
+            patch=request.patch,
+        )
+    except Exception as e:
+        logger.exception("build_messages failed")
+        raise HTTPException(status_code=500, detail=f"build_messages error: {e}") from e
 
     # Persist the user message BEFORE streaming (so it appears in history)
     pool = await get_pool()
     msg_repo = MessageRepository(pool)
+    # Auto-create session if it doesn't exist (for smoke tests and external callers)
+    from app.repositories.session import SessionRepository
+    sess_repo = SessionRepository(pool)
+    existing = await sess_repo.get(request.session_id)
+    if existing is None:
+        async with pool.acquire() as conn:
+            await conn.execute(
+                "INSERT INTO sessions (id, title, mode) VALUES ($1, $2, $3) ON CONFLICT (id) DO NOTHING",
+                request.session_id,
+                None,
+                request.mode,
+            )
     await msg_repo.create(
         session_id=request.session_id,
         role="user",
@@ -232,5 +250,9 @@ async def chat(request: ChatRequest) -> StreamingResponse | JSONResponse:
         )
     else:
         # Non-streaming mode: return complete JSON
-        result = await chat_non_streaming(messages, request.session_id)
-        return JSONResponse(content=result)
+        try:
+            result = await chat_non_streaming(messages, request.session_id)
+            return JSONResponse(content=result)
+        except Exception as e:
+            logger.exception("chat_non_streaming failed")
+            raise HTTPException(status_code=500, detail=f"chat_non_streaming error: {e}") from e

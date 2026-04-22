@@ -38,8 +38,9 @@ export function useGpuStatus() {
     try {
       const data = await fetchGpuStatus();
       setStatus(data);
-    } catch {
+    } catch (err) {
       // Non-blocking — keep existing state on network errors
+      console.warn("[useGpuStatus] Failed to fetch GPU status:", err);
     }
   }, []);
 

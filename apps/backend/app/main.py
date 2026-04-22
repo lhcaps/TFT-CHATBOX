@@ -43,10 +43,10 @@ app.add_middleware(
 
 from app.routes import health, sessions, chat, search, ingest, patch_state, gpu_status  # noqa: E402, F401
 
-app.include_router(health.router)
-app.include_router(gpu_status.router)
-app.include_router(sessions.router)
-app.include_router(chat.router)
-app.include_router(search.router)
-app.include_router(ingest.router)
-app.include_router(patch_state.router)
+app.include_router(health.router, prefix="/api")
+app.include_router(gpu_status.router, prefix="/api")
+app.include_router(sessions.router, prefix="/api")
+app.include_router(chat.router, prefix="/api")
+app.include_router(search.router, prefix="/api")
+app.include_router(ingest.router, prefix="/api")
+app.include_router(patch_state.router, prefix="/api")

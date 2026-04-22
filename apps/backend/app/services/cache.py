@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 from dataclasses import dataclass
 
 from cachetools import TTLCache
@@ -10,6 +11,10 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from app.services.ollama import RetrievedChunk
+
+# ─── Constants ─────────────────────────────────────────────────────────────────
+
+MAX_QUERY_LENGTH = 512  # Truncate queries longer than this to avoid large cache keys
 
 
 @dataclass
@@ -20,9 +25,13 @@ class CacheEntry:
 
 
 def _make_cache_key(query: str, mode: str, patch: str | None) -> str:
-    """Build a cache key from query, mode, and optional patch filter."""
+    """Build a cache key from query, mode, and optional patch filter.
+
+    Query is truncated to MAX_QUERY_LENGTH to prevent unbounded key sizes.
+    """
     patch_part = patch if patch else "all"
-    return f"{mode}:{patch_part}:{query}"
+    truncated = query[:MAX_QUERY_LENGTH] if len(query) > MAX_QUERY_LENGTH else query
+    return f"{mode}:{patch_part}:{truncated}"
 
 
 class EmbeddingCache:

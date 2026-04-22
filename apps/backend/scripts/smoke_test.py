@@ -25,6 +25,7 @@ import os
 import sys
 import time
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Literal
 
 import httpx
@@ -32,9 +33,13 @@ import httpx
 # ─── Configuration ───────────────────────────────────────────────────────────────
 
 BACKEND_BASE = os.getenv("BACKEND_URL", "http://localhost:8000")
-CHAT_ENDPOINT = f"{BACKEND_BASE}/chat"
-GPU_ENDPOINT = f"{BACKEND_BASE}/health/gpu"
+CHAT_ENDPOINT = f"{BACKEND_BASE}/api/chat"
+GPU_ENDPOINT = f"{BACKEND_BASE}/api/health/gpu"
 REQUEST_TIMEOUT = 120.0  # seconds — generous for LLM response
+
+# Results file in the same directory as this script
+SCRIPT_DIR = Path(__file__).parent
+RESULTS_FILE = SCRIPT_DIR / "smoke_test_results.json"
 
 
 # ─── Data types ────────────────────────────────────────────────────────────────
@@ -252,10 +257,8 @@ async def main() -> int:
                 r = await run_question(client, question, mode)
                 result.results.append(r)
                 marker = "PASS" if r.passed else "FAIL"
-                status_str = marker
-                if not r.passed:
-                    status_str += f" ({r.error})"
-                print(f"    [{mode}] {marker} {status_str} -- {r.response_length} chars")
+                detail = f"({r.error})" if not r.passed else ""
+                print(f"    [{mode}] {marker} {detail} -- {r.response_length} chars")
             # Brief pause between questions to avoid overwhelming the LLM
             await asyncio.sleep(0.5)
 
@@ -285,9 +288,9 @@ async def main() -> int:
             for r in result.results
         ],
     }
-    with open("smoke_test_results.json", "w", encoding="utf-8") as f:
+    with open(RESULTS_FILE, "w", encoding="utf-8") as f:
         json.dump(summary, f, indent=2)
-    print(f"Detailed results saved to: smoke_test_results.json")
+    print(f"Detailed results saved to: {RESULTS_FILE}")
 
     # Exit code: 0 = all pass, 1 = any failure
     all_passed = all(r.passed for r in result.results)

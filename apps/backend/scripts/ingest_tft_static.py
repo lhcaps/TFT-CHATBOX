@@ -25,6 +25,14 @@ class TFTStaticData(TypedDict):
 CDN_BASE = "https://ddragon.leagueoflegends.com/cdn"
 VERSIONS_URL = "https://ddragon.leagueoflegends.com/api/versions.json"
 
+# CommunityDragon fallback (for recent sets not yet on ddragon)
+CDRAGON_BASE = "https://raw.communitydragon.org/latest/cdragon/tft"
+
+# Default User-Agent to avoid 403 from Riot CDN
+DEFAULT_HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+}
+
 # Data types and their CDN paths
 TFT_DATA_TYPES = {
     "champions": "data/en_US/tft/tft-champion.json",
@@ -42,9 +50,9 @@ CACHE_FILES = {
 }
 
 
-async def fetch_json(url: str) -> dict:
-    """Fetch JSON data from a URL using httpx."""
-    async with httpx.AsyncClient(timeout=30.0) as client:
+async def fetch_json(url: str, headers: dict | None = None) -> dict:
+    """Fetch JSON data from a URL using httpx with browser User-Agent."""
+    async with httpx.AsyncClient(timeout=30.0, headers=headers or DEFAULT_HEADERS) as client:
         response = await client.get(url)
         response.raise_for_status()
         return response.json()
@@ -53,7 +61,7 @@ async def fetch_json(url: str) -> dict:
 async def fetch_json_safe(url: str) -> dict | None:
     """Fetch JSON data from a URL, returning None on error (e.g. 403 for retired TFT sets)."""
     try:
-        async with httpx.AsyncClient(timeout=30.0) as client:
+        async with httpx.AsyncClient(timeout=30.0, headers=DEFAULT_HEADERS) as client:
             response = await client.get(url)
             response.raise_for_status()
             return response.json()

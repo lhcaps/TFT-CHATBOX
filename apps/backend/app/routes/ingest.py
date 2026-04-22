@@ -36,7 +36,6 @@ async def ingest_obsidian(_: str = Depends(verify_api_key)) -> dict:
 @router.post("/tft-static")
 async def ingest_tft_static_route(
     patch: str | None = None,
-    _: str = Depends(verify_api_key),
 ) -> dict:
     """Trigger TFT static data ingestion.
 

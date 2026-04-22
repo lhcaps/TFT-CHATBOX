@@ -1,3 +1,10 @@
+-- Ensure fts generated column exists (backwards compat: if table was created before fts was added)
+ALTER TABLE chunks ADD COLUMN IF NOT EXISTS fts tsvector GENERATED ALWAYS AS (to_tsvector('english', content)) STORED;
+
+-- Recreate fts index (handles both fresh and upgraded schemas)
+DROP INDEX IF EXISTS chunks_content_fts_idx;
+CREATE INDEX IF NOT EXISTS chunks_content_fts_idx ON chunks USING gin (fts);
+
 CREATE OR REPLACE FUNCTION hybrid_search_chunks(
   query_text text,
   query_embedding vector(1024),
@@ -21,7 +28,7 @@ with full_text as (
     row_number() over (
       order by ts_rank_cd(fts, websearch_to_tsquery('simple', query_text)) desc
     ) as rank_ix
-  from document_chunks
+  from chunks
   where fts @@ websearch_to_tsquery('simple', query_text)
   limit least(match_count, 30) * 2
 ),
@@ -31,21 +38,21 @@ semantic as (
     row_number() over (
       order by embedding <=> query_embedding
     ) as rank_ix
-  from document_chunks
+  from chunks
   where embedding is not null
   limit least(match_count, 30) * 2
 )
 select
-  dc.id as chunk_id,
-  dc.document_id,
-  dc.heading_path,
-  dc.content,
-  dc.metadata
+  c.id as chunk_id,
+  null::uuid as document_id,
+  null::text as heading_path,
+  c.content,
+  c.metadata
 from full_text
 full outer join semantic
   on full_text.id = semantic.id
-join document_chunks dc
-  on coalesce(full_text.id, semantic.id) = dc.id
+join chunks c
+  on coalesce(full_text.id, semantic.id) = c.id
 order by
   coalesce(1.0 / (rrf_k + full_text.rank_ix), 0.0) * full_text_weight +
   coalesce(1.0 / (rrf_k + semantic.rank_ix), 0.0) * semantic_weight desc
