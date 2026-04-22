@@ -24,13 +24,14 @@ A TFT player can ask comp questions, patch notes, augment choices, or pivot stra
 - ✅ TTL-LRU embedding cache (30-min, 500 entries) — v1.0
 - ✅ GPU memory monitoring (frontend display) — v1.0
 - ✅ 20-question smoke test: 60/60 PASS — v1.0
+- ✅ Patch state in DB with `patch_info` table — v1.1
+- ✅ Backend patch status API (GET /api/patch/status) — v1.1
+- ✅ Auto-scrape patch notes API (POST /api/ingest/patch-notes) — v1.1
+- ✅ n8n patch monitoring workflow (active) + Discord notifications — v1.1
+- ✅ Frontend patch version display + staleness badge — v1.1
 
 ### Active
 
-- [ ] Patch state in DB + auto-ingest pipeline (PATCH-01, PATCH-02)
-- [ ] Auto-scrape patch notes on new patch (PATCH-03)
-- [ ] n8n workflow activation + monitoring (PATCH-04)
-- [ ] Frontend patch version + staleness display (PATCH-05)
 - [ ] Session auto-naming and search (SESS-01, SESS-02)
 - [ ] Session export to Obsidian Markdown (SESS-03)
 - [ ] Inline citation cards with hover source snippets (RAG-08)
@@ -67,16 +68,17 @@ A TFT player can ask comp questions, patch notes, augment choices, or pivot stra
 
 ## Current State
 
-**v1.1 TFT Meta Mastery** — in progress
+**v1.1 TFT Meta Mastery shipped** — 2026-04-22
 
 | Metric | Value |
 |--------|-------|
 | Smoke test | 60/60 PASS (v1.0) |
-| Phases complete | 7/7 (v1.0) |
-| Requirements shipped | 35/35 (v1.0) |
-| DB chunks | 32 (TFT patch 17.1) |
+| Phases complete | 8/8 (v1.0 + v1.1) |
+| Requirements shipped | 40/40 (35 v1.0 + 5 v1.1) |
+| DB chunks | 44 (TFT patches 16.8.1 + 17.1) |
 | Models | qwen3:1.7b (chat) + qwen3-embedding:4b (embedding) |
-| n8n workflows | patch_monitor.json exists but `active: false` |
+| n8n workflows | patch_monitor.json `active: true` |
+| Frontend | Patch badge + GPU status in header |
 
 ## Constraints
 
@@ -97,7 +99,7 @@ A TFT player can ask comp questions, patch notes, augment choices, or pivot stra
 | In-memory LRU cache | MVP scale doesn't need Redis | ✅ Locked (v1.0) |
 | Bearer token auth | Defense in depth | ✅ Locked (v1.0) |
 | ngrok dropped | 100% local operation | ✅ Locked (v1.0) |
-| Patch state in DB (not file) | More reliable, queryable, testable | 🔄 v1.1 |
+| Patch state in DB (not file) | Single source of truth, queryable, testable | ✅ Locked (v1.1) |
 | RLS disabled | Local-only, risk accepted | ✅ Locked |
 
 ## Evolution
@@ -117,15 +119,7 @@ This document evolves at phase transitions and milestone boundaries.
 3. Audit Out of Scope — reasons still valid?
 4. Update Context with current state
 
-## Current Milestone: v1.1 TFT Meta Mastery
-
-**Goal:** Automated TFT meta intelligence — backend tracks patch state in DB, n8n monitors Riot for new patches, auto-ingests patch notes + static data when available.
-
-**Target features:**
-- Patch state persisted in DB (not just file)
-- Auto-scrape & ingest patch notes on new patch detection
-- n8n workflow activates and monitors patch changes
-- Frontend displays patch version + staleness status
+## Current Milestone: None — all milestones shipped
 
 ---
 *Last updated: 2026-04-22*

@@ -15,7 +15,7 @@
 
 ## Current Position
 
-**Active Phase:** Phase 8: Patch Meta Mastery (planned — ready to execute)
+**Active Phase:** None (v1.1 shipped)
 
 **Milestone Progress:**
 ```
@@ -79,7 +79,20 @@
 
 ## Accumulated Context
 
-### v1.1 Focus: TFT Meta Mastery
+### v1.1 TFT Meta Mastery — SHIPPED ✅
+
+**All features delivered:**
+- `patch_info` table: current_patch, latest_available, last_checked, last_ingested, ingest_status, patch_notes_url, updated_at
+- `GET /api/patch/status` → full DB state with is_stale
+- `POST /api/patch/status/refresh` → update latest_available from Riot CDN
+- `POST /api/ingest/patch-notes` → scrape + ingest patch notes chunks
+- `scrape_patch_url()` → listing page discovery, URL pattern fallback
+- n8n `patch_monitor.json` → `active: true`, calls both ingest endpoints, Discord start/success/fail
+- `PatchStatus` component → version badge, stale indicator, check button in header
+
+**Outstanding:**
+- n8n workflow needs user to open http://localhost:5678 and configure API key + Discord webhook credentials
+- `scrape_patch17.py` hardcodes Set 17 URL template — needs update for future sets
 
 **Goal:** Automated TFT meta intelligence — backend tracks patch state in DB, n8n monitors Riot for new patches, auto-ingests patch notes + static data when available.
 

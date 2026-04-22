@@ -1,18 +1,22 @@
 # Milestones
 
-## v1.1 TFT Meta Mastery — In Progress
+## v1.1 TFT Meta Mastery — SHIPPED 2026-04-22
 
-**Date:** 2026-04-22 (planned)
-**Phase:** Planning pending
+**Date:** 2026-04-22
+**Phase:** Phase 8 (4 plans)
 **Goal:** Automated TFT meta intelligence — patch state in DB, n8n monitors Riot, auto-ingests patch notes + static data.
 
 **Target features:**
-- Patch state persisted in DB (not just file)
-- Auto-scrape & ingest patch notes on new patch detection
-- n8n workflow activates and monitors patch changes
-- Frontend displays patch version + staleness status
+- ✅ Patch state persisted in DB (not just file) — `patch_info` table
+- ✅ Auto-scrape & ingest patch notes on new patch detection — `POST /api/ingest/patch-notes`
+- ✅ n8n workflow activates and monitors patch changes — `patch_monitor.json` `active: true`
+- ✅ Frontend displays patch version + staleness status — `PatchStatus` component
 
-**Required REQ-IDs:** PATCH-01 through PATCH-05
+**Required REQ-IDs:** PATCH-01 through PATCH-05 — **5/5 shipped**
+
+**Git range:** `a937de0` (partial)
+
+**Smoke test:** Manual end-to-end — `GET /api/patch/status`, `POST /api/ingest/patch-notes`, n8n workflow updated, frontend badge visible
 
 ---
 
@@ -42,3 +46,5 @@
 
 - [.planning/milestones/v1.0-ROADMAP.md](.planning/milestones/v1.0-ROADMAP.md)
 - [.planning/milestones/v1.0-REQUIREMENTS.md](.planning/milestones/v1.0-REQUIREMENTS.md)
+- [.planning/milestones/v1.1-ROADMAP.md](.planning/milestones/v1.1-ROADMAP.md)
+- [.planning/milestones/v1.1-REQUIREMENTS.md](.planning/milestones/v1.1-REQUIREMENTS.md)
