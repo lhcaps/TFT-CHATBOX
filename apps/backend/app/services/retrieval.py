@@ -5,11 +5,16 @@ from app.db import get_pool
 from app.services.ollama import ollama
 
 
-async def retrieve_chunks(query: str, top_k: int = 6) -> list[dict]:
+async def retrieve_chunks(query: str, top_k: int = 6, patch: str | None = None) -> list[dict]:
     """Retrieve relevant chunks using hybrid search.
 
-    Combines semantic (vector) and full-text search via hybrid_search_chunks SQL function.
-    Returns chunks with source, heading, text, and relevance score.
+    Args:
+        query: Search query text.
+        top_k: Number of chunks to return (default 6).
+        patch: Optional patch version to filter by (e.g. "17.1"). If None, searches all patches.
+
+    Returns:
+        List of dicts with id, content, source, metadata, score.
     """
     embedding = await ollama.generate_embedding(query)
 
@@ -23,11 +28,12 @@ async def retrieve_chunks(query: str, top_k: int = 6) -> list[dict]:
                 source,
                 metadata,
                 similarity
-            FROM hybrid_search_chunks($1::vector, $2, $3)
+            FROM hybrid_search_chunks_by_patch($1::vector, $2, $3, $4)
             """,
             embedding,
             query,
             top_k,
+            patch,
         )
 
     return [
