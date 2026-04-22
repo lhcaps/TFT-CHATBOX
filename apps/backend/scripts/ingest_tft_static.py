@@ -4,6 +4,7 @@ from __future__ import annotations
 import asyncio
 import json
 from pathlib import Path
+from typing import TypedDict
 
 import httpx
 
@@ -11,6 +12,13 @@ from app.config import settings
 from app.db import get_pool
 from app.services.ollama import ollama
 from app.utils.hashing import content_hash
+
+
+class TFTStaticData(TypedDict):
+    champions: dict
+    traits: dict
+    items: dict
+    augments: dict
 
 
 # CDN base URLs for Riot Data Dragon
@@ -145,183 +153,200 @@ async def get_patch_data(patch: str | None = None) -> tuple[str, dict[str, dict]
     return patch, data
 
 
-def format_champion(champ: dict) -> str:
-    """Format a champion entry as readable text."""
-    name = champ.get("character_id", champ.get("name", "Unknown"))
-    cost = champ.get("tier", "?")
-    traits = champ.get("traits", [])
-    traits_str = ", ".join(traits) if traits else "None"
-
-    lines = [f"# {name}", f"Cost: {cost}", f"Traits: {traits_str}"]
-
-    # Include stats if available
-    stats = champ.get("stats", {})
-    if stats:
-        for stat_name, stat_value in stats.items():
-            lines.append(f"{stat_name}: {stat_value}")
-
-    return "\n".join(lines)
+def _get_cached_version_marker() -> Path | None:
+    """Get the path to the cached version marker file."""
+    marker = Path(settings.tft_cache_dir) / "latest_version.txt"
+    if not marker.exists():
+        return None
+    return marker
 
 
-def format_trait(trait: dict) -> str:
-    """Format a trait entry as readable text."""
-    name = trait.get("name", trait.get("id", "Unknown"))
-    desc = trait.get("description", trait.get("desc", ""))
-
-    lines = [f"# {name}", desc]
-
-    # Include set info if available
-    if "sets" in trait:
-        lines.append(f"Sets: {trait['sets']}")
-
-    return "\n".join(lines)
+async def get_cached_version() -> str | None:
+    """Get the latest cached version from the marker file."""
+    marker = _get_cached_version_marker()
+    if marker is None:
+        return None
+    return marker.read_text(encoding="utf-8").strip()
 
 
-def format_item(item: dict) -> str:
-    """Format an item entry as readable text."""
-    name = item.get("name", item.get("id", "Unknown"))
-    desc = item.get("description", item.get("desc", ""))
-    effects = item.get("effects", {})
-    from_item = item.get("from", [])
-
-    lines = [f"# {name}", desc]
-
-    if effects:
-        for key, value in effects.items():
-            lines.append(f"{key}: {value}")
-
-    if from_item:
-        lines.append(f"Components: {', '.join(str(x) for x in from_item)}")
-
-    return "\n".join(lines)
+async def save_cached_version(version: str) -> None:
+    """Save the latest cached version to the marker file."""
+    ensure_cache_dir(version)
+    marker = Path(settings.tft_cache_dir) / "latest_version.txt"
+    marker.write_text(version, encoding="utf-8")
 
 
-def format_augment(augment: dict) -> str:
-    """Format an augment entry as readable text."""
-    name = augment.get("name", augment.get("id", "Unknown"))
-    desc = augment.get("description", augment.get("desc", ""))
-    tier = augment.get("tier", "?")
-    lines = [f"# {name}", f"Tier: {tier}", desc]
+def _extract_season_from_patch(patch: str) -> str:
+    """Infer the TFT set/season from the patch number.
 
-    return "\n".join(lines)
-
-
-def parse_tft_data(data: dict, data_type: str) -> list[dict]:
-    """Parse TFT JSON data into a list of individual entries."""
-    if data_type == "champions":
-        # Champions data is in "data" key as dict of character_id -> champ info
-        data_obj = data.get("data", data)
-        return [{"character_id": k, **v} for k, v in data_obj.items()]
-    elif data_type == "traits":
-        # Traits data is in "data" key as dict
-        data_obj = data.get("data", data)
-        return [{"id": k, **v} for k, v in data_obj.items()]
-    elif data_type == "items":
-        # Items data is in "data" key as dict
-        data_obj = data.get("data", data)
-        return [{"id": k, **v} for k, v in data_obj.items()]
-    elif data_type == "augments":
-        # Augments might be a list or in "data" key
-        if isinstance(data, list):
-            return data
-        return data.get("data", [data])
-    return []
-
-
-def format_data_type(data: dict, data_type: str) -> str:
-    """Format all entries of a data type as a single chunk."""
-    entries = parse_tft_data(data, data_type)
-
-    if data_type == "champions":
-        formatted = [format_champion(e) for e in entries]
-    elif data_type == "traits":
-        formatted = [format_trait(e) for e in entries]
-    elif data_type == "items":
-        formatted = [format_item(e) for e in entries]
-    elif data_type == "augments":
-        formatted = [format_augment(e) for e in entries]
-    else:
-        formatted = [str(e) for e in entries]
-
-    return "\n\n---\n\n".join(formatted)
-
-
-async def ingest_tft_static(patch: str | None = None) -> dict:
+    TFT patch 17.x = Set 17 (Space Gods).
+    Update this mapping as new sets are released.
     """
-    Ingest TFT static data from CDN with disk caching.
+    patch_int = int(patch.split(".")[0])
+    SEASON_MAP = {
+        14: "SET14",
+        15: "SET15",
+        16: "SET16",
+        17: "SET17",
+    }
+    return SEASON_MAP.get(patch_int, f"SET{patch_int}")
 
-    1. Determine patch version (latest from CDN or specified)
-    2. Check disk cache for existing data
-    3. Download from CDN if not cached
-    4. Save to cache
-    5. Parse and chunk data by type
-    6. Generate embeddings and store in DB
 
-    Args:
-        patch: Specific patch version to ingest. If None, uses latest.
+def _format_champions(data: dict, patch: str) -> str:
+    """Format champion data as readable markdown."""
+    lines = [f"# TFT Champions (Patch {patch})\n"]
+    champions = data.get("data", {})
+    for key, champ in sorted(champions.items(), key=lambda x: x[1].get("cost", 0)):
+        name = champ.get("name", key)
+        cost = champ.get("cost", "?")
+        traits = champ.get("traits", [])
+        stats = champ.get("stats", {})
 
-    Returns:
-        Dict with stats: types processed, chunks created, patch version
+        lines.append(f"## {name} (Cost: {cost})")
+        if traits:
+            lines.append(f"Traits: {', '.join(traits)}")
+        if stats:
+            hp = stats.get("hp", "?")
+            attack_damage = stats.get("attackDamage", "?")
+            ability_power = stats.get("abilityPower", "?")
+            attack_speed = stats.get("attackSpeed", "?")
+            crit = stats.get("critChance", "?")
+            mana = stats.get("mana", "?")
+            lines.append(
+                f"Stats: HP: {hp} | AD: {attack_damage} | AP: {ability_power} "
+                f"| AS: {attack_speed} | Crit: {crit}% | Mana: {mana}"
+            )
+        lines.append("")
+    return "\n".join(lines)
+
+
+def _format_traits(data: dict, patch: str) -> str:
+    """Format trait data as readable markdown."""
+    lines = [f"# TFT Traits (Patch {patch})\n"]
+    traits = data.get("data", {})
+    for key, trait in sorted(traits.items(), key=lambda x: x[1].get("name", "")):
+        name = trait.get("name", key)
+        desc = trait.get("desc", "")
+        sets = trait.get("sets", [])
+
+        lines.append(f"## {name}")
+        if desc:
+            lines.append(f"Desc: {desc}")
+        for s in sets:
+            min_u = s.get("minUnits", "?")
+            max_u = s.get("maxUnits", "?")
+            effects = s.get("effects", [])
+            lines.append(f"Threshold {min_u}-{max_u} units:")
+            for eff in effects:
+                lines.append(f"  - {eff}")
+        lines.append("")
+    return "\n".join(lines)
+
+
+def _format_items(data: dict, patch: str) -> str:
+    """Format item data as readable markdown."""
+    lines = [f"# TFT Items (Patch {patch})\n"]
+    items = data.get("data", {})
+    for key, item in sorted(items.items(), key=lambda x: x[1].get("name", "")):
+        name = item.get("name", key)
+        desc = item.get("desc", "")
+        effects = item.get("effects", {})
+
+        lines.append(f"## {name}")
+        if desc:
+            lines.append(f"Desc: {desc}")
+        if effects:
+            eff_str = " | ".join(f"{k}: {v}" for k, v in effects.items())
+            lines.append(f"Effects: {eff_str}")
+        lines.append("")
+    return "\n".join(lines)
+
+
+def _format_augments(data: dict, patch: str) -> str:
+    """Format augment data as readable markdown."""
+    lines = [f"# TFT Augments (Patch {patch})\n"]
+    augments = data.get("data", {})
+    for key, aug in sorted(augments.items(), key=lambda x: x[1].get("name", "")):
+        name = aug.get("name", key)
+        desc = aug.get("desc", "")
+        tiers = aug.get("tier", [])
+        tier_label = ", ".join(str(t) for t in tiers) if tiers else "?"
+
+        lines.append(f"## {name} (Tier: {tier_label})")
+        if desc:
+            lines.append(f"Desc: {desc}")
+        lines.append("")
+    return "\n".join(lines)
+
+
+def format_patch_data(data: TFTStaticData, patch: str) -> dict[str, tuple[str, dict]]:
+    """Format all TFT static data into chunk-ready text with metadata.
+
+    Returns dict: { "champions": (text, metadata), "traits": (text, metadata), ... }
+    metadata = { "season": "SET17", "patch": "17.1", "type": "champions", ... }
     """
+    season = _extract_season_from_patch(patch)
+    formatted = {
+        "champions": _format_champions(data["champions"], patch),
+        "traits": _format_traits(data["traits"], patch),
+        "items": _format_items(data["items"], patch),
+        "augments": _format_augments(data["augments"], patch),
+    }
+
+    chunks = {}
+    for data_type, text in formatted.items():
+        metadata = {
+            "season": season,
+            "patch": patch,
+            "type": data_type,
+        }
+        chunks[data_type] = (text, metadata)
+
+    return chunks
+
+
+async def ingest_tft_static(patch: str | None = None) -> dict[str, int | list]:
+    """Download, cache, and parse TFT static data.
+
+    Returns dict with:
+      - patch: version string
+      - status: "downloaded" or "cached"
+      - types: list of data type names
+      - chunks: list of {type, text, hash, metadata} dicts for downstream processing
+    """
+    # Determine latest version first to check cache status
+    if patch is None:
+        patch = await get_latest_version()
+
+    was_cached = load_patch_from_cache(patch) is not None
+
     # Get patch data (cache-first, CDN fallback)
     version, data = await get_patch_data(patch)
 
-    pool = await get_pool()
-    stats = {"patch": version, "types": 0, "chunks": 0, "new_chunks": 0}
+    # Update global version marker
+    cached_version = await get_cached_version()
+    if version != cached_version:
+        await save_cached_version(version)
 
-    async with pool.acquire() as conn:
-        for data_type in TFT_DATA_TYPES:
-            if data_type not in data:
-                continue
+    # Format into readable text chunks
+    formatted_chunks = format_patch_data(data, version)
 
-            # Format data as text
-            text = format_data_type(data[data_type], data_type)
-            chunk_hash = content_hash(text)
+    # Compute hashes for deduplication
+    result_chunks = []
+    for data_type, (text, metadata) in formatted_chunks.items():
+        result_chunks.append({
+            "type": data_type,
+            "text": text,
+            "hash": content_hash(text),
+            "metadata": metadata,
+        })
 
-            # Check if already ingested
-            source = f"tft_static:{data_type}:{version}"
-            existing = await conn.fetchval(
-                "SELECT 1 FROM chunks WHERE source = $1 AND content_hash = $2",
-                source,
-                chunk_hash,
-            )
-
-            if existing:
-                stats["chunks"] += 1
-                continue
-
-            # Generate embedding
-            embedding = await ollama.generate_embedding(text)
-
-            # Extract season from patch (e.g., "17.1" -> "SET17")
-            major = version.split(".")[0] if version else "SET0"
-            season = f"SET{major}"
-
-            # Insert into DB
-            metadata = {
-                "season": season,
-                "patch": version,
-                "type": data_type,
-            }
-
-            await conn.execute(
-                """
-                INSERT INTO chunks (content, content_hash, source, metadata, embedding)
-                VALUES ($1, $2, $3, $4, $5::vector)
-                ON CONFLICT (source, content_hash) DO NOTHING
-                """,
-                text,
-                chunk_hash,
-                source,
-                metadata,
-                embedding,
-            )
-
-            stats["types"] += 1
-            stats["chunks"] += 1
-            stats["new_chunks"] += 1
-
-    return stats
+    return {
+        "patch": version,
+        "status": "cached" if was_cached else "downloaded",
+        "types": ["champions", "traits", "items", "augments"],
+        "chunks": result_chunks,
+    }
 
 
 if __name__ == "__main__":
@@ -329,4 +354,4 @@ if __name__ == "__main__":
 
     patch_arg = sys.argv[1] if len(sys.argv) > 1 else None
     result = asyncio.run(ingest_tft_static(patch_arg))
-    print(f"Ingested patch {result['patch']}: {result['types']} types, {result['chunks']} chunks ({result['new_chunks']} new)")
+    print(f"Patch {result['patch']}: {result['status']}, {len(result['chunks'])} chunks")
