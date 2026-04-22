@@ -16,7 +16,7 @@ export function PatchStatus() {
 
   const fetchStatus = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/patch/status");
+      const res = await fetch("/api/patch/status");
       if (res.ok) {
         setStatus(await res.json());
       }

@@ -8,7 +8,7 @@ export interface GpuStatus {
   models_loaded: string[];
 }
 
-const GPU_ENDPOINT = "/health/gpu";
+const GPU_ENDPOINT = "/api/health/gpu";
 const POLL_INTERVAL_MS = 30_000; // 30 seconds
 
 async function fetchGpuStatus(): Promise<GpuStatus> {
