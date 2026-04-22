@@ -71,6 +71,7 @@ Full details: [.planning/milestones/v1.0-ROADMAP.md](.planning/milestones/v1.0-R
 | 5. TFT Static Data | v1.0 | 4/4 | Complete | 2026-04-22 |
 | 6. Automation | v1.0 | 4/4 | Complete | 2026-04-22 |
 | 7. Polish & Smoke Test | v1.0 | 4/4 | Complete | 2026-04-22 |
+| 8. Patch Meta Mastery | v1.1 | 4/4 | Planned | — |
 
 ---
 
