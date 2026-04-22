@@ -25,7 +25,6 @@ class GPUStatus:
 
 
 async def _fetch_ollama_ps() -> dict:
-    """Call Ollama /api/ps and return the JSON response."""
     async with httpx.AsyncClient(timeout=5.0) as client:
         resp = await client.get(f"{settings.ollama_base_url}/api/ps")
         resp.raise_for_status()
@@ -33,18 +32,12 @@ async def _fetch_ollama_ps() -> dict:
 
 
 def _parse_gpu_status(ps_response: dict) -> GPUStatus:
-    """Parse Ollama /api/ps response into GPUStatus.
-
-    The /api/ps response has a "memory" object per loaded model.
-    GPU memory is reported in the "memory" field at the top level.
-    """
     memory = ps_response.get("memory", {})
     models = ps_response.get("models", [])
 
     vram_used = memory.get("used")
     vram_total = memory.get("total")
 
-    # Convert bytes to MB if available
     vram_used_mb: int | None = None
     vram_total_mb: int | None = None
     percent_used: int | None = None
@@ -55,10 +48,13 @@ def _parse_gpu_status(ps_response: dict) -> GPUStatus:
         if vram_total_mb > 0:
             percent_used = round((vram_used_mb / vram_total_mb) * 100)
 
-    models_loaded = [
-        m.get("name", str(m.get("model", "unknown")))
-        for m in models
-    ]
+    models_loaded = []
+    for m in models:
+        name = m.get("name")
+        if name is None:
+            model_val = m.get("model", "unknown")
+            name = str(model_val)
+        models_loaded.append(name)
 
     gpu_available = vram_total_mb is not None and vram_total_mb > 0
 
@@ -73,15 +69,6 @@ def _parse_gpu_status(ps_response: dict) -> GPUStatus:
 
 @router.get("/gpu")
 async def gpu_status() -> GPUStatus:
-    """Return current GPU/VRAM usage via Ollama /api/ps.
-
-    Returns:
-        gpu_available: True if GPU info was available
-        vram_used_mb: VRAM currently used (MB), or None if unavailable
-        vram_total_mb: Total VRAM (MB), or None if unavailable
-        percent_used: Percentage of VRAM used (0-100), or None if unavailable
-        models_loaded: List of currently loaded model names
-    """
     try:
         ps_response = await _fetch_ollama_ps()
         return _parse_gpu_status(ps_response)

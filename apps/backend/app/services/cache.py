@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
 
 from cachetools import TTLCache
+
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from app.services.ollama import RetrievedChunk
@@ -15,7 +16,7 @@ if TYPE_CHECKING:
 class CacheEntry:
     """A cached retrieval result."""
     embedding: list[float]
-    chunks: list[RetrievedChunk]
+    chunks: list["RetrievedChunk"]
 
 
 def _make_cache_key(query: str, mode: str, patch: str | None) -> str:
