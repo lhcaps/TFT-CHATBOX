@@ -70,6 +70,7 @@ async def stream_ollama_tokens(
     session_id: str,
     mode: str = "normal",
     user_message: str = "",
+    patch: str | None = None,
 ) -> AsyncIterable[str]:
     """Stream tokens from Ollama as structured SSE events.
 
@@ -81,7 +82,7 @@ async def stream_ollama_tokens(
     # Emit citation events BEFORE streaming begins (rag/coach modes only)
     if mode in ("rag", "coach") and user_message:
         from app.services.retrieval import retrieve_chunks
-        chunks = await retrieve_chunks(user_message, top_k=settings.rag_top_k)
+        chunks = await retrieve_chunks(user_message, top_k=settings.rag_top_k, patch=patch)
         for chunk in chunks:
             citation_data = {
                 "id": chunk["id"],
@@ -226,7 +227,7 @@ async def chat(request: ChatRequest) -> StreamingResponse | JSONResponse:
     if request.stream:
         # Streaming mode: SSE with structured events
         return StreamingResponse(
-            stream_ollama_tokens(messages, request.session_id, request.mode, request.message),
+            stream_ollama_tokens(messages, request.session_id, request.mode, request.message, request.patch),
             media_type="text/event-stream",
         )
     else:

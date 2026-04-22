@@ -3,10 +3,10 @@
 -- ============================================
 
 CREATE OR REPLACE FUNCTION hybrid_search_chunks_by_patch(
-    query_embedding VECTOR(1024),
-    query_text TEXT,
-    top_k INT DEFAULT 6,
-    filter_patch TEXT DEFAULT NULL
+    p_embedding VECTOR(1024),
+    p_text TEXT,
+    p_top_k INT DEFAULT 6,
+    p_patch TEXT DEFAULT NULL
 )
 RETURNS TABLE (
     id INT,
@@ -16,18 +16,18 @@ RETURNS TABLE (
     similarity FLOAT
 ) AS $$
 BEGIN
-    IF filter_patch IS NULL THEN
+    IF p_patch IS NULL THEN
         -- No patch filter: use all chunks
         RETURN QUERY
         WITH text_matches AS (
-            SELECT id, content, source, metadata,
-                   ts_rank(to_tsvector('english', content), plainto_tsquery('english', query_text)) AS text_rank
-            FROM chunks
-            WHERE to_tsvector('english', content) @@ plainto_tsquery('english', query_text)
+            SELECT c.id, c.content, c.source, c.metadata,
+                   ts_rank(to_tsvector('english', c.content), plainto_tsquery('english', p_text)) AS text_rank
+            FROM chunks c
+            WHERE to_tsvector('english', c.content) @@ plainto_tsquery('english', p_text)
         ),
         vector_matches AS (
-            SELECT id, 1 - (embedding <=> query_embedding) AS vector_similarity
-            FROM chunks
+            SELECT c.id, 1 - (c.embedding <=> p_embedding) AS vector_similarity
+            FROM chunks c
         )
         SELECT
             c.id, c.content, c.source, c.metadata,
@@ -37,22 +37,22 @@ BEGIN
         LEFT JOIN vector_matches v ON c.id = v.id
         WHERE c.embedding IS NOT NULL
         ORDER BY similarity DESC
-        LIMIT top_k;
+        LIMIT p_top_k;
     ELSE
-        -- Patch filter: only chunks matching metadata->>'patch' = filter_patch
+        -- Patch filter: only chunks matching metadata->>'patch' = p_patch
         RETURN QUERY
         WITH text_matches AS (
-            SELECT id, content, source, metadata,
-                   ts_rank(to_tsvector('english', content), plainto_tsquery('english', query_text)) AS text_rank
-            FROM chunks
-            WHERE to_tsvector('english', content) @@ plainto_tsquery('english', query_text)
-              AND metadata->>'patch' = filter_patch
+            SELECT c.id, c.content, c.source, c.metadata,
+                   ts_rank(to_tsvector('english', c.content), plainto_tsquery('english', p_text)) AS text_rank
+            FROM chunks c
+            WHERE to_tsvector('english', c.content) @@ plainto_tsquery('english', p_text)
+              AND c.metadata->>'patch' = p_patch
         ),
         vector_matches AS (
-            SELECT id, 1 - (embedding <=> query_embedding) AS vector_similarity
-            FROM chunks
-            WHERE embedding IS NOT NULL
-              AND metadata->>'patch' = filter_patch
+            SELECT c.id, 1 - (c.embedding <=> p_embedding) AS vector_similarity
+            FROM chunks c
+            WHERE c.embedding IS NOT NULL
+              AND c.metadata->>'patch' = p_patch
         )
         SELECT
             c.id, c.content, c.source, c.metadata,
@@ -61,9 +61,9 @@ BEGIN
         LEFT JOIN text_matches t ON c.id = t.id
         LEFT JOIN vector_matches v ON c.id = v.id
         WHERE c.embedding IS NOT NULL
-          AND c.metadata->>'patch' = filter_patch
+          AND c.metadata->>'patch' = p_patch
         ORDER BY similarity DESC
-        LIMIT top_k;
+        LIMIT p_top_k;
     END IF;
 END;
 $$ LANGUAGE plpgsql;

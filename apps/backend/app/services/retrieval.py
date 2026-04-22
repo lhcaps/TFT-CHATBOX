@@ -1,6 +1,8 @@
 """RAG retrieval service using hybrid search (semantic + full-text)."""
 from __future__ import annotations
 
+import json
+
 from app.db import get_pool
 from app.services.ollama import ollama
 
@@ -30,7 +32,7 @@ async def retrieve_chunks(query: str, top_k: int = 6, patch: str | None = None) 
                 similarity
             FROM hybrid_search_chunks_by_patch($1::vector, $2, $3, $4)
             """,
-            embedding,
+            json.dumps(embedding),
             query,
             top_k,
             patch,

@@ -21,12 +21,15 @@ class OllamaService:
         async with httpx.AsyncClient(timeout=30.0) as client:
             payload = {
                 "model": self.embedding_model,
-                "input": text,
+                "prompt": text,
             }
             response = await client.post(f"{self.base_url}/api/embeddings", json=payload)
             response.raise_for_status()
             data = response.json()
-            return data.get("embedding", [])
+            embedding = data.get("embedding", [])
+            if not isinstance(embedding, list):
+                raise ValueError(f"Expected embedding list, got {type(embedding)}: {embedding}")
+            return embedding
 
     async def generate_embeddings(self, texts: list[str]) -> list[list[float]]:
         """Generate embeddings for multiple texts in one batch request."""
