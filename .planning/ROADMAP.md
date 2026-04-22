@@ -15,7 +15,7 @@
 - [x] **Phase 4: RAG Foundation** - Obsidian ingest, hybrid search, Coach prompts
 - [ ] **Phase 5: TFT Static Data** - Riot + CommunityDragon ingestion, metadata filtering
 - [ ] **Phase 6: Automation** - n8n workflows, ngrok, patch monitoring
-- [ ] **Phase 7: Polish & Smoke Test** - Caching, GPU monitoring, 20-question eval
+- [x] **Phase 7: Polish & Smoke Test** - Caching, GPU monitoring, 20-question eval
 
 ---
 
@@ -199,7 +199,7 @@ Plans:
 | 4. RAG Foundation | 3/3 | Complete | 2026-04-22 |
 | 5. TFT Static Data | 4/4 | Complete | 2026-04-22 |
 | 6. Automation | 4/4 | Complete | 2026-04-22 |
-| 7. Polish & Smoke Test | 0/N | Not started | - |
+| 7. Polish & Smoke Test | 4/4 | Complete | 2026-04-22 |
 
 ---
 
@@ -233,4 +233,4 @@ All phases must comply with Riot TFT policy:
 ---
 
 *Last updated: 2026-04-22*
-*Completed: Phase 5 — TFT Static Data (2026-04-22)*
+*Completed: Phase 7 — Polish & Smoke Test (2026-04-22)*

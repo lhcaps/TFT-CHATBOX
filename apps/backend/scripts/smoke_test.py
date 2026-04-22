@@ -32,8 +32,8 @@ import httpx
 # ─── Configuration ───────────────────────────────────────────────────────────────
 
 BACKEND_BASE = os.getenv("BACKEND_URL", "http://localhost:8000")
-CHAT_ENDPOINT = f"{BACKEND_BASE}/api/chat"
-GPU_ENDPOINT = f"{BACKEND_BASE}/api/health/gpu"
+CHAT_ENDPOINT = f"{BACKEND_BASE}/chat"
+GPU_ENDPOINT = f"{BACKEND_BASE}/health/gpu"
 REQUEST_TIMEOUT = 120.0  # seconds — generous for LLM response
 
 
@@ -206,7 +206,6 @@ def print_summary(result: SmokeTestResult) -> None:
     print(f"  {'Q#':<4} {'Category':<10} {'Mode':<8} {'Result':<7} {'Response (chars)':<20} {'Preview'}")
     print("  " + "-" * 74)
     for r in result.results:
-        status_str = "PASS" if r.passed else "FAIL"
         marker = "PASS" if r.passed else "FAIL"
         char_count = f"{r.response_length} chars"
         preview = r.response_preview[:30]
@@ -253,7 +252,7 @@ async def main() -> int:
                 r = await run_question(client, question, mode)
                 result.results.append(r)
                 marker = "PASS" if r.passed else "FAIL"
-                status_str = "PASS" if r.passed else "FAIL"
+                status_str = marker
                 if not r.passed:
                     status_str += f" ({r.error})"
                 print(f"    [{mode}] {marker} {status_str} -- {r.response_length} chars")
