@@ -191,7 +191,7 @@ Plans:
 | 2. Backend Core | 4/4 | Complete | 2026-04-22 |
 | 3. Frontend Chat | N/N | Complete | 2026-04-22 |
 | 4. RAG Foundation | 3/3 | Complete | 2026-04-22 |
-| 5. TFT Static Data | 4/4 | Ready to execute | - |
+| 5. TFT Static Data | 4/4 | Complete | 2026-04-22 |
 | 6. Automation | 0/N | Not started | - |
 | 7. Polish & Smoke Test | 0/N | Not started | - |
 
@@ -227,4 +227,4 @@ All phases must comply with Riot TFT policy:
 ---
 
 *Last updated: 2026-04-22*
-*Completed: Phase 4 — RAG Foundation (2026-04-22)*
+*Completed: Phase 5 — TFT Static Data (2026-04-22)*
