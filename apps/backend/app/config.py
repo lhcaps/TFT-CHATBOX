@@ -1,6 +1,8 @@
 """Application configuration from environment variables."""
 from __future__ import annotations
 
+from pathlib import Path
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -54,6 +56,9 @@ class Settings(BaseSettings):
     n8n_proxy_hops: int = 1
     generic_timezone: str = "Asia/Ho_Chi_Minh"
     tz: str = "Asia/Ho_Chi_Minh"
+
+    # TFT Cache
+    tft_cache_dir: str = str(Path.home() / ".tft-copilot" / "cache")
 
 
 settings = Settings()
