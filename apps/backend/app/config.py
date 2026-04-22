@@ -44,7 +44,7 @@ class Settings(BaseSettings):
     chat_history_window: int = 10
 
     # CORS
-    allowed_origins: list[str] = ["http://localhost:5173"]
+    allowed_origins: list[str] = ["http://localhost:5173", "http://localhost:5174", "http://localhost:3001"]
 
     # n8n
     webhook_url: str = "http://localhost:5678/"

@@ -6,8 +6,7 @@ services:
     build:
       context: ../apps/backend
       dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
+    ports: []
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@host.docker.internal:54322/postgres
       - OLLAMA_BASE_URL=http://host.docker.internal:11434
@@ -22,7 +21,7 @@ services:
       context: ../apps/frontend
       dockerfile: Dockerfile
     ports:
-      - "5173:5173"
+      - "3001:5173"
     depends_on:
       - backend
 
