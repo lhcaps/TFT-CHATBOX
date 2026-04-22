@@ -15,7 +15,7 @@
 
 ## Current Position
 
-**Active Phase:** Phase 6 - Automation (pending planning)
+**Active Phase:** Phase 6 - Automation (context captured, ready for planning)
 
 **Milestone Progress:** 5/7 phases complete
 
@@ -74,6 +74,11 @@
 | n8n for automation | Cron ingest + webhook fan-out | Locked |
 | SSE for streaming | Sufficient for one-way streaming | Locked |
 | In-memory LRU cache | MVP scale doesn't need Redis | Locked |
+| Obsidian manual trigger only | No schedule, no file watcher — user controls timing | Locked (Phase 6) |
+| Patch monitor: backend holds state | `/api/patch/current` endpoint, state in cache | Locked (Phase 6) |
+| ngrok dropped | 100% local, no remote access needed | Locked (Phase 6) |
+| n8n ↔ backend: Bearer token auth | Defense in Depth, future-proof | Locked (Phase 6) |
+| Notification: Discord webhook | On CDN 403 failure | Locked (Phase 6) |
 
 ---
 
@@ -129,7 +134,6 @@ Phase 1 (Foundation)
 | 4 | Wrong embedding dimensions | Always specify `dimensions: 1024` |
 | 4 | Duplicate chunks on re-ingest | DELETE before INSERT |
 | 5 | Coach TFT policy violations | No real-time, no scouting, suggest options |
-| 6 | ngrok URL change | Script URL refresh on restart |
 | 6 | Workflow not activated | Save AND activate toggle |
 
 ---
