@@ -60,5 +60,8 @@ class Settings(BaseSettings):
     # TFT Cache
     tft_cache_dir: str = str(Path.home() / ".tft-copilot" / "cache")
 
+    # API Auth
+    api_secret_key: str = ""
+
 
 settings = Settings()
