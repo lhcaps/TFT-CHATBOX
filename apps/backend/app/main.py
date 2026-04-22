@@ -41,10 +41,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-from app.routes import health, sessions, chat, search, ingest  # noqa: E402, F401
+from app.routes import health, sessions, chat, search, ingest, patch_state  # noqa: E402, F401
 
 app.include_router(health.router)
 app.include_router(sessions.router)
 app.include_router(chat.router)
 app.include_router(search.router)
 app.include_router(ingest.router)
+app.include_router(patch_state.router)

@@ -11,6 +11,7 @@ services:
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@host.docker.internal:54322/postgres
       - OLLAMA_BASE_URL=http://host.docker.internal:11434
+      - API_SECRET_KEY=${API_SECRET_KEY:-}
     volumes:
       - ../apps/backend:/app
     extra_hosts:
@@ -35,6 +36,9 @@ services:
       - N8N_BASIC_AUTH_PASSWORD=tft-copilot
       - N8N_HOST=localhost
       - N8N_PROTOCOL=http
+      - GENERIC_TIMEZONE=Asia/Ho_Chi_Minh
+      - N8N_PROXY_HOPS=1
+      - API_SECRET_KEY=${API_SECRET_KEY:-}
     volumes:
       - ../n8n/workflows:/home/node/.n8n/workflows
       - ../n8n/local-files:/files
