@@ -73,33 +73,33 @@ class SmokeTestResult:
 # ─── Test questions ─────────────────────────────────────────────────────────────
 
 QUESTIONS: list[Question] = [
-    # --- Comp (5) ---
-    Question(1, "comp", "What are the strongest team comps for patch 17.1?"),
-    Question(2, "comp", "Is Umbra/Dawnbringer a viable late-game carry in Set 17?"),
-    Question(3, "comp", "Which champions work best as a 3-star solo tank in the current meta?"),
-    Question(4, "comp", "What is the best way to play reroll versus slow-roll in patch 17.1?"),
-    Question(5, "comp", "How do I build a board around a Kayn reroll strategy?"),
+    # --- Comp (5) — Set 17 Space Gods ---
+    Question(1, "comp", "What are the strongest S-tier comps in patch 17.1? Give me the top 3 with their carries."),
+    Question(2, "comp", "Is Turbo Doomer (Vex/Bard/Rammus) a viable comp in the current meta?"),
+    Question(3, "comp", "Which champions work best as a solo tank in Set 17 Space Gods?"),
+    Question(4, "comp", "What is the best way to play Stay Groovy comp (Nami/Ornn) in patch 17.1?"),
+    Question(5, "comp", "How do I itemize a board around Viktor carry in Set 17?"),
 
-    # --- Item (5) ---
-    Question(6, "item", "What items should I slam early if I get a Sparring Gloves on first carousel?"),
-    Question(7, "item", "Which items are the best for a Zeri carry in Set 17?"),
-    Question(8, "item", "Is Warmog's Armor worth building in the current meta?"),
+    # --- Item (5) — Set 17 patch 17.1B ---
+    Question(6, "item", "Patch 17.1B nerfed tank items — is Warmog's still worth slamming early?"),
+    Question(7, "item", "Which items are best for Viktor carry in Set 17?"),
+    Question(8, "item", "I got Sparring Gloves on carousel — what are the best slamable items now?"),
     Question(9, "item", "How do I itemize a multi-carrier board with both a frontliner and backliner?"),
-    Question(10, "item", "What are the best slamable items for an Augment-First player?"),
+    Question(10, "item", "Rabadon's Deathcap got buffed to 55 AP in 17.1B — which AP carries benefit most?"),
 
-    # --- Augment (5) ---
+    # --- Augment (5) — Set 17 augment pool ---
     Question(11, "augment", "Best first augment for a fast 8 roll down strategy?"),
-    Question(12, "augment", "Is Starship Bench worth taking if I'm not playing Infernus?"),
-    Question(13, "augment", "What augment tier should I prioritie when offered Portable Forge?"),
-    Question(14, "augment", "How do I adapt my augment choices when I hit a bad shop at 2-1?"),
+    Question(12, "augment", "What augment tier should I prioritie when offered Portable Forge?"),
+    Question(13, "augment", "Patch 17.1B removed Golden Dragon, Just Hit, Max Build — what replaces them?"),
+    Question(14, "augment", "I hit a bad shop at 2-1 — how do I adapt my augment choices?"),
     Question(15, "augment", "Which silver augments are secretly S-tier in patch 17.1?"),
 
-    # --- Pivot (5) ---
-    Question(16, "pivot", "I got 2-star Yone and 2-star Kayn — which should I commit to?"),
-    Question(17, "pivot", "I was playing Chemtech but hit 3 copies of Illaoi early. Should I pivot to Sentinel?"),
+    # --- Pivot (5) — Set 17 champions & traits ---
+    Question(16, "pivot", "I got 2-star Yone and 2-star Mordekaiser — which should I commit to?"),
+    Question(17, "pivot", "I was playing Anima but hit 3 copies of Illaoi early. Should I pivot to Space Groove?"),
     Question(18, "pivot", "When should I abandon a pre-level-8 reroll comp and fast 9 instead?"),
     Question(19, "pivot", "My board is mid. Do I roll at 50 gold or push levels?"),
-    Question(20, "pivot", "I hit an early 2-star 4-cost. Should I grief my 3-cost reroll plan?"),
+    Question(20, "pivot", "I hit an early 2-star 4-cost Viktor. Should I grief my 3-cost reroll plan?"),
 
     # --- Meta (5) — Phase 9: MetaTFT Real-time Intelligence ---
     Question(21, "meta", "What's the current S-tier comps from MetaTFT? Show me with CompCard format."),

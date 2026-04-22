@@ -1,0 +1,1780 @@
+{
+  "metadata": {
+    "title": "TFT Set 17 / Patch 17.1 Rebuild Pack",
+    "set": 17,
+    "set_name": "Space Gods",
+    "patch": "17.1",
+    "generated_on": "2026-04-23",
+    "notes": [
+      "This pack is rebuilt from current official Riot patch/set-overview data plus current Mobalytics Set 17 roster, synergy, item, and meta pages surfaced through web search.",
+      "Fields that were not explicitly available in reliable snippets are omitted instead of guessed.",
+      "Use this as a clean ingest baseline for /api/ingest/metatft, then enrich champion stats/ability scaling from a second-stage scraper if needed."
+    ]
+  },
+  "systems": {
+    "realm_of_the_gods": {
+      "replaces": "Carousel",
+      "flow": [
+        "Each god round offers 2 gods plus a weaker generic Pengu option.",
+        "All god offerings come with a component.",
+        "If you are lower HP, Pengu offers higher-cost units and PvE gives component anvils instead of random components.",
+        "At 4-7, the god you aligned with offers a Boon armory and continues dropping loot later."
+      ]
+    },
+    "space_gods": [
+      {
+        "name": "Soraka",
+        "title": "God of Stars",
+        "focus": "HP / health preservation"
+      },
+      {
+        "name": "Ahri",
+        "title": "God of Opulence",
+        "focus": "econ / gold"
+      },
+      {
+        "name": "Aurelion Sol",
+        "title": "God of Wonders",
+        "focus": "quests / conditional boons"
+      },
+      {
+        "name": "Yasuo",
+        "title": "God of the Abyss",
+        "focus": "hex empowerment / positioning"
+      },
+      {
+        "name": "Varus",
+        "title": "God of Love",
+        "focus": "board options / unit quality"
+      },
+      {
+        "name": "Evelynn",
+        "title": "God of Temptation",
+        "focus": "risk-reward trades"
+      },
+      {
+        "name": "Thresh",
+        "title": "God of Pacts",
+        "focus": "random boons from other gods plus gold"
+      },
+      {
+        "name": "Kayle",
+        "title": "God of Order",
+        "focus": "items"
+      },
+      {
+        "name": "Ekko",
+        "title": "God of Time",
+        "focus": "past-themed rewards / artifacts / temporary effects"
+      }
+    ],
+    "patch_17_1b_highlights": {
+      "augments_removed": [
+        "Golden Dragon",
+        "Just Hit",
+        "Max Build"
+      ],
+      "traits_changed": [
+        {
+          "name": "Mecha",
+          "change": "Transformed bonus Health 50% -> 40%"
+        },
+        {
+          "name": "Space Groove",
+          "change": "Attack Speed per Groovian 12% -> 11%"
+        }
+      ],
+      "system_changes": [
+        {
+          "name": "Level 7 shop odds",
+          "from": "16/30/43/10/1",
+          "to": "19/30/40/10/1"
+        },
+        {
+          "name": "Stage 3-7 loot",
+          "change": "Components dropped reduced by 1"
+        },
+        {
+          "name": "Encounters",
+          "change": "Not present in 17.1; planned for 17.2"
+        }
+      ],
+      "keyword_changes": [
+        {
+          "from": "Chill",
+          "to": "Slow"
+        },
+        {
+          "from": "Dazzle",
+          "to": "Weaken"
+        },
+        {
+          "from": "Spells can critically strike",
+          "to": "Precision"
+        }
+      ]
+    }
+  },
+  "origins": [
+    {
+      "name": "Anima",
+      "breakpoints": [
+        3,
+        6
+      ],
+      "champions": [
+        "Aurora",
+        "Briar",
+        "Fiora",
+        "Illaoi",
+        "Jinx"
+      ],
+      "summary": "After losing player combat, gain Tech plus additional Tech based on loss streak length; also gain Tech from Anima takedowns. At 100 Tech, prototype Anima Weapons."
+    },
+    {
+      "name": "Arbiter",
+      "breakpoints": [
+        2,
+        3
+      ],
+      "champions": [
+        "Diana",
+        "LeBlanc",
+        "Leona",
+        "Zoe"
+      ],
+      "summary": "Scribe a unique divine law with a chosen cause/effect; stronger at higher breakpoint."
+    },
+    {
+      "name": "Bulwark",
+      "breakpoints": [
+        1
+      ],
+      "champions": [
+        "Shen"
+      ],
+      "summary": "Summons a placeable relic that grants adjacent allies shield and attack speed."
+    },
+    {
+      "name": "Commander",
+      "breakpoints": [
+        1
+      ],
+      "champions": [
+        "Sona"
+      ],
+      "summary": "Sona grants a random Command Mod every 2 rounds."
+    },
+    {
+      "name": "Dark Lady",
+      "breakpoints": [
+        1
+      ],
+      "champions": [
+        "Morgana"
+      ],
+      "summary": "Allies take less damage from abilities; stronger while Morgana is in Dark Form."
+    },
+    {
+      "name": "Dark Star",
+      "breakpoints": [
+        2,
+        4,
+        6,
+        9
+      ],
+      "champions": [
+        "Cho'Gath",
+        "Jhin",
+        "Kai'Sa",
+        "Karma",
+        "Lissandra",
+        "Mordekaiser"
+      ],
+      "summary": "Summons black holes that consume low-health enemies; higher breakpoints add AD/AP and supermassive effects."
+    },
+    {
+      "name": "Divine Duelist",
+      "breakpoints": [
+        1
+      ],
+      "champions": [
+        "Fiora"
+      ],
+      "summary": "Tactician heals for a portion of player damage dealt from winning; Fiora always wins 1v1 duels."
+    },
+    {
+      "name": "Doomer",
+      "breakpoints": [
+        1
+      ],
+      "champions": [
+        "Vex"
+      ],
+      "summary": "Marks enemies with Doom; first hit consumes Doom and steals AD/AP for strongest Vex."
+    },
+    {
+      "name": "Eradicator",
+      "breakpoints": [
+        1
+      ],
+      "champions": [
+        "Jhin"
+      ],
+      "summary": "Enemies have less Armor and Magic Resist."
+    },
+    {
+      "name": "Factory New",
+      "breakpoints": [
+        1
+      ],
+      "champions": [
+        "Graves"
+      ],
+      "summary": "After combat, open an armory to buy a permanent upgrade for strongest Graves."
+    },
+    {
+      "name": "Galaxy Hunter",
+      "breakpoints": [
+        1
+      ],
+      "champions": [
+        "Zed"
+      ],
+      "summary": "Zed gains bonus AD while at least one clone is alive; obtained from Invader Zed augment."
+    },
+    {
+      "name": "Gun Goddess",
+      "breakpoints": [
+        1
+      ],
+      "champions": [
+        "Miss Fortune"
+      ],
+      "summary": "Miss Fortune chooses between Conduit, Challenger, or Replicator mode and gets a mode-specific ability."
+    },
+    {
+      "name": "Mecha",
+      "breakpoints": [
+        3,
+        4,
+        6
+      ],
+      "champions": [
+        "Aurelion Sol",
+        "The Mighty Mech",
+        "Urgot"
+      ],
+      "summary": "Mechas can transform into ultimate form, take 2 slots, count twice for trait, and gain bonus Health."
+    },
+    {
+      "name": "Meeple",
+      "breakpoints": [
+        3,
+        5,
+        7,
+        10
+      ],
+      "champions": [
+        "Bard",
+        "Corki",
+        "Fizz",
+        "Gnar",
+        "Meepsie",
+        "Poppy",
+        "Rammus",
+        "Veigar"
+      ],
+      "summary": "Meeps empower Meeple abilities; higher breakpoints add cloning and MeepLords."
+    },
+    {
+      "name": "N.O.V.A.",
+      "breakpoints": [
+        2,
+        5
+      ],
+      "champions": [
+        "Aatrox",
+        "Akali",
+        "Caitlyn",
+        "Kindred",
+        "Maokai"
+      ],
+      "summary": "N.O.V.A. units trigger unique ally power surges after several seconds; at 5, gain a Striker selector."
+    },
+    {
+      "name": "Oracle",
+      "breakpoints": [
+        1
+      ],
+      "champions": [
+        "Tahm Kench"
+      ],
+      "summary": "Tahm Kench grants a reward every 3 rounds."
+    },
+    {
+      "name": "Party Animal",
+      "breakpoints": [
+        1
+      ],
+      "champions": [
+        "Blitzcrank"
+      ],
+      "summary": "Blitzcrank becomes untargetable and repairs Health once per combat after dropping low."
+    },
+    {
+      "name": "Primordian",
+      "breakpoints": [
+        2,
+        3
+      ],
+      "champions": [
+        "Bel'Veth",
+        "Briar",
+        "Rek'Sai"
+      ],
+      "summary": "Spawn Swarmlings from damage dealt/taken; higher breakpoint adds more spawns and a random 1- or 2-cost each round."
+    },
+    {
+      "name": "Psionic",
+      "breakpoints": [
+        2,
+        4
+      ],
+      "champions": [
+        "Gragas",
+        "Master Yi",
+        "Pyke",
+        "Sona",
+        "Viktor"
+      ],
+      "summary": "Gain Psionic items that can go on any ally; at 4, the items gain extra effects on Psionic holders."
+    },
+    {
+      "name": "Redeemer",
+      "breakpoints": [
+        1
+      ],
+      "champions": [
+        "Rhaast"
+      ],
+      "summary": "For each non-unique active trait, your team gains Attack Speed plus Armor/MR."
+    },
+    {
+      "name": "Space Groove",
+      "breakpoints": [
+        1,
+        3,
+        5,
+        7,
+        10
+      ],
+      "champions": [
+        "Blitzcrank",
+        "Gwen",
+        "Nami",
+        "Nasus",
+        "Ornn",
+        "Samira",
+        "Teemo"
+      ],
+      "summary": "Groovians can enter the Groove to gain Attack Speed and Health regen; higher breakpoints add stacking AD/AP and stronger effects."
+    },
+    {
+      "name": "Stargazer",
+      "breakpoints": [
+        3,
+        5,
+        7
+      ],
+      "champions": [
+        "Jax",
+        "Lulu",
+        "Nunu",
+        "Talon",
+        "Twisted Fate",
+        "Xayah"
+      ],
+      "summary": "Each game uses a different constellation that empowers board hexes; examples include Serpent, Mountain, Altar, Medallion, Fountain, Boar."
+    },
+    {
+      "name": "Timebreaker",
+      "breakpoints": [
+        2,
+        3,
+        4
+      ],
+      "champions": [
+        "Ezreal",
+        "Milio",
+        "Pantheon",
+        "Riven"
+      ],
+      "summary": "On losses gain rerolls; on wins store XP in a Temporal Core. Higher breakpoints add Attack Speed."
+    }
+  ],
+  "classes": [
+    {
+      "name": "Bastion",
+      "breakpoints": [
+        2,
+        4,
+        6
+      ],
+      "champions": [
+        "Aatrox",
+        "Jax",
+        "Ornn",
+        "Poppy",
+        "Rammus",
+        "Shen"
+      ],
+      "summary": "Team gains Armor/MR; Bastions gain more, doubled early in combat."
+    },
+    {
+      "name": "Brawler",
+      "breakpoints": [
+        2,
+        4,
+        6
+      ],
+      "champions": [
+        "Cho'Gath",
+        "Gragas",
+        "Maokai",
+        "Pantheon",
+        "Rek'Sai",
+        "Tahm Kench",
+        "Urgot"
+      ],
+      "summary": "Team gains Health; Brawlers gain more."
+    },
+    {
+      "name": "Challenger",
+      "breakpoints": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "champions": [
+        "Bel'Veth",
+        "Diana",
+        "Jinx",
+        "Kindred"
+      ],
+      "summary": "Team gains Attack Speed; Challengers gain more and dash/reset AS on kill."
+    },
+    {
+      "name": "Conduit",
+      "breakpoints": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "champions": [
+        "Aurelion Sol",
+        "Bard",
+        "Mordekaiser",
+        "Viktor",
+        "Zoe"
+      ],
+      "summary": "Innate extra mana from all sources; team gains mana regen, Conduits gain more."
+    },
+    {
+      "name": "Fateweaver",
+      "breakpoints": [
+        2,
+        4
+      ],
+      "champions": [
+        "Caitlyn",
+        "Corki",
+        "Milio",
+        "Twisted Fate"
+      ],
+      "summary": "Innate Precision; lucky chance effects, then Crit Chance/Crit Damage at 4."
+    },
+    {
+      "name": "Marauder",
+      "breakpoints": [
+        2,
+        4,
+        6
+      ],
+      "champions": [
+        "Akali",
+        "Bel'Veth",
+        "Fiora",
+        "Master Yi",
+        "Urgot"
+      ],
+      "summary": "Team gains Omnivamp; Marauders gain more Omnivamp, AD, and overheal-to-shield."
+    },
+    {
+      "name": "Replicator",
+      "breakpoints": [
+        2,
+        4
+      ],
+      "champions": [
+        "Lissandra",
+        "Lulu",
+        "Nami",
+        "Pantheon",
+        "Veigar"
+      ],
+      "summary": "Abilities repeat at reduced effectiveness."
+    },
+    {
+      "name": "Rogue",
+      "breakpoints": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "champions": [
+        "Briar",
+        "Fizz",
+        "Gwen",
+        "Kai'Sa",
+        "Riven",
+        "Talon"
+      ],
+      "summary": "Gain AD/AP; first time dropping low, slip into shadows and retarget enemies."
+    },
+    {
+      "name": "Shepherd",
+      "breakpoints": [
+        3,
+        5,
+        7
+      ],
+      "champions": [
+        "Illaoi",
+        "LeBlanc",
+        "Lissandra",
+        "Meepsie",
+        "Sona",
+        "Teemo"
+      ],
+      "summary": "Summon Bond of the Stars: Bia, then Bayin, then deeper bond."
+    },
+    {
+      "name": "Sniper",
+      "breakpoints": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "champions": [
+        "Ezreal",
+        "Gnar",
+        "Jhin",
+        "Samira",
+        "Xayah"
+      ],
+      "summary": "Damage Amp that scales further with target distance."
+    },
+    {
+      "name": "Vanguard",
+      "breakpoints": [
+        2,
+        4,
+        6
+      ],
+      "champions": [
+        "Blitzcrank",
+        "Illaoi",
+        "Leona",
+        "Mordekaiser",
+        "Nasus",
+        "Nunu"
+      ],
+      "summary": "Gain Durability while shielded and max-Health shields at combat start / 50% HP."
+    },
+    {
+      "name": "Voyager",
+      "breakpoints": [
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "champions": [
+        "Aurora",
+        "Karma",
+        "Meepsie",
+        "Pyke",
+        "The Mighty Mech"
+      ],
+      "summary": "Tanks/Fighters get Shield, others get Damage Amp; Voyagers get double."
+    }
+  ],
+  "champions": [
+    {
+      "name": "Aatrox",
+      "cost": 1,
+      "traits": [
+        "N.O.V.A.",
+        "Bastion"
+      ]
+    },
+    {
+      "name": "Briar",
+      "cost": 1,
+      "traits": [
+        "Anima",
+        "Primordian",
+        "Rogue"
+      ]
+    },
+    {
+      "name": "Caitlyn",
+      "cost": 1,
+      "traits": [
+        "N.O.V.A.",
+        "Fateweaver"
+      ]
+    },
+    {
+      "name": "Cho'Gath",
+      "cost": 1,
+      "traits": [
+        "Dark Star",
+        "Brawler"
+      ]
+    },
+    {
+      "name": "Ezreal",
+      "cost": 1,
+      "traits": [
+        "Timebreaker",
+        "Sniper"
+      ]
+    },
+    {
+      "name": "Leona",
+      "cost": 1,
+      "traits": [
+        "Arbiter",
+        "Vanguard"
+      ]
+    },
+    {
+      "name": "Lissandra",
+      "cost": 1,
+      "traits": [
+        "Dark Star",
+        "Shepherd",
+        "Replicator"
+      ]
+    },
+    {
+      "name": "Nasus",
+      "cost": 1,
+      "traits": [
+        "Space Groove",
+        "Vanguard"
+      ]
+    },
+    {
+      "name": "Poppy",
+      "cost": 1,
+      "traits": [
+        "Meeple",
+        "Bastion"
+      ]
+    },
+    {
+      "name": "Rek'Sai",
+      "cost": 1,
+      "traits": [
+        "Primordian",
+        "Brawler"
+      ]
+    },
+    {
+      "name": "Talon",
+      "cost": 1,
+      "traits": [
+        "Stargazer",
+        "Rogue"
+      ]
+    },
+    {
+      "name": "Teemo",
+      "cost": 1,
+      "traits": [
+        "Space Groove",
+        "Shepherd"
+      ]
+    },
+    {
+      "name": "Twisted Fate",
+      "cost": 1,
+      "traits": [
+        "Stargazer",
+        "Fateweaver"
+      ]
+    },
+    {
+      "name": "Veigar",
+      "cost": 1,
+      "traits": [
+        "Meeple",
+        "Replicator"
+      ]
+    },
+    {
+      "name": "Akali",
+      "cost": 2,
+      "traits": [
+        "N.O.V.A.",
+        "Marauder"
+      ]
+    },
+    {
+      "name": "Bel'Veth",
+      "cost": 2,
+      "traits": [
+        "Primordian",
+        "Challenger",
+        "Marauder"
+      ]
+    },
+    {
+      "name": "Gnar",
+      "cost": 2,
+      "traits": [
+        "Meeple",
+        "Sniper"
+      ]
+    },
+    {
+      "name": "Gragas",
+      "cost": 2,
+      "traits": [
+        "Psionic",
+        "Brawler"
+      ]
+    },
+    {
+      "name": "Gwen",
+      "cost": 2,
+      "traits": [
+        "Space Groove",
+        "Rogue"
+      ]
+    },
+    {
+      "name": "Jax",
+      "cost": 2,
+      "traits": [
+        "Stargazer",
+        "Bastion"
+      ]
+    },
+    {
+      "name": "Jinx",
+      "cost": 2,
+      "traits": [
+        "Anima",
+        "Challenger"
+      ]
+    },
+    {
+      "name": "Meepsie",
+      "cost": 2,
+      "traits": [
+        "Meeple",
+        "Shepherd",
+        "Voyager"
+      ]
+    },
+    {
+      "name": "Milio",
+      "cost": 2,
+      "traits": [
+        "Timebreaker",
+        "Fateweaver"
+      ]
+    },
+    {
+      "name": "Mordekaiser",
+      "cost": 2,
+      "traits": [
+        "Dark Star",
+        "Conduit",
+        "Vanguard"
+      ]
+    },
+    {
+      "name": "Pantheon",
+      "cost": 2,
+      "traits": [
+        "Timebreaker",
+        "Brawler",
+        "Replicator"
+      ]
+    },
+    {
+      "name": "Pyke",
+      "cost": 2,
+      "traits": [
+        "Psionic",
+        "Voyager"
+      ]
+    },
+    {
+      "name": "Zoe",
+      "cost": 2,
+      "traits": [
+        "Arbiter",
+        "Conduit"
+      ]
+    },
+    {
+      "name": "Aurora",
+      "cost": 3,
+      "traits": [
+        "Anima",
+        "Voyager"
+      ]
+    },
+    {
+      "name": "Diana",
+      "cost": 3,
+      "traits": [
+        "Arbiter",
+        "Challenger"
+      ]
+    },
+    {
+      "name": "Fizz",
+      "cost": 3,
+      "traits": [
+        "Meeple",
+        "Rogue"
+      ]
+    },
+    {
+      "name": "Illaoi",
+      "cost": 3,
+      "traits": [
+        "Anima",
+        "Vanguard",
+        "Shepherd"
+      ]
+    },
+    {
+      "name": "Kai'Sa",
+      "cost": 3,
+      "traits": [
+        "Dark Star",
+        "Rogue"
+      ]
+    },
+    {
+      "name": "Lulu",
+      "cost": 3,
+      "traits": [
+        "Stargazer",
+        "Replicator"
+      ]
+    },
+    {
+      "name": "Maokai",
+      "cost": 3,
+      "traits": [
+        "N.O.V.A.",
+        "Brawler"
+      ]
+    },
+    {
+      "name": "Miss Fortune",
+      "cost": 3,
+      "traits": [
+        "Gun Goddess"
+      ]
+    },
+    {
+      "name": "Ornn",
+      "cost": 3,
+      "traits": [
+        "Space Groove",
+        "Bastion"
+      ]
+    },
+    {
+      "name": "Rhaast",
+      "cost": 3,
+      "traits": [
+        "Redeemer"
+      ]
+    },
+    {
+      "name": "Samira",
+      "cost": 3,
+      "traits": [
+        "Space Groove",
+        "Sniper"
+      ]
+    },
+    {
+      "name": "Urgot",
+      "cost": 3,
+      "traits": [
+        "Mecha",
+        "Brawler",
+        "Marauder"
+      ]
+    },
+    {
+      "name": "Viktor",
+      "cost": 3,
+      "traits": [
+        "Psionic",
+        "Conduit"
+      ]
+    },
+    {
+      "name": "Aurelion Sol",
+      "cost": 4,
+      "traits": [
+        "Mecha",
+        "Conduit"
+      ]
+    },
+    {
+      "name": "Corki",
+      "cost": 4,
+      "traits": [
+        "Meeple",
+        "Fateweaver"
+      ]
+    },
+    {
+      "name": "Karma",
+      "cost": 4,
+      "traits": [
+        "Dark Star",
+        "Voyager"
+      ]
+    },
+    {
+      "name": "Kindred",
+      "cost": 4,
+      "traits": [
+        "N.O.V.A.",
+        "Challenger"
+      ]
+    },
+    {
+      "name": "LeBlanc",
+      "cost": 4,
+      "traits": [
+        "Arbiter",
+        "Shepherd"
+      ]
+    },
+    {
+      "name": "Master Yi",
+      "cost": 4,
+      "traits": [
+        "Psionic",
+        "Marauder"
+      ]
+    },
+    {
+      "name": "Nami",
+      "cost": 4,
+      "traits": [
+        "Space Groove",
+        "Replicator"
+      ]
+    },
+    {
+      "name": "Nunu",
+      "cost": 4,
+      "traits": [
+        "Stargazer",
+        "Vanguard"
+      ]
+    },
+    {
+      "name": "Rammus",
+      "cost": 4,
+      "traits": [
+        "Meeple",
+        "Bastion"
+      ]
+    },
+    {
+      "name": "Riven",
+      "cost": 4,
+      "traits": [
+        "Timebreaker",
+        "Rogue"
+      ]
+    },
+    {
+      "name": "Tahm Kench",
+      "cost": 4,
+      "traits": [
+        "Oracle",
+        "Brawler"
+      ]
+    },
+    {
+      "name": "The Mighty Mech",
+      "cost": 4,
+      "traits": [
+        "Mecha",
+        "Voyager"
+      ]
+    },
+    {
+      "name": "Xayah",
+      "cost": 4,
+      "traits": [
+        "Stargazer",
+        "Sniper"
+      ]
+    },
+    {
+      "name": "Bard",
+      "cost": 5,
+      "traits": [
+        "Meeple",
+        "Conduit"
+      ]
+    },
+    {
+      "name": "Blitzcrank",
+      "cost": 5,
+      "traits": [
+        "Party Animal",
+        "Space Groove",
+        "Vanguard"
+      ]
+    },
+    {
+      "name": "Fiora",
+      "cost": 5,
+      "traits": [
+        "Divine Duelist",
+        "Anima",
+        "Marauder"
+      ]
+    },
+    {
+      "name": "Graves",
+      "cost": 5,
+      "traits": [
+        "Factory New"
+      ]
+    },
+    {
+      "name": "Jhin",
+      "cost": 5,
+      "traits": [
+        "Dark Star",
+        "Eradicator",
+        "Sniper"
+      ]
+    },
+    {
+      "name": "Morgana",
+      "cost": 5,
+      "traits": [
+        "Dark Lady"
+      ]
+    },
+    {
+      "name": "Shen",
+      "cost": 5,
+      "traits": [
+        "Bulwark",
+        "Bastion"
+      ]
+    },
+    {
+      "name": "Sona",
+      "cost": 5,
+      "traits": [
+        "Commander",
+        "Psionic",
+        "Shepherd"
+      ]
+    },
+    {
+      "name": "Vex",
+      "cost": 5,
+      "traits": [
+        "Doomer"
+      ]
+    },
+    {
+      "name": "Zed",
+      "cost": 5,
+      "traits": [
+        "Galaxy Hunter"
+      ]
+    }
+  ],
+  "items": {
+    "basic_components": [
+      "B.F. Sword",
+      "Chain Vest",
+      "Giant's Belt",
+      "Needlessly Large Rod",
+      "Negatron Cloak",
+      "Recurve Bow",
+      "Sparring Gloves",
+      "Tear of the Goddess",
+      "Spatula",
+      "Frying Pan"
+    ],
+    "combined": [
+      {
+        "name": "Adaptive Helm",
+        "recipe": [
+          "Negatron Cloak",
+          "Tear of the Goddess"
+        ]
+      },
+      {
+        "name": "Archangel's Staff",
+        "recipe": [
+          "Needlessly Large Rod",
+          "Tear of the Goddess"
+        ]
+      },
+      {
+        "name": "Bloodthirster",
+        "recipe": [
+          "B.F. Sword",
+          "Negatron Cloak"
+        ]
+      },
+      {
+        "name": "Blue Buff",
+        "recipe": [
+          "Tear of the Goddess",
+          "Tear of the Goddess"
+        ]
+      },
+      {
+        "name": "Bramble Vest",
+        "recipe": [
+          "Chain Vest",
+          "Chain Vest"
+        ]
+      },
+      {
+        "name": "Crownguard",
+        "recipe": [
+          "Needlessly Large Rod",
+          "Chain Vest"
+        ]
+      },
+      {
+        "name": "Deathblade",
+        "recipe": [
+          "B.F. Sword",
+          "B.F. Sword"
+        ]
+      },
+      {
+        "name": "Dragon's Claw",
+        "recipe": [
+          "Negatron Cloak",
+          "Negatron Cloak"
+        ]
+      },
+      {
+        "name": "Edge of Night",
+        "recipe": [
+          "B.F. Sword",
+          "Chain Vest"
+        ]
+      },
+      {
+        "name": "Evenshroud",
+        "recipe": [
+          "Negatron Cloak",
+          "Giant's Belt"
+        ]
+      },
+      {
+        "name": "Gargoyle Stoneplate",
+        "recipe": [
+          "Chain Vest",
+          "Negatron Cloak"
+        ]
+      },
+      {
+        "name": "Giant Slayer",
+        "recipe": [
+          "B.F. Sword",
+          "Recurve Bow"
+        ]
+      },
+      {
+        "name": "Guinsoo's Rageblade",
+        "recipe": [
+          "Recurve Bow",
+          "Needlessly Large Rod"
+        ]
+      },
+      {
+        "name": "Hand of Justice",
+        "recipe": [
+          "Tear of the Goddess",
+          "Sparring Gloves"
+        ]
+      },
+      {
+        "name": "Hextech Gunblade",
+        "recipe": [
+          "B.F. Sword",
+          "Needlessly Large Rod"
+        ]
+      },
+      {
+        "name": "Infinity Edge",
+        "recipe": [
+          "B.F. Sword",
+          "Sparring Gloves"
+        ]
+      },
+      {
+        "name": "Ionic Spark",
+        "recipe": [
+          "Needlessly Large Rod",
+          "Negatron Cloak"
+        ]
+      },
+      {
+        "name": "Jeweled Gauntlet",
+        "recipe": [
+          "Needlessly Large Rod",
+          "Sparring Gloves"
+        ]
+      },
+      {
+        "name": "Kraken's Fury",
+        "recipe": [
+          "Negatron Cloak",
+          "Recurve Bow"
+        ]
+      },
+      {
+        "name": "Last Whisper",
+        "recipe": [
+          "Recurve Bow",
+          "Sparring Gloves"
+        ]
+      },
+      {
+        "name": "Morellonomicon",
+        "recipe": [
+          "Needlessly Large Rod",
+          "Giant's Belt"
+        ]
+      },
+      {
+        "name": "Nashor's Tooth",
+        "recipe": [
+          "Recurve Bow",
+          "Giant's Belt"
+        ]
+      },
+      {
+        "name": "Protector's Vow",
+        "recipe": [
+          "Tear of the Goddess",
+          "Chain Vest"
+        ]
+      },
+      {
+        "name": "Quicksilver",
+        "recipe": [
+          "Sparring Gloves",
+          "Negatron Cloak"
+        ]
+      },
+      {
+        "name": "Rabadon's Deathcap",
+        "recipe": [
+          "Needlessly Large Rod",
+          "Needlessly Large Rod"
+        ]
+      },
+      {
+        "name": "Red Buff",
+        "recipe": [
+          "Recurve Bow",
+          "Recurve Bow"
+        ]
+      },
+      {
+        "name": "Spear of Shojin",
+        "recipe": [
+          "B.F. Sword",
+          "Tear of the Goddess"
+        ]
+      },
+      {
+        "name": "Spirit Visage",
+        "recipe": [
+          "Tear of the Goddess",
+          "Giant's Belt"
+        ]
+      },
+      {
+        "name": "Steadfast Heart",
+        "recipe": [
+          "Chain Vest",
+          "Sparring Gloves"
+        ]
+      },
+      {
+        "name": "Sterak's Gage",
+        "recipe": [
+          "B.F. Sword",
+          "Giant's Belt"
+        ]
+      },
+      {
+        "name": "Striker's Flail",
+        "recipe": [
+          "Giant's Belt",
+          "Sparring Gloves"
+        ]
+      },
+      {
+        "name": "Sunfire Cape",
+        "recipe": [
+          "Chain Vest",
+          "Giant's Belt"
+        ]
+      },
+      {
+        "name": "Thief's Gloves",
+        "recipe": [
+          "Sparring Gloves",
+          "Sparring Gloves"
+        ]
+      },
+      {
+        "name": "Titan's Resolve",
+        "recipe": [
+          "Chain Vest",
+          "Recurve Bow"
+        ]
+      },
+      {
+        "name": "Void Staff",
+        "recipe": [
+          "Recurve Bow",
+          "Tear of the Goddess"
+        ]
+      },
+      {
+        "name": "Warmog's Armor",
+        "recipe": [
+          "Giant's Belt",
+          "Giant's Belt"
+        ]
+      },
+      {
+        "name": "Arbiter Emblem",
+        "recipe": [
+          "Spatula",
+          "Negatron Cloak"
+        ]
+      },
+      {
+        "name": "Bastion Emblem",
+        "recipe": [
+          "Frying Pan",
+          "Chain Vest"
+        ]
+      },
+      {
+        "name": "Brawler Emblem",
+        "recipe": [
+          "Frying Pan",
+          "Giant's Belt"
+        ]
+      },
+      {
+        "name": "Challenger Emblem",
+        "recipe": [
+          "Frying Pan",
+          "Recurve Bow"
+        ]
+      },
+      {
+        "name": "Dark Star Emblem",
+        "recipe": [
+          "Spatula",
+          "B.F. Sword"
+        ]
+      },
+      {
+        "name": "Marauder Emblem",
+        "recipe": [
+          "Frying Pan",
+          "B.F. Sword"
+        ]
+      },
+      {
+        "name": "Meeple Emblem",
+        "recipe": [
+          "Spatula",
+          "Chain Vest"
+        ]
+      },
+      {
+        "name": "N.O.V.A. Emblem",
+        "recipe": [
+          "Spatula",
+          "Sparring Gloves"
+        ]
+      },
+      {
+        "name": "Primordian Emblem",
+        "recipe": [
+          "Spatula",
+          "Giant's Belt"
+        ]
+      },
+      {
+        "name": "Rogue Emblem",
+        "recipe": [
+          "Frying Pan",
+          "Sparring Gloves"
+        ]
+      },
+      {
+        "name": "Shepherd Emblem",
+        "recipe": [
+          "Frying Pan",
+          "Tear of the Goddess"
+        ]
+      },
+      {
+        "name": "Space Groove Emblem",
+        "recipe": [
+          "Spatula",
+          "Tear of the Goddess"
+        ]
+      },
+      {
+        "name": "Stargazer Emblem",
+        "recipe": [
+          "Spatula",
+          "Needlessly Large Rod"
+        ]
+      },
+      {
+        "name": "Timebreaker Emblem",
+        "recipe": [
+          "Spatula",
+          "Recurve Bow"
+        ]
+      },
+      {
+        "name": "Vanguard Emblem",
+        "recipe": [
+          "Frying Pan",
+          "Negatron Cloak"
+        ]
+      },
+      {
+        "name": "Voyager Emblem",
+        "recipe": [
+          "Frying Pan",
+          "Needlessly Large Rod"
+        ]
+      },
+      {
+        "name": "Tactician's Cape",
+        "recipe": [
+          "Spatula",
+          "Frying Pan"
+        ]
+      },
+      {
+        "name": "Tactician's Crown",
+        "recipe": [
+          "Spatula",
+          "Spatula"
+        ]
+      },
+      {
+        "name": "Tactician's Shield",
+        "recipe": [
+          "Frying Pan",
+          "Frying Pan"
+        ]
+      }
+    ],
+    "radiants_explicitly_seen": [
+      "Radiant Adaptive Helm",
+      "Radiant Archangel's Staff",
+      "Radiant Bloodthirster",
+      "Radiant Blue Buff",
+      "Radiant Bramble Vest",
+      "Radiant Crownguard",
+      "Radiant Deathblade",
+      "Radiant Dragon's Claw",
+      "Radiant Edge of Night",
+      "Radiant Evenshroud",
+      "Radiant Gargoyle's Stoneplate",
+      "Radiant Giant Slayer",
+      "Radiant Guinsoo's Rageblade",
+      "Radiant Hand of Justice",
+      "Radiant Hextech Gunblade"
+    ],
+    "psionic_items": [
+      {
+        "name": "Biomatter Preserver",
+        "summary": "Gain 5% max Health and deploy Life Orbs; at Psionic 4, Psionic holders gain increased healing."
+      },
+      {
+        "name": "Drone Uplink",
+        "summary": "A drone repeats part of the holder's damage; at Psionic 4, an extra mini-drone appears on Psionic holders."
+      },
+      {
+        "name": "Malware Matrix",
+        "summary": "Physical damage reduces Armor; at Psionic 4, every 3rd attack cleaves on Psionic holders."
+      },
+      {
+        "name": "Sympathetic Implant",
+        "summary": "Periodic mana regeneration; at Psionic 4, Psionic holders deal part of ability damage as true damage."
+      },
+      {
+        "name": "Target-Lock Optics",
+        "summary": "First attack on an enemy deals bonus damage; at Psionic 4, Psionic holders heal on target death."
+      }
+    ],
+    "anima_weapons": [
+      "Animapocalypse",
+      "Battle Bunny Crossbow",
+      "Broken Prototype",
+      "Bunny Prime Ballista",
+      "Cyclonic Slicers",
+      "Deep Freeze",
+      "Echoing Batblades",
+      "Evolved Embershot",
+      "Guiding Hex",
+      "Iceblast Armor",
+      "Leaky Prototype",
+      "Leonine Lamentation",
+      "Lioness's Lament",
+      "Omniweapon",
+      "OwO Blaster",
+      "Radiant Field",
+      "Rocket Swarm",
+      "Savage Slicer",
+      "Searing Shortbow",
+      "Solar Eclipse",
+      "Sparking Prototype",
+      "Tentacle Slam",
+      "The Annihilator",
+      "Unceasing Cyclone",
+      "UwU Blaster",
+      "Vayne's Chromablades"
+    ],
+    "artifacts": [
+      "Aegis of Dawn",
+      "Aegis of Dusk",
+      "Ahri's Aura",
+      "Blighting Jewel",
+      "Cappa Juice",
+      "Dawncore",
+      "Deathfire Grasp",
+      "Death's Defiance",
+      "Eternal Pact",
+      "Fishbones",
+      "Flickerblade",
+      "Gambler's Blade",
+      "Gold Collector",
+      "Hellfire Hatchet",
+      "Horizon Focus",
+      "Hullcrusher",
+      "Indomitable Gauntlet",
+      "Infinity Force",
+      "Innervating Locket",
+      "Lesser Mirrored Persona",
+      "Lich Bane",
+      "Lightshield Crest",
+      "Luden's Tempest",
+      "Manazane",
+      "Mending Echoes",
+      "Mirrored Persona",
+      "Mittens",
+      "Mogul's Mail",
+      "Prowler's Claw",
+      "Rapid Firecannon",
+      "Seeker's Armguard",
+      "Shadow Puppet",
+      "Silvermere Dawn",
+      "Sniper's Focus",
+      "Spectral Cutlass",
+      "Statikk Shiv",
+      "Suspicious Trench Coat",
+      "Talisman Of Ascension",
+      "The Darkin Aegis",
+      "The Darkin Bow",
+      "The Darkin Scythe",
+      "The Darkin Staff",
+      "Titanic Hydra",
+      "Trickster's Glass",
+      "Unending Despair",
+      "Void Gauntlet",
+      "Wit's End",
+      "Zhonya's Paradox",
+      "Ekko's Patience",
+      "Evelynn's Instinct",
+      "Kayle's Exaltation",
+      "Soraka's Miracle",
+      "Thresh's Lantern",
+      "Varus's Obsession",
+      "Yasuo's Bladework"
+    ]
+  },
+  "meta_comps": {
+    "s_tier_snapshot_17_1": [
+      {
+        "name": "Turbo Doomer",
+        "carries": [
+          "Vex",
+          "Bard",
+          "Rammus"
+        ],
+        "leveling": "Fast 9"
+      },
+      {
+        "name": "Stay Groovy",
+        "carries": [
+          "Nami",
+          "Ornn",
+          "Blitzcrank"
+        ],
+        "leveling": "Fast 8"
+      },
+      {
+        "name": "Slap & Zap",
+        "carries": [
+          "Viktor",
+          "Mordekaiser",
+          "Illaoi"
+        ],
+        "leveling": "Level 7 slow roll"
+      },
+      {
+        "name": "N.O.V.A.",
+        "carries": [
+          "Varus",
+          "Tahm Kench",
+          "Graves"
+        ],
+        "leveling": "Fast 8"
+      },
+      {
+        "name": "Mirror Mayhem",
+        "carries": [
+          "LeBlanc",
+          "Nunu",
+          "Karma"
+        ],
+        "leveling": "Fast 8"
+      },
+      {
+        "name": "Mountain Stargaze",
+        "carries": [
+          "Riven",
+          "Nunu",
+          "Xayah"
+        ],
+        "leveling": "Fast 8"
+      },
+      {
+        "name": "Void Arcane",
+        "carries": [
+          "Ezreal",
+          "Cho'Gath",
+          "Riven"
+        ],
+        "leveling": "Level 5 slow roll"
+      },
+      {
+        "name": "Conduit Reroll",
+        "carries": [
+          "Miss Fortune",
+          "Viktor",
+          "Ornn",
+          "Rhaast"
+        ],
+        "leveling": "Level 7 slow roll"
+      },
+      {
+        "name": "Capped & Loaded",
+        "carries": [
+          "Vex",
+          "Graves",
+          "Fiora",
+          "Nunu"
+        ],
+        "leveling": "Fast 9"
+      },
+      {
+        "name": "Transformers",
+        "carries": [
+          "Aurelion Sol",
+          "The Mighty Mech",
+          "Urgot"
+        ],
+        "leveling": "Fast 8"
+      },
+      {
+        "name": "NOVA YI",
+        "carries": [
+          "Fiora",
+          "Master Yi",
+          "Maokai",
+          "Kindred"
+        ],
+        "leveling": "Fast 8"
+      },
+      {
+        "name": "Astral Meep",
+        "carries": [
+          "Bard",
+          "Corki",
+          "Rammus"
+        ],
+        "leveling": "Fast 8"
+      }
+    ],
+    "a_tier_snapshot_17_1": [
+      "Primordian NOVA Reroll",
+      "Cards & Cartridges",
+      "Rogue Diff",
+      "Contract Killer",
+      "Invader Zed",
+      "Anima Cashout",
+      "Twin Blades",
+      "Stellar Combo"
+    ]
+  }
+}

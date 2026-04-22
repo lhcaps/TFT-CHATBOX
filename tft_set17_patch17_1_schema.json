@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TFTSet17Patch171IngestPack",
+  "type": "object",
+  "required": [
+    "metadata",
+    "systems",
+    "origins",
+    "classes",
+    "champions",
+    "items",
+    "meta_comps"
+  ],
+  "properties": {
+    "metadata": {
+      "type": "object"
+    },
+    "systems": {
+      "type": "object"
+    },
+    "origins": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "breakpoints",
+          "champions",
+          "summary"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "breakpoints": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "champions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "summary": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "classes": {
+      "$ref": "#/properties/origins"
+    },
+    "champions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "cost",
+          "traits"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "cost": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "traits": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "items": {
+      "type": "object"
+    },
+    "meta_comps": {
+      "type": "object"
+    }
+  }
+}

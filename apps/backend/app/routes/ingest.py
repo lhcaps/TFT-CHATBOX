@@ -213,3 +213,34 @@ async def ingest_metatft_route(
             status_code=500,
             detail=f"MetaTFT ingest failed: {e}",
         )
+
+
+@router.post("/tft-set17")
+async def ingest_tft_set17_route() -> dict:
+    """Ingest the TFT Set 17 / Patch 17.1 clean data pack into the RAG DB.
+
+    Loads tft_set17_patch17_1_data_pack.json and converts each section into
+    Markdown chunks with embeddings, upserting into the chunks table with
+    source='tft_set17'.
+
+    Sections ingested:
+    - Systems (Realm of the Gods, 9 Space Gods, Patch 17.1B changes)
+    - Origins (all 17 Set 17 origins with champions + summaries)
+    - Classes (all 13 Set 17 classes)
+    - Champions (54 champions with cost + traits)
+    - Items (standard, Radiant, Psionic, Anima, Artifacts)
+    - Meta comps (12 S-tier + 8 A-tier comp snapshots)
+    """
+    from scripts.ingest_tft_set17 import ingest_all as do_ingest
+
+    try:
+        result = await do_ingest()
+        return {"status": "ok", "source": "tft_set17", **result}
+    except FileNotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        logger.exception("TFT Set 17 ingest failed")
+        raise HTTPException(
+            status_code=500,
+            detail=f"TFT Set 17 ingest failed: {e}",
+        )
