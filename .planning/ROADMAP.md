@@ -10,7 +10,7 @@
 ## Milestones
 
 - ✅ **v1.0 MVP** — Phases 1-7 (shipped 2026-04-22) — 60/60 smoke test PASS
-- 📋 **v1.1 Next** — TBD (planning pending)
+- 📋 **v1.1 TFT Meta Mastery** — planning pending
 
 ---
 
@@ -33,9 +33,30 @@ Full details: [.planning/milestones/v1.0-ROADMAP.md](.planning/milestones/v1.0-R
 
 </details>
 
-### 📋 v1.1 Next (Planned)
+### 📋 v1.1 TFT Meta Mastery (Planned)
 
-Planning not yet started. See [.planning/milestones/v1.0-ROADMAP.md](.planning/milestones/v1.0-ROADMAP.md) for v2 requirements.
+**Goal:** Automated TFT meta intelligence — backend tracks patch state in DB, n8n monitors Riot for new patches, auto-ingests patch notes + static data when available.
+
+**Requirements:**
+- PATCH-01: Patch state table in DB (current_patch, latest_available, last_checked, last_ingested)
+- PATCH-02: Backend patch status API (GET /api/patch/status → current, latest, staleness)
+- PATCH-03: Auto-scrape patch notes API (POST /api/ingest/patch-notes → scrape + ingest)
+- PATCH-04: n8n workflow activation + full patch monitoring (static + notes + Discord webhook)
+- PATCH-05: Frontend patch version display + staleness badge
+
+**Depends on:** Phase 6 (Automation)
+
+**Success criteria:**
+1. `GET /api/patch/status` returns `{current, latest, is_stale, last_checked, last_ingested}` from DB
+2. `POST /api/ingest/patch-notes?patch=X.Y` scrapes Riot page + ingests chunks into DB
+3. n8n `patch_monitor` workflow is `active: true` and triggers both static data + patch notes ingest
+4. Frontend shows patch version badge with staleness state
+
+**Gaps from v1.0:**
+- `patch_monitor.json` exists but `"active": false`
+- `patch_state.py` reads from file, not DB — no structured metadata
+- No `patch_notes` ingestion endpoint (scrape_patch17.py is one-off script)
+- Frontend has no patch/staleness display
 
 ---
 
@@ -55,7 +76,14 @@ Planning not yet started. See [.planning/milestones/v1.0-ROADMAP.md](.planning/m
 
 ## v2 Requirements (Deferred)
 
-### RAG Enhancements
+> Note: PATCH-* requirements below are being addressed in **v1.1 TFT Meta Mastery**.
+
+### Patch Automation (v1.1 — in progress)
+- PATCH-01: Patch state table in DB (current_patch, latest_available, last_checked, last_ingested)
+- PATCH-02: Backend patch status API (GET /api/patch/status)
+- PATCH-03: Auto-scrape patch notes API (POST /api/ingest/patch-notes)
+- PATCH-04: n8n workflow activation + full patch monitoring + Discord webhook
+- PATCH-05: Frontend patch version display + staleness badge
 - RAG-08: Inline citation cards with hover/tap source snippets
 - RAG-09: Streaming citation reveal alongside tokens
 - RAG-10: Retrieval debug panel showing chunks, scores, sources

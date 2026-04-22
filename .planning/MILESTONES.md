@@ -1,5 +1,21 @@
 # Milestones
 
+## v1.1 TFT Meta Mastery — In Progress
+
+**Date:** 2026-04-22 (planned)
+**Phase:** Planning pending
+**Goal:** Automated TFT meta intelligence — patch state in DB, n8n monitors Riot, auto-ingests patch notes + static data.
+
+**Target features:**
+- Patch state persisted in DB (not just file)
+- Auto-scrape & ingest patch notes on new patch detection
+- n8n workflow activates and monitors patch changes
+- Frontend displays patch version + staleness status
+
+**Required REQ-IDs:** PATCH-01 through PATCH-05
+
+---
+
 ## v1.0 MVP — SHIPPED 2026-04-22
 
 **Date:** 2026-04-22

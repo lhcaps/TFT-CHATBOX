@@ -27,6 +27,10 @@ A TFT player can ask comp questions, patch notes, augment choices, or pivot stra
 
 ### Active
 
+- [ ] Patch state in DB + auto-ingest pipeline (PATCH-01, PATCH-02)
+- [ ] Auto-scrape patch notes on new patch (PATCH-03)
+- [ ] n8n workflow activation + monitoring (PATCH-04)
+- [ ] Frontend patch version + staleness display (PATCH-05)
 - [ ] Session auto-naming and search (SESS-01, SESS-02)
 - [ ] Session export to Obsidian Markdown (SESS-03)
 - [ ] Inline citation cards with hover source snippets (RAG-08)
@@ -50,27 +54,29 @@ A TFT player can ask comp questions, patch notes, augment choices, or pivot stra
 | WebSocket instead of SSE | SSE is sufficient for streaming |
 | Redis or distributed cache | In-memory LRU sufficient for MVP |
 | Cross-encoder reranking | Heuristic reranking is good enough for MVP |
+| RLS / database security | Local-only deployment — risk accepted |
 
 ## Context
 
-- **Hardware**: 64GB RAM + RTX 4070 Ti SUPER 12GB VRAM (adjusted from 16GB)
-- **Chat model**: qwen3:1.7b (~1.4GB VRAM) — switched from qwen3:8b for 12GB VRAM compatibility
-- **Embedding model**: qwen3-embedding:4b (creates 2560-dim, truncated to 1024 for DB HNSW limit)
+- **Hardware**: 64GB RAM + RTX 4070 Ti SUPER 12GB VRAM
+- **Chat model**: qwen3:1.7b (~1.4GB VRAM)
+- **Embedding model**: qwen3-embedding:4b (2560-dim, truncated to 1024 for HNSW limit)
 - **Season**: Set 17 Space Gods, Patch 17.1
-- **Smoke test**: 60/60 PASS — 20 questions across 4 categories × 3 modes
+- **Smoke test**: 60/60 PASS — 20 questions × 3 modes
 - **Design source**: deep-research-report.md
 
 ## Current State
 
-**v1.0 MVP shipped** — 2026-04-22
+**v1.1 TFT Meta Mastery** — in progress
 
 | Metric | Value |
 |--------|-------|
-| Smoke test | 60/60 PASS |
-| Phases complete | 7/7 |
-| Requirements shipped | 35/35 |
+| Smoke test | 60/60 PASS (v1.0) |
+| Phases complete | 7/7 (v1.0) |
+| Requirements shipped | 35/35 (v1.0) |
 | DB chunks | 32 (TFT patch 17.1) |
 | Models | qwen3:1.7b (chat) + qwen3-embedding:4b (embedding) |
+| n8n workflows | patch_monitor.json exists but `active: false` |
 
 ## Constraints
 
@@ -81,18 +87,45 @@ A TFT player can ask comp questions, patch notes, augment choices, or pivot stra
 
 ## Key Decisions
 
-| Decision | Rationale | Outcome |
-|----------|-----------|---------|
-| Ollama native (not containerized) | GPU passthrough in Docker on Windows | ✅ Shipped |
-| 1024-dim embeddings (truncated from 2560) | HNSW index limit 2000 dims | ✅ Shipped — consider 1024-dim model |
-| Supabase local CLI | Postgres + pgvector + dashboard without Docker complexity | ✅ Shipped |
-| 3-mode chat (Normal/RAG/Coach) | TFT policy compliance | ✅ Shipped |
-| SSE for streaming | Sufficient for one-way token streaming | ✅ Shipped |
-| In-memory LRU cache | MVP scale | ✅ Shipped |
-| Bearer token auth | Defense in depth | ✅ Shipped |
-| qwen3:1.7b for 12GB VRAM | Quality vs. VRAM tradeoff | ✅ Shipped — shorter responses than qwen3:8b |
-| ngrok dropped | 100% local operation | ✅ Shipped |
+| Decision | Rationale | Status |
+|----------|-----------|--------|
+| Ollama native (not containerized) | GPU passthrough on Windows | ✅ Locked (v1.0) |
+| 1024-dim embeddings (truncated from 2560) | HNSW index limit 2000 dims | ✅ Locked (v1.0) |
+| Supabase local CLI | Postgres + pgvector without Docker complexity | ✅ Locked (v1.0) |
+| 3-mode chat (Normal/RAG/Coach) | TFT policy compliance | ✅ Locked (v1.0) |
+| SSE for streaming | Sufficient for one-way token streaming | ✅ Locked (v1.0) |
+| In-memory LRU cache | MVP scale doesn't need Redis | ✅ Locked (v1.0) |
+| Bearer token auth | Defense in depth | ✅ Locked (v1.0) |
+| ngrok dropped | 100% local operation | ✅ Locked (v1.0) |
+| Patch state in DB (not file) | More reliable, queryable, testable | 🔄 v1.1 |
+| RLS disabled | Local-only, risk accepted | ✅ Locked |
+
+## Evolution
+
+This document evolves at phase transitions and milestone boundaries.
+
+**After each phase transition** (via `$gsd-transition`):
+1. Requirements invalidated? → Move to Out of Scope with reason
+2. Requirements validated? → Move to Validated with phase reference
+3. New requirements emerged? → Add to Active
+4. Decisions to log? → Add to Key Decisions
+5. "What This Is" still accurate? → Update if drifted
+
+**After each milestone** (via `$gsd-complete-milestone`):
+1. Full review of all sections
+2. Core Value check — still the right priority?
+3. Audit Out of Scope — reasons still valid?
+4. Update Context with current state
+
+## Current Milestone: v1.1 TFT Meta Mastery
+
+**Goal:** Automated TFT meta intelligence — backend tracks patch state in DB, n8n monitors Riot for new patches, auto-ingests patch notes + static data when available.
+
+**Target features:**
+- Patch state persisted in DB (not just file)
+- Auto-scrape & ingest patch notes on new patch detection
+- n8n workflow activates and monitors patch changes
+- Frontend displays patch version + staleness status
 
 ---
-
-*Last updated: 2026-04-22 after v1.0 MVP milestone completion*
+*Last updated: 2026-04-22*
