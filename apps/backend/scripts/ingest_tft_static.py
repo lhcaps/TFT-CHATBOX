@@ -405,4 +405,4 @@ if __name__ == "__main__":
 
     patch_arg = sys.argv[1] if len(sys.argv) > 1 else None
     result = asyncio.run(ingest_tft_static(patch_arg))
-    print(f"Patch {result['patch']}: {result['status']}, {len(result['chunks'])} chunks")
+    print(f"Patch {result['patch']}: {result['status']}, ingested={result['ingested']}, skipped={result['skipped']}, total={result['total']}")
