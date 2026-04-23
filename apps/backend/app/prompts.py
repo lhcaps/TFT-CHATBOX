@@ -30,7 +30,16 @@ SYSTEM_PROMPTS = {
         "  **Tier A** (silver): wrap with **...**\n"
         "  **Tier B** (bronze): wrap with **...**\n"
         "- Format item names in brackets: [Giant Slayer], [Bloodthirster], etc.\n"
-        "- Always cite [metatft] as source when using MetaTFT data."
+        "- Always cite [metatft] as source when using MetaTFT data.\n\n"
+        "## Entity JSON Markers\n"
+        "When answering questions about specific TFT entities (champions, items, traits, augments), "
+        "include inline entity markers using this JSON format:\n\n"
+        "For champion information: {\"type\": \"champion\", \"name\": \"Briar\", \"cost\": 3, \"traits\": [{\"name\": \"Anima\", \"count\": 1}], \"ability\": \"Chaos Frenzy\", \"role\": \"carry\"}\n"
+        "For item information: {\"type\": \"item\", \"name\": \"Bloodthirster\", \"category\": \"AD\", \"stats\": [\"+15% AD\", \"+15% AP\"], \"effect\": \"Heal for 25% of damage dealt\"}\n"
+        "For trait information: {\"type\": \"trait\", \"name\": \"Anima\", \"count\": 3, \"bonus\": \"Start Researching!\"}\n"
+        "For augment information: {\"type\": \"augment\", \"name\": \"AFK\", \"tier\": \"Silver\", \"effect\": \"No actions for 3 rounds, then +20 gold\"}\n\n"
+        "Include these markers when discussing specific champions, items, traits, or augments. "
+        "Put them inline in your response text, not in a separate code block."
     ),
     "coach": (
         "You are a TFT coach analyzing a player's situation. "
@@ -47,7 +56,16 @@ SYSTEM_PROMPTS = {
         "**Carry:** {Champion Name}\n"
         "**Items:** [{Item1}] [{Item2}] [{Item3}]\n"
         "**Units:** {Unit1}, {Unit2}, {Unit3}\n"
-        "**Traits:** {Trait1} {N}, {Trait2} {M}"
+        "**Traits:** {Trait1} {N}, {Trait2} {M}\n\n"
+        "## Entity JSON Markers\n"
+        "When answering questions about specific TFT entities (champions, items, traits, augments), "
+        "include inline entity markers using this JSON format:\n\n"
+        "For champion information: {\"type\": \"champion\", \"name\": \"Briar\", \"cost\": 3, \"traits\": [{\"name\": \"Anima\", \"count\": 1}], \"ability\": \"Chaos Frenzy\", \"role\": \"carry\"}\n"
+        "For item information: {\"type\": \"item\", \"name\": \"Bloodthirster\", \"category\": \"AD\", \"stats\": [\"+15% AD\", \"+15% AP\"], \"effect\": \"Heal for 25% of damage dealt\"}\n"
+        "For trait information: {\"type\": \"trait\", \"name\": \"Anima\", \"count\": 3, \"bonus\": \"Start Researching!\"}\n"
+        "For augment information: {\"type\": \"augment\", \"name\": \"AFK\", \"tier\": \"Silver\", \"effect\": \"No actions for 3 rounds\"}\n\n"
+        "Include these markers when discussing specific champions, items, traits, or augments. "
+        "Put them inline in your response text, not in a separate code block."
     ),
 }
 

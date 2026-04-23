@@ -1,5 +1,7 @@
 // ─── Types ────────────────────────────────────────────────────────────────────
 
+import type { EntityCard, ChampionEntity, ItemEntity, TraitEntity, AugmentEntity, ContentBlock } from '../api/types';
+
 export interface CompTrait {
   name: string;
   count: number;
@@ -132,3 +134,101 @@ export function parseCompBlocks(content: string): CompBlock[] {
 
   return blocks;
 }
+
+// ─── Entity Marker Parser ─────────────────────────────────────────────────────
+
+/** Entity marker regex — matches complete or partial JSON starting with {"type": */
+const ENTITY_MARKER_RE = /\{"type":\s*"(champion|item|trait|augment)"[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/g;
+
+/** Validates that a string is valid JSON and has a known entity type */
+export function tryParseEntity(raw: string): EntityCard | null {
+  try {
+    const parsed = JSON.parse(raw) as EntityCard;
+    if (['champion', 'item', 'trait', 'augment'].includes(parsed.type)) {
+      return parsed;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+/** Streaming buffer: accumulate tokens, extract complete entity markers */
+export class EntityMarkerBuffer {
+  private buffer: string = '';
+
+  add(token: string): EntityCard[] {
+    const entities: EntityCard[] = [];
+    this.buffer += token;
+
+    let match;
+    ENTITY_MARKER_RE.lastIndex = 0;
+
+    while ((match = ENTITY_MARKER_RE.exec(this.buffer)) !== null) {
+      const candidate = match[0];
+      const parsed = tryParseEntity(candidate);
+      if (parsed) {
+        entities.push(parsed);
+        this.buffer = this.buffer.slice(0, match.index) + this.buffer.slice(match.index + candidate.length);
+        ENTITY_MARKER_RE.lastIndex = 0;
+      }
+    }
+
+    return entities;
+  }
+
+  getBuffer(): string {
+    return this.buffer;
+  }
+}
+
+/** Parse a full message content string into text/comp/entity blocks */
+export function parseEntityBlocks(content: string): ContentBlock[] {
+  const blocks: ContentBlock[] = [];
+
+  const compRegex = /(^|\n)(#{1,3}\s+Comp:\s*.+?(?=\n#{1,3}\s+Comp:|\n*(?:-{3,}|\*{3,}|$)))/gm;
+  let lastIndex = 0;
+  let match;
+
+  while ((match = compRegex.exec(content)) !== null) {
+    if (match.index > lastIndex) {
+      const textBefore = content.slice(lastIndex, match.index);
+      parseEntityMarkersInText(textBefore, blocks);
+    }
+    blocks.push({ kind: 'comp', raw: match[2] });
+    lastIndex = match.index + match[0].length;
+  }
+
+  if (lastIndex < content.length) {
+    parseEntityMarkersInText(content.slice(lastIndex), blocks);
+  }
+
+  return blocks;
+}
+
+/** Helper: scan text for entity marker patterns and add as blocks */
+function parseEntityMarkersInText(text: string, blocks: ContentBlock[]): void {
+  const markerRe = /\{"type":\s*"(champion|item|trait|augment)"[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/g;
+  let lastEnd = 0;
+  let m;
+
+  while ((m = markerRe.exec(text)) !== null) {
+    if (m.index > lastEnd) {
+      const textPart = text.slice(lastEnd, m.index).trim();
+      if (textPart) blocks.push({ kind: 'text', raw: textPart });
+    }
+    const parsed = tryParseEntity(m[0]);
+    if (parsed) {
+      blocks.push({ kind: 'entity', raw: m[0], entity: parsed });
+    } else {
+      blocks.push({ kind: 'text', raw: '`' + m[0] + '`' });
+    }
+    lastEnd = m.index + m[0].length;
+  }
+
+  if (lastEnd < text.length) {
+    const remaining = text.slice(lastEnd).trim();
+    if (remaining) blocks.push({ kind: 'text', raw: remaining });
+  }
+}
+

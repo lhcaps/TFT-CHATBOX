@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import type { Message } from '../api/types';
+import type { Message, EntityCard } from '../api/types';
 import { CitationCard } from './CitationCard';
 import { CitationModal } from './CitationModal';
 import { EmptyState } from './EmptyState';
 import { CompCard } from './CompCard';
-import { parseCompBlocks, parseCompCard } from '../utils/compParser';
+import { parseEntityBlocks, parseCompCard } from '../utils/compParser';
 
 interface MessageListProps {
   messages: Message[];
@@ -115,17 +115,38 @@ export function MessageList({ messages, isStreaming }: MessageListProps) {
 
 // ─── MessageContent ────────────────────────────────────────────────────────────
 
+// Placeholder import — SMART-02 will implement the actual card components
+// For now, entity cards render as styled code blocks
+function EntityCardPlaceholder({ entity }: { entity: EntityCard }) {
+  const colors: Record<string, string> = {
+    champion: 'border-blue-500/40 bg-blue-950/20',
+    item: 'border-red-500/40 bg-red-950/20',
+    trait: 'border-purple-500/40 bg-purple-950/20',
+    augment: 'border-yellow-500/40 bg-yellow-950/20',
+  };
+  const borderColor = colors[entity.type] || 'border-gray-600/40 bg-gray-800/20';
+
+  return (
+    <code className={`block rounded-lg border px-3 py-2 my-2 text-xs font-mono ${borderColor} max-w-[400px]`}>
+      {JSON.stringify(entity, null, 2)}
+    </code>
+  );
+}
+
 function MessageContent({ content }: { content: string }) {
-  const blocks = parseCompBlocks(content);
+  const blocks = parseEntityBlocks(content);
 
   return (
     <>
       {blocks.map((block, i) => {
-        if (block.type === 'comp') {
+        if (block.kind === 'comp') {
           const parsed = parseCompCard(block.raw);
           if (parsed) {
             return <CompCard key={i} {...parsed} />;
           }
+        }
+        if (block.kind === 'entity' && block.entity) {
+          return <EntityCardPlaceholder key={i} entity={block.entity} />;
         }
         return (
           <p key={i} className="whitespace-pre-wrap break-words leading-relaxed">
