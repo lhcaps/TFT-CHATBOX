@@ -24,6 +24,7 @@ async def build_messages(
     mode: str,
     patch: str | None = None,
     top_k: int | None = None,
+    router_result: dict | None = None,  # NEW: from QueryRouter
 ) -> list[dict]:
     """Build the messages array for Ollama: system + recent history + optional RAG context."""
     pool = await get_pool()
@@ -59,6 +60,24 @@ async def build_messages(
             context_lines.append("---CONTEXT---")
             context_block = "\n".join(context_lines)
             messages.append({"role": "user", "content": context_block})
+
+    # Inject graph context if available (from QueryRouter)
+    if router_result and router_result.get("graph_data"):
+        graph_data = router_result["graph_data"]
+        if graph_data.get("neighbors"):
+            graph_lines = ["---KNOWLEDGE GRAPH---"]
+            entity = graph_data.get("entity", "Entity")
+            graph_lines.append(f"Related data for: {entity}")
+            for neighbor in graph_data["neighbors"][:5]:
+                edge = neighbor.get("edge", "")
+                node = neighbor.get("node", "")
+                count = neighbor.get("count")
+                count_str = f" ({count})" if count else ""
+                graph_lines.append(f"  - {node}{count_str} [{edge}]")
+            graph_lines.append("---END GRAPH---")
+            graph_block = "\n".join(graph_lines)
+            # Insert before user message (last message in list)
+            messages.insert(len(messages) - 1, {"role": "system", "content": graph_block})
 
     # Add current user message
     messages.append({"role": "user", "content": user_message})
@@ -212,14 +231,25 @@ async def chat(request: ChatRequest) -> StreamingResponse | JSONResponse:
     if request.session_id is None:
         raise HTTPException(status_code=400, detail="session_id is required")
 
+    router_result = None
+    if request.mode in ("rag", "coach") and request.message:
+        try:
+            from app.services.router import QueryRouter
+            router = QueryRouter()
+            router_result = await router.route(request.message, top_k=request.top_k)
+        except Exception as e:
+            logger.warning(f"QueryRouter failed: {e}")
+            router_result = None
+
     try:
-        # Build messages array with system prompt + history + optional RAG context
+        # Build messages array with system prompt + history + optional RAG context + graph context
         messages = await build_messages(
             session_id=request.session_id,
             user_message=request.message,
             mode=request.mode,
             patch=request.patch,
             top_k=request.top_k,
+            router_result=router_result,
         )
     except Exception as e:
         logger.exception("build_messages failed")

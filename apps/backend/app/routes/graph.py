@@ -169,7 +169,7 @@ async def ingest_graph(
     source: str = Query("all", description="Source to reload: all, champions, items, traits, augments, systems"),
 ) -> IngestResponse:
     """Reload graph data from all sources.
-    
+
     This is the same as POST /api/graph/reload but follows the naming
     convention expected by the ingest pipeline.
     """
@@ -182,3 +182,96 @@ async def ingest_graph(
         node_counts=counts,
         timestamp=datetime.utcnow().isoformat(),
     )
+
+
+@router.get("/suggest")
+async def get_suggestions(
+    context: str = Query(..., description="User's current message for context", max_length=200),
+    limit: int = Query(3, ge=1, le=5, description="Max suggestions to return"),
+) -> dict:
+    """
+    Generate contextual suggestions based on the user's current message.
+
+    Uses the knowledge graph to detect entities mentioned in the user's message
+    and suggests related queries (champion items, trait breakpoints, etc.).
+    """
+    from app.services.router import classify_query, QuerySource
+
+    suggestions: list[dict] = []
+    G = knowledge_graph.get()
+    context_lower = context.lower()
+
+    # Detect entities in the message
+    detected_entities: list[tuple[str, str, str]] = []
+
+    # Try to find champion/item/trait/augment names in the message
+    for node_id in G.nodes():
+        node_data = G.nodes[node_id]
+        name = node_data.get("name", "")
+        if name and name.lower() in context_lower:
+            detected_entities.append((name, node_data.get("type", "unknown"), node_id))
+
+    # Generate suggestions based on detected entities
+    for name, entity_type, node_id in detected_entities[:3]:
+        if entity_type == "champion":
+            # Suggest items for this champion
+            items = []
+            for neighbor in G.neighbors(node_id):
+                ndata = G.nodes[neighbor]
+                if ndata.get("type") == "item":
+                    items.append(ndata.get("name", neighbor))
+            if items:
+                suggestions.append({
+                    "text": f"Best items for {name}?",
+                    "type": "champion",
+                })
+            # Suggest trait breakdown
+            suggestions.append({
+                "text": f"{name} traits breakdown",
+                "type": "champion",
+            })
+        elif entity_type == "trait":
+            # Suggest trait breakdown
+            suggestions.append({
+                "text": f"{name} breakpoint",
+                "type": "trait",
+            })
+            # Suggest best champions
+            suggestions.append({
+                "text": f"Best {name} comps",
+                "type": "trait",
+            })
+        elif entity_type == "item":
+            suggestions.append({
+                "text": f"{name} recipe",
+                "type": "item",
+            })
+        elif entity_type == "augment":
+            suggestions.append({
+                "text": f"Best {name} alternatives",
+                "type": "augment",
+            })
+
+    # If no entities detected, generate generic suggestions
+    if not suggestions:
+        suggestions = [
+            {"text": "Top S-tier comps", "type": "general"},
+            {"text": "Best items for carries", "type": "general"},
+            {"text": "Trait breakpoint guide", "type": "general"},
+        ]
+
+    # Classify the current query to add relevant suggestions
+    sources, _ = classify_query(context)
+    if QuerySource.GRAPH in sources:
+        suggestions.insert(0, {"text": "Champion items lookup", "type": "champion"})
+
+    # Deduplicate and limit
+    seen: set[str] = set()
+    unique: list[dict] = []
+    for s in suggestions:
+        if s["text"] not in seen:
+            seen.add(s["text"])
+            unique.append(s)
+    suggestions = unique[:limit]
+
+    return {"suggestions": suggestions, "detected_entities": [e[0] for e in detected_entities[:3]]}
