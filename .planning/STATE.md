@@ -7,15 +7,15 @@
 
 ## Project Reference
 
-**Core Value:** A TFT player can ask comp questions, patch notes, augment choices, or pivot strategies — and get grounded, locally-sourced answers without leaving the game ecosystem.
+**Core Value:** A TFT player can ask comp questions, patch notes, augment choices, or pivot strategies — and get grounded, locally-sourced answers without leaving the game ecosystem. **v1.4 transforms this from a search tool into an intelligent knowledge companion.**
 
-**Current Milestone:** v1.3 Hardening & Polish — shipped
+**Current Milestone:** v1.4 Smart & Polished — in progress
 
 ---
 
 ## Current Position
 
-**Active Phase:** Phase 10 complete — all milestones shipped
+**Active Phase:** Phase 11 planned — Knowledge Graph (KNOW-01..04)
 
 **Milestone Progress:**
 ```
@@ -23,11 +23,63 @@
 ✅ v1.1 TFT Meta Mastery — Phase 8 (shipped 2026-04-22)
 ✅ v1.2 MetaTFT Real-time Intelligence — Phase 9 (shipped 2026-04-23)
 ✅ v1.3 Hardening & Polish — Phase 10 (shipped 2026-04-23)
+🔄 v1.4 Smart & Polished — Phases 11-14 (planned 2026-04-23)
 ```
 
-**Root Cause Fixes Applied (2026-04-23):**
-- Fix A: GPU status SyntaxError — `/health/gpu` → `/api/health/gpu` in `useGpuStatus.ts`
-- Fix B: PatchStatus CORS block — hardcoded URL → `/api/patch/status` via Vite proxy
+---
+
+## v1.4 "Smart & Polished" — Vision
+
+### Problem Statement
+
+The current system answers questions but doesn't *understand* TFT entities. It retrieves text chunks, not structured knowledge. Three concrete pain points:
+
+1. **Flat responses:** "What items for Briar?" returns a wall of text. Not structured, not cross-linked.
+2. **UI overflow:** Long messages stretch the container, breaking layout alignment.
+3. **Sparse knowledge:** Only 32 chunks in the DB. 252 augments and 59 champions are not in the vector store.
+
+### Solution Architecture
+
+```
+User Query
+    │
+    ▼
+┌─────────────────────┐
+│  Smart Query Router  │ ← Phase 13 (SMART-04)
+└──────────┬──────────┘
+           │
+     ┌─────┴─────┐
+     ▼           ▼
+┌─────────┐  ┌─────────┐  ┌─────────┐
+│Knowledge│  │   RAG   │  │ MetaTFT  │
+│ Graph   │  │ Pipeline│  │  Data    │
+│(NetworkX)│  │(vector) │  │(scraped) │
+└────┬────┘  └────┬────┘  └────┬────┘
+     │             │             │
+     └─────────────┴─────────────┘
+                    │
+                    ▼
+            ┌───────────────┐
+            │  LLM Response  │
+            │(entity markers)│
+            └───────┬───────┘
+                    │
+                    ▼
+            ┌─────────────────┐
+            │ Frontend Entity │
+            │ Cards + CompCard│
+            └─────────────────┘
+```
+
+### Key Design Decisions for v1.4
+
+| Decision | Rationale | Status |
+|----------|-----------|--------|
+| NetworkX for knowledge graph | Fast, Python-native, easy to serialize | ✅ Planned (Phase 11) |
+| Entity JSON markers in LLM output | No prompt overhead, easy to parse | ✅ Planned (Phase 13) |
+| Knowledge Graph as primary for entity queries | Graph traversal is faster than vector search for direct entity lookups | ✅ Planned (Phase 13) |
+| Tailwind-only CompCard | Replace inline styles for maintainability | ✅ Planned (Phase 12) |
+| Streaming citations (SSE events) | Progressive reveal improves perceived latency | ✅ Planned (Phase 14) |
 
 ---
 
@@ -36,12 +88,12 @@
 | Metric | Value | Notes |
 |--------|-------|-------|
 | v1.0 Requirements mapped | 35/35 | 100% coverage |
-| v1.0 Phases defined | 7 | All complete |
-| v1.0 Smoke test | 60/60 PASS | 20 questions × 3 modes |
 | v1.1 Requirements | 5/5 | PATCH-01..05 complete |
 | v1.2 Requirements (META) | 5/5 | META-01..05 complete |
 | v1.3 Requirements (HARD) | 5/5 | HARD-01..05 complete |
+| v1.4 Requirements | 19/19 | KNOW-01..04, UI-01..05, SMART-01..05, RAG2-01..05 |
 | Total Phases shipped | 10 | Phases 1-10 all shipped |
+| **v1.4 DB chunk target** | **≥ 500** | Currently ~44 chunks |
 
 ---
 
@@ -53,6 +105,7 @@
 | VRAM | 12GB (RTX 4070 Ti SUPER) | Chat + Embedding models |
 | Chat model | qwen3:1.7b | ~1.4GB VRAM |
 | Embedding model | qwen3-embedding:4b | ~2.5GB VRAM (2560 dims → 1024 truncated) |
+| **VRAM headroom for v1.4** | ~8GB free | Could upgrade to qwen3:8b in future |
 
 ---
 
@@ -60,13 +113,14 @@
 
 | Layer | Technology | Notes |
 |-------|------------|-------|
-| Frontend | React 19 + Vite 6 + Tailwind 4 | Chat UI |
-| Backend | FastAPI + Uvicorn | API orchestration |
+| Frontend | React 19 + Vite 6 + Tailwind 4 | Chat UI — being redesigned in Phase 12 |
+| Backend | FastAPI + Uvicorn | API orchestration + Knowledge Graph |
 | LLM | Ollama native (Windows) | qwen3:1.7b + qwen3-embedding:4b |
-| Database | Supabase local CLI (pgvector/HNSW) | 1024-dim embeddings |
+| Database | Supabase local CLI (pgvector/HNSW) | 1024-dim embeddings, 44→500+ chunks in v1.4 |
 | Automation | n8n (Docker) | Scheduled workflows |
-| Knowledge | Obsidian vault | Markdown notes |
-| TFT Data | Riot CDN + CommunityDragon + Patch page scrape | Set 17 Space Gods, Patch 17.1 |
+| Knowledge | Obsidian vault + JSON data packs | Markdown notes + verified TFT data |
+| **NEW** Knowledge Graph | NetworkX | In-memory graph for cross-entity traversal (Phase 11) |
+| TFT Data | Riot CDN + CommunityDragon + MetaTFT + User-verified JSON | Set 17 Space Gods, Patch 17.1 |
 
 ---
 
@@ -83,95 +137,43 @@
 | Bearer token auth | Defense in depth | ✅ Locked |
 | ngrok dropped | 100% local, no remote access needed | ✅ Locked |
 | RLS disabled | Local-only, risk accepted | ✅ Locked |
+| NetworkX for knowledge graph | Fast, Python-native, easy to serialize/deserialize | ✅ Planned (Phase 11) |
+| Entity JSON markers | LLM outputs structured JSON inline; frontend parses and renders cards | ✅ Planned (Phase 13) |
+| Graph-first routing | Knowledge Graph for direct entity queries; RAG for complex questions | ✅ Planned (Phase 13) |
 
 ---
 
-## Accumulated Context
+## Data Files (Verified)
 
-### v1.1 TFT Meta Mastery — SHIPPED ✅
+User has provided verified data files for v1.4 ingest:
 
-**All features delivered:**
-- `patch_info` table: current_patch, latest_available, last_checked, last_ingested, ingest_status, patch_notes_url, updated_at
-- `GET /api/patch/status` → full DB state with is_stale
-- `POST /api/patch/status/refresh` → update latest_available from Riot CDN
-- `POST /api/ingest/patch-notes` → scrape + ingest patch notes chunks
-- `scrape_patch_url()` → listing page discovery, URL pattern fallback
-- n8n `patch_monitor.json` → `active: true`, calls both ingest endpoints, Discord start/success/fail
-- `PatchStatus` component → version badge, stale indicator, check button in header
-
-**Outstanding:**
-- n8n workflow needs user to open http://localhost:5678 and configure API key + Discord webhook credentials
-- `scrape_patch17.py` hardcodes Set 17 URL template — needs update for future sets
-
-**Goal:** Automated TFT meta intelligence — backend tracks patch state in DB, n8n monitors Riot for new patches, auto-ingests patch notes + static data when available.
-
-**Gap Analysis (from codebase audit):**
-1. `patch_monitor.json` exists but `"active": false` — not running
-2. `patch_state.py` reads from file `latest_version.txt`, not DB
-3. No `patch_info` table in DB — no structured patch metadata storage
-4. `scrape_patch17.py` is one-off script, not API-triggered
-5. n8n `patch_monitor` only triggers `/ingest/tft-static`, NOT patch notes scraping
-6. Frontend has no patch version display or staleness indicator
-
-**What was built:**
-1. DB `patch_info` table: stores current_patch, latest_available, last_checked, last_ingested
-2. Backend API: `GET /api/patch/status` (returns current + latest + staleness)
-3. Backend API: `POST /api/ingest/patch-notes` — scrapes Riot page for a specific patch version
-4. n8n workflow: activate + connect patch notes ingest + Discord webhook on new patch
-5. Frontend: patch version badge + "stale" indicator when behind
-
----
-
-### v1.2 MetaTFT Real-time Intelligence — SHIPPED ✅
-
-**All features delivered (Phase 9):**
-- META-01: `POST /api/ingest/metatft` — httpx scrape of `https://www.metatft.com/comps`
-- META-02: MetaTFT Markdown transformer — comp tiers, carries, items → Vietnamese
-- META-03: Space Gods data ingest — `ingest_tft_set17.py`, `scrape_set_overview.py`
-- META-04: n8n `patch_monitor.json` daily trigger at 12:00 noon
-- META-05: Frontend `CompCard` + `compParser.ts` → styled cards in MessageList
-
-**Key files:**
-- `apps/backend/app/routes/ingest.py` — `POST /api/ingest/metatft`
-- `apps/backend/scripts/scrape_metatft.py` — MetaTFT scraper
-- `apps/backend/scripts/scrape_set_overview.py` — Space Gods scraper
-- `apps/backend/scripts/ingest_tft_set17.py` — Set 17 ingest script
-- `apps/frontend/src/components/CompCard.tsx` — Comp card component
-- `apps/frontend/src/utils/compParser.ts` — Markdown → comp data parser
-- `n8n/workflows/patch_monitor.json` — n8n daily cron + Discord
-
----
-
-### v1.3 Hardening & Polish — SHIPPED ✅
-
-**All features verified (Phase 10):**
-- HARD-01: Session switch loading spinner in `ChatShell.tsx` (lines 122-129)
-- HARD-02: 60s timeout on `/api/chat` in `chat.ts` (lines 10-17)
-- HARD-03: Pydantic `Field(ge=1, le=50)` on `top_k` in `models.py`
-- HARD-04: CompCard component integrated in `MessageList.tsx` (Phase 9 META-05)
-- HARD-05: Toast system (`useToast.ts` + `toast.tsx`) in `App.tsx`
-
-**Root cause fixes applied:**
-- Fix A: `useGpuStatus.ts` line 11 — `/health/gpu` → `/api/health/gpu`
-- Fix B: `PatchStatus.tsx` line 19 — hardcoded URL → `/api/patch/status`
-
-**Lesson learned:** Phase 10 was fully implemented but poorly documented. All 5 tasks existed in code. Only 2 path fixes were needed.
+| File | Entities | Used in Phase |
+|------|---------|--------------|
+| `augments_full_user_verified.json` | 252 augments (Silver/Gold/Prismatic) | 14 (RAG2-04) |
+| `traits_full_user_verified.json` | 30+ traits with champions + breakpoints | 11 (KNOW-01), 14 (RAG2-04) |
+| `items_effects_expanded_set17.json` | 45+ items with effect text | 11 (KNOW-01), 14 (RAG2-04) |
+| `tft_set17_patch17_1_deep_pack_v4_user_verified.json` | 59 champions + traits + systems | 11 (KNOW-01), 14 (RAG2-04) |
+| `tft_set17_patch17_1_enhanced_pack.json` | 9 Space Gods + Realm of the Gods | 11 (KNOW-01), 14 (RAG2-04) |
+| `tft_set17_patch17_1_data_pack.json` | Full champion roster + abilities + meta | 11 (KNOW-01), 14 (RAG2-04) |
+| `rolling_odds_user_verified.json` | Rolling odds by level (verified) | 11 (KNOW-01), 14 (RAG2-04) |
 
 ---
 
 ## Known Issues
 
+### UI Issues (To Fix in Phase 12)
+
+| Issue | Root Cause | Fix |
+|-------|-----------|-----|
+| Message bubble overflow | No `max-width` enforcement + missing `min-w-0` on flex containers | UI-01 |
+| CitationCard truncates | `line-clamp-3` + no expand state | UI-02 |
+| CompCard inline styles | Mixed inline/Tailwind, hard to maintain | UI-03 |
+| No mobile layout | No responsive breakpoints | UI-04 |
+| Poor streaming UX | Basic typing indicator, no progressive reveal | UI-05 |
+
 ### Security (Acknowledged)
+
 - ⚠️ **RLS disabled on DB tables** — accepted risk for local-only deployment
-
-### v1.1 Pre-Phase Warnings
-
-| Phase | Pitfall | Mitigation |
-|-------|---------|------------|
-| All | n8n container can't reach `localhost:8000` | Use `http://backend:8000` in n8n workflows |
-| All | n8n workflows `active: false` | Must be activated manually in n8n UI |
-| Patch notes | Riot page structure changes | Graceful degradation + logging |
-| Patch notes | CDN 403 on retired sets | Fallback to CommunityDragon |
 
 ---
 
@@ -179,10 +181,8 @@
 
 ### For Next Session
 
-When starting new milestone work:
-1. Run `/gsd-progress` to check current state
-2. Start new-milestone via GSD workflow
-3. Run health checks before starting:
+When starting v1.4 Phase 11:
+1. Run health checks:
    ```powershell
    ollama ps
    npx supabase status
@@ -190,24 +190,55 @@ When starting new milestone work:
    curl http://localhost:8000/api/health/gpu
    curl http://localhost:8000/api/patch/status
    ```
+2. Verify the 7 verified data files are in the project root
+3. Start Phase 11 with `$gsd-plan-phase 11`
 
-### Key Context for This Project
+### What v1.4 Changes
 
-**What makes this project unique:**
-- Local LLM (Ollama) + local vector DB (pgvector/HNSW) + local scraping
-- 3 chat modes: Normal (no context), RAG (Obsidian + TFT data), Coach (strategic framing)
-- MetaTFT daily data refresh via n8n cron
-- CompCard renders meta comp data in styled UI
-- Toast notifications for user feedback
-- Session switch spinner prevents confusion during loading
-
-**What was wrong with Phase 10 (and now fixed):**
-- Phase 10 was planned with 5 new tasks to implement
-- Codebase audit revealed ALL 5 tasks were already implemented
-- Phase 10 was actually "done" — just the planning docs were wrong
-- Two critical browser errors existed (GPU SyntaxError + PatchStatus CORS)
-- Both errors caused by wrong API paths — both fixed
+| Before v1.4 | After v1.4 |
+|-------------|-------------|
+| Text chunks in DB (~44) | Structured chunks by entity type (500+) |
+| Flat markdown text responses | Rich entity cards (ChampionProfile, ItemCard, TraitCard, AugmentCard) |
+| Keyword search | Knowledge graph traversal + vector search hybrid |
+| Citation cards at end of response | Streaming citations that appear progressively |
+| Single-column layout, overflow bugs | Responsive layout with proper overflow handling |
+| 3 modes (Normal/RAG/Coach) | Same 3 modes, but each delivers smarter, cross-linked answers |
+| 32 ingested TFT data chunks | 500+ chunks covering all Set 17 entities |
 
 ---
-*State tracked: 2026-04-22*
-*Last updated: 2026-04-23 at v1.3 Hardening & Polish ship*
+
+## Accumulated Context
+
+### v1.4 Planned Features
+
+**Phase 11: Knowledge Graph (KNOW-01..04)**
+- NetworkX graph with Champion, Item, Trait, Augment, God, System nodes
+- Edges: HAS_TRAIT, BUILDS_FROM, ITEM_FOR_CHAMPION, SYNERGIZES, TRAIT_BREAKPOINT
+- API: GET /api/graph/query, GET /api/graph/neighbors/{entity}, POST /api/graph/ingest
+- Auto-reload on patch ingest + hot-reload endpoint
+
+**Phase 12: UI/UX Core Redesign (UI-01..05)**
+- Fix message overflow: `min-w-0`, `max-w-[70%]`, `overflow-wrap: break-word`
+- CitationCard v2: expandable, collapsible, source filter, copy button
+- CompCard Tailwind migration: replace inline styles, full type safety
+- Responsive: mobile sidebar drawer, tablet 2-column citations
+- Loading states: skeleton loaders, streaming cursor, welcome screen
+
+**Phase 13: Smart Chat Engine (SMART-01..05)**
+- LLM emits entity JSON markers: `{"type": "champion", "name": "Briar", ...}`
+- Frontend parser renders: ChampionProfile, ItemCard, TraitCard, AugmentCard
+- Smart reply suggestions: context-aware chips from knowledge graph
+- Query router: graph-first for entities, rag-fallback for complex questions
+- Coach enhancements: pivot fallback chain, in-game scenario presets ([fast8], [hyperoll])
+
+**Phase 14: RAG 2.0 + Full Data Ingest (RAG2-01..05)**
+- Entity type metadata filtering: champion, item, trait, augment, system
+- Heuristic reranking: patch_priority × entity_priority × recency_boost
+- Streaming citations: citation_start/citation_progress/citation_end SSE events
+- Full ingest: 252 augments + 59 champions + 45+ items + 30+ traits + systems
+- Obsidian file watcher for real-time reactive sync
+
+---
+
+*State tracked: 2026-04-23*
+*Last updated: 2026-04-23 at v1.4 planning*
