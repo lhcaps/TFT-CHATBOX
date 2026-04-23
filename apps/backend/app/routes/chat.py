@@ -124,11 +124,8 @@ async def stream_ollama_tokens(
                 "revealed": False,
             }
             # citation_start: metadata only, no content
-            yield f"event: citation_start\ndata: {json.dumps({'citation': {
-                'id': citation_id,
-                'source': chunk["source"],
-                'heading': chunk.get("metadata", {}).get("heading_path", ""),
-            })})\n\n"
+            cit_payload = {"citation": {"id": citation_id, "source": chunk["source"], "heading": chunk.get("metadata", {}).get("heading_path", "")}}
+            yield f"event: citation_start\ndata: {json.dumps(cit_payload)}\n\n"
 
     async with httpx.AsyncClient(timeout=120.0) as client:
         payload = {
@@ -161,10 +158,8 @@ async def stream_ollama_tokens(
                             if not cit["revealed"] and citation_id in full_text:
                                 # Reveal first 100 chars as preview
                                 preview = cit["content"][:100]
-                                yield f"event: citation_progress\ndata: {json.dumps({'citation': {
-                                    'id': citation_id,
-                                    'text_preview': preview,
-                                })})\n\n"
+                                progress_payload = {"citation": {"id": citation_id, "text_preview": preview}}
+                                yield f"event: citation_progress\ndata: {json.dumps(progress_payload)}\n\n"
                                 cit["revealed"] = True
                                 break
                         # Per D-04: token event format
@@ -183,13 +178,8 @@ async def stream_ollama_tokens(
 
     # Emit citation_end events for all citations (RAG2-03)
     for citation_id, cit in streaming_citations.items():
-        yield f"event: citation_end\ndata: {json.dumps({'citation': {
-            'id': citation_id,
-            'text': cit["content"],
-            'score': cit["score"],
-            'source': cit["source"],
-            'heading': cit["heading"],
-        })})\n\n"
+        end_payload = {"citation": {"id": citation_id, "text": cit["content"], "score": cit["score"], "source": cit["source"], "heading": cit["heading"]}}
+        yield f"event: citation_end\ndata: {json.dumps(end_payload)}\n\n"
 
     # Persist the assistant message (after stream completes)
     try:
