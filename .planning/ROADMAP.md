@@ -94,11 +94,13 @@ GOD_ALIGNMENT(god, trait)               # Soraka → Anima (HP focus)
 7. **Empty state** — Improve the welcome screen with TFT theming
 
 **Plans:**
-- [ ] `12-01-PLAN.md` — Layout refactor: fix overflow, `min-w-0`, `max-w-[70%]` enforcement, scroll isolation
-- [ ] `12-02-PLAN.md` — CitationCard v2: expandable on click, collapsible sections, source filtering
-- [ ] `12-03-PLAN.md` — CompCard Tailwind migration: replace inline styles with Tailwind classes, add type safety
-- [ ] `12-04-PLAN.md` — Responsive breakpoints: mobile sidebar collapse, tablet layout, touch targets
-- [ ] `12-05-PLAN.md` — Loading states + streaming UX polish: typing indicator improvement, progressive message reveal
+- [x] `12-01-PLAN.md` — Layout refactor: fix overflow, `min-w-0`, `max-w-[70%]` enforcement, scroll isolation
+- [x] `12-02-PLAN.md` — CitationCard v2: expandable on click, collapsible sections, source filtering
+- [x] `12-03-PLAN.md` — CompCard Tailwind migration: replace inline styles with Tailwind classes, add type safety
+- [x] `12-04-PLAN.md` — Responsive breakpoints: mobile sidebar collapse, tablet layout, touch targets
+- [x] `12-05-PLAN.md` — Loading states + streaming UX polish: typing indicator improvement, progressive message reveal
+
+**Status:** ✅ Complete (2026-04-23)
 
 **Depends on:** None (independent of backend)
 
@@ -215,7 +217,7 @@ tft_set17_patch17_1_enhanced_pack.json → Space Gods system details × 300 char
 | Phase | Milestone | Plans | Status | REQ-IDs |
 |-------|-----------|-------|--------|---------|
 | 11 | v1.4 | 4/4 | ✅ Complete (2026-04-23) | KNOW-01..04 |
-| 12 | v1.4 | 5/5 | 📋 Planned | UI-01..05 |
+| 12 | v1.4 | 5/5 | ✅ Complete (2026-04-23) | UI-01..05 |
 | 13 | v1.4 | 5/5 | 📋 Planned | SMART-01..05 |
 | 14 | v1.4 | 5/5 | 📋 Planned | RAG2-01..05 |
 
