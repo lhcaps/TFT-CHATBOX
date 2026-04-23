@@ -8,7 +8,8 @@ import { ChampionProfile } from './ChampionProfile';
 import { ItemCard } from './ItemCard';
 import { TraitCard } from './TraitCard';
 import { AugmentCard } from './AugmentCard';
-import { parseEntityBlocks, parseCompCard } from '../utils/compParser';
+import { CoachLineOfPlay } from './CoachLineOfPlay';
+import { parseEntityBlocks, parseCompCard, parseCoachBlocks, hasCoachContent } from '../utils/compParser';
 
 interface MessageListProps {
   messages: Message[];
@@ -46,7 +47,7 @@ export function MessageList({ messages, isStreaming }: MessageListProps) {
             }`}
           >
             <div className="prose prose-invert prose-sm max-w-none">
-              <MessageContent content={msg.content} />
+              <MessageContent content={msg.content} messageRole={msg.role} />
             </div>
             {msg.citations && msg.citations.length > 0 && (
               <div className="mt-2 pt-2 border-t border-gray-700 overflow-x-auto">
@@ -145,7 +146,24 @@ function EntityCardRenderer({ entity }: { entity: EntityCard }) {
   }
 }
 
-function MessageContent({ content }: { content: string }) {
+function MessageContent({ content, messageRole }: { content: string; messageRole?: string }) {
+  // Check for coach line-of-play content in assistant messages
+  if (messageRole === 'assistant' && hasCoachContent(content)) {
+    const coach = parseCoachBlocks(content);
+    if (coach.lines.length > 0 || coach.pivots.length > 0) {
+      return (
+        <>
+          <CoachLineOfPlay lines={coach.lines} pivots={coach.pivots} />
+          {coach.text && (
+            <p className="whitespace-pre-wrap break-words leading-relaxed">
+              {coach.text}
+            </p>
+          )}
+        </>
+      );
+    }
+  }
+
   const blocks = parseEntityBlocks(content);
 
   return (

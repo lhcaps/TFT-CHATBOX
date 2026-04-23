@@ -232,3 +232,99 @@ function parseEntityMarkersInText(text: string, blocks: ContentBlock[]): void {
   }
 }
 
+// ─── Coach Line-of-Play Parser ────────────────────────────────────────────────
+
+import type { LineOfPlay, PivotLine } from '../api/types';
+
+/** Parse coach line-of-play blocks from message content */
+export function parseCoachBlocks(content: string): {
+  text: string;
+  lines: LineOfPlay[];
+  pivots: PivotLine[];
+} {
+  const lines: LineOfPlay[] = [];
+  const pivots: PivotLine[] = [];
+
+  // Find all primary/option blocks
+  const blockPattern = /(?:^|\n)(PRIMARY|OPTION\s*\d+)[:：]?\s*\n?(.+?)(?=\n(?:PRIMARY|OPTION\s*\d+|PIVOT\s*FALLBACK)|$)/gis;
+  let match;
+  const matches: Array<{ type: string; content: string }> = [];
+
+  while ((match = blockPattern.exec(content)) !== null) {
+    matches.push({
+      type: match[1].toUpperCase().trim(),
+      content: match[2].trim(),
+    });
+  }
+
+  // Parse each block
+  for (const block of matches) {
+    const line: Partial<LineOfPlay> = { name: '' };
+    const lines_content = block.content.split('\n');
+
+    for (const line_content of lines_content) {
+      const trimmed = line_content.trim();
+      if (!trimmed || trimmed.startsWith('--')) continue;
+
+      // Parse key-value pairs
+      const econMatch = trimmed.match(/^Econ[s]?[：:]?\s*(.+)/i);
+      if (econMatch) { line.econ = econMatch[1].trim(); continue; }
+
+      const itemsMatch = trimmed.match(/^Items?[：:]?\s*(.+)/i);
+      if (itemsMatch) {
+        line.items = itemsMatch[1].split(/[,，]/).map(s => s.trim()).filter(Boolean);
+        continue;
+      }
+
+      const timingMatch = trimmed.match(/^Timing[s]?[：:]?\s*(.+)/i);
+      if (timingMatch) { line.timing = timingMatch[1].trim(); continue; }
+
+      const riskMatch = trimmed.match(/^Risk[s]?[：:]?\s*(.+)/i);
+      if (riskMatch) { line.risk = riskMatch[1].trim(); continue; }
+
+      // First non-empty line without prefix is the name
+      if (!line.name && trimmed && !trimmed.includes(':')) {
+        line.name = trimmed;
+      }
+    }
+
+    if (line.name) {
+      lines.push(line as LineOfPlay);
+    }
+  }
+
+  // Parse pivot fallback
+  const pivotPattern = /(?:^|\n)PIVOT\s*FALLBACK[:：]?\s*\n?(.+?)(?=\n\n|$)/gis;
+  while ((match = pivotPattern.exec(content)) !== null) {
+    const pivotContent = match[1].trim();
+    const pivotLines = pivotContent.split('\n');
+
+    for (const pl of pivotLines) {
+      const trimmed = pl.trim();
+      if (!trimmed) continue;
+
+      // Format: "CompName: timing details"
+      const pivotMatch = trimmed.match(/^([^:：]+)[:：]\s*(.+)/);
+      if (pivotMatch) {
+        pivots.push({
+          name: pivotMatch[1].trim(),
+          timing: pivotMatch[2].trim(),
+        });
+      }
+    }
+  }
+
+  // Remove parsed content from remaining text
+  const text = content
+    .replace(/(?:^|\n)(PRIMARY|OPTION\s*\d+)[:：]?\s*\n?.+?(?=\n(?:PRIMARY|OPTION\s*\d+|PIVOT\s*FALLBACK)|$)/gis, '')
+    .replace(/(?:^|\n)PIVOT\s*FALLBACK[:：]?\s*\n?.+?$/gis, '')
+    .trim();
+
+  return { text, lines, pivots };
+}
+
+/** Check if content contains coach line-of-play markers */
+export function hasCoachContent(content: string): boolean {
+  return /(?:^|\n)(PRIMARY|OPTION\s*\d+|PIVOT\s*FALLBACK)/im.test(content);
+}
+

@@ -50,6 +50,7 @@ export function ChatShell({
 }: ChatShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [lastUserMessage, setLastUserMessage] = useState('');
+  const [activePreset, setActivePreset] = useState<string | null>(null);
 
   const handleShellSend = (message: string) => {
     setLastUserMessage(message);
@@ -238,6 +239,9 @@ export function ChatShell({
           onSend={handleShellSend}
           disabled={isStreaming || !currentSession}
           placeholder={currentSession ? undefined : 'Start a new chat to begin...'}
+          coachMode={currentMode === 'coach'}
+          activePreset={activePreset}
+          onPresetChange={setActivePreset}
         />
 
         {/* Stop Button */}
