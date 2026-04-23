@@ -41,7 +41,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-from app.routes import health, sessions, chat, search, ingest, patch_state, gpu_status, graph  # noqa: E402, F401
+from app.routes import health, sessions, chat, search, ingest, patch_state, gpu_status, graph, watch  # noqa: E402, F401
 
 app.include_router(health.router, prefix="/api")
 app.include_router(gpu_status.router, prefix="/api")
@@ -51,6 +51,7 @@ app.include_router(search.router, prefix="/api")
 app.include_router(ingest.router, prefix="/api")
 app.include_router(patch_state.router, prefix="/api")
 app.include_router(graph.router, prefix="/api")
+app.include_router(watch.router, prefix="/api")
 
 # Register graph reload → cache invalidation callback
 from app.graph.events import on_graph_reload
