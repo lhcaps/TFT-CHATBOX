@@ -61,10 +61,10 @@ GOD_ALIGNMENT(god, trait)               # Soraka → Anima (HP focus)
 ```
 
 **Plans:**
-- [ ] `11-01-PLAN.md` — Knowledge Graph schema + NetworkX data model
-- [ ] `11-02-PLAN.md` — `/api/graph/query` + `/api/graph/neighbors/{entity}` endpoints
-- [ ] `11-03-PLAN.md` — Auto-reload on patch ingest + hot-reload endpoint
-- [ ] `11-04-PLAN.md` — Unit tests for graph traversals (edge cases, missing nodes)
+- [x] `11-01-PLAN.md` — Knowledge Graph schema + NetworkX data model
+- [x] `11-02-PLAN.md` — `/api/graph/query` + `/api/graph/neighbors/{entity}` endpoints
+- [x] `11-03-PLAN.md` — Auto-reload on patch ingest + hot-reload endpoint
+- [x] `11-04-PLAN.md` — Unit tests for graph traversals (edge cases, missing nodes)
 
 **Depends on:** Phase 5 (TFT Static Data already ingested), Phase 8 (patch monitoring)
 
@@ -214,7 +214,7 @@ tft_set17_patch17_1_enhanced_pack.json → Space Gods system details × 300 char
 
 | Phase | Milestone | Plans | Status | REQ-IDs |
 |-------|-----------|-------|--------|---------|
-| 11 | v1.4 | 4/4 | 📋 Planned | KNOW-01..04 |
+| 11 | v1.4 | 4/4 | ✅ Complete (2026-04-23) | KNOW-01..04 |
 | 12 | v1.4 | 5/5 | 📋 Planned | UI-01..05 |
 | 13 | v1.4 | 5/5 | 📋 Planned | SMART-01..05 |
 | 14 | v1.4 | 5/5 | 📋 Planned | RAG2-01..05 |
