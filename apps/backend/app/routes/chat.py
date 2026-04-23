@@ -13,6 +13,7 @@ from app.db import get_pool
 from app.models import ChatRequest
 from app.prompts import get_system_prompt
 from app.repositories.message import MessageRepository
+from app.services.router import RoutedQuery
 
 
 router = APIRouter(prefix="/chat", tags=["chat"])
@@ -24,7 +25,7 @@ async def build_messages(
     mode: str,
     patch: str | None = None,
     top_k: int | None = None,
-    router_result: dict | None = None,  # NEW: from QueryRouter
+    router_result: RoutedQuery | None = None,  # RoutedQuery dataclass from QueryRouter
 ) -> list[dict]:
     """Build the messages array for Ollama: system + recent history + optional RAG context."""
     pool = await get_pool()
@@ -62,8 +63,8 @@ async def build_messages(
             messages.append({"role": "user", "content": context_block})
 
     # Inject graph context if available (from QueryRouter)
-    if router_result and router_result.get("graph_data"):
-        graph_data = router_result["graph_data"]
+    if router_result and router_result.graph_data:
+        graph_data = router_result.graph_data
         if graph_data.get("neighbors"):
             graph_lines = ["---KNOWLEDGE GRAPH---"]
             entity = graph_data.get("entity", "Entity")
