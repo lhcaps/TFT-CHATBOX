@@ -137,7 +137,7 @@ Fix layout overflow bugs and create a polished, responsive chat interface for TF
 
 ### Integration Points
 - `ChatShell.tsx` line 50: root `<div className="flex h-screen bg-gray-900 text-white overflow-hidden">`
-  - Sidebar: line 52, `<aside className="w-64 flex-shrink-0 ...">`
+  - Sidebar: line 52, `<aside className="w-64 shrink-0 ...">`
   - Main: line 93, `<div className="flex-1 flex flex-col min-w-0">` (already has min-w-0 ✅)
 - `MessageList.tsx` line 20: `<div className="flex-1 overflow-y-auto space-y-4 p-6">` — needs overflow-x-hidden
 - `MessageList.tsx` line 38: `<div className={`max-w-[70%] rounded-2xl...`}>` — needs responsive variants
@@ -161,7 +161,7 @@ Glow effect: shadow-[0_0_15px_rgba(139,92,246,0.3)] (purple glow)
 ### CompCard Tailwind Structure
 ```tsx
 // Header with cosmic gradient border
-<div className="rounded-xl border border-purple-500/50 bg-gradient-to-br from-purple-900/20 to-blue-900/20">
+<div className="rounded-xl border border-purple-500/50 bg-linear-to-br from-purple-900/20 to-blue-900/20">
   {/* Tier badge with glow */}
   <span className="text-yellow-400 font-bold shadow-[0_0_8px_rgba(251,191,36,0.4)]">S</span>
   {/* Stats, items, units, traits with Tailwind spacing */}
