@@ -140,11 +140,13 @@ The LLM produces structured JSON markers in the response that the frontend parse
 ```
 
 **Plans:**
-- [ ] `13-01-PLAN.md` — Smart entity JSON markers in LLM prompts + frontend JSON parser → entity cards
-- [ ] `13-02-PLAN.md` — ChampionProfile, ItemCard, TraitCard, AugmentCard inline components
-- [ ] `13-03-PLAN.md` — Smart reply suggestions (context-aware chips from knowledge graph)
-- [ ] `13-04-PLAN.md` — Cross-entity query routing: graph-first, rag-fallback, metaTFT enrichment
-- [ ] `13-05-PLAN.md` — Coach mode enhancement: pivot fallback chain + in-game scenario presets
+- [x] `13-01-PLAN.md` — Smart entity JSON markers in LLM prompts + frontend JSON parser → entity cards
+- [x] `13-02-PLAN.md` — ChampionProfile, ItemCard, TraitCard, AugmentCard inline components
+- [x] `13-03-PLAN.md` — Smart reply suggestions (context-aware chips from knowledge graph)
+- [x] `13-04-PLAN.md` — Cross-entity query routing: graph-first, rag-fallback, metaTFT enrichment
+- [x] `13-05-PLAN.md` — Coach mode enhancement: pivot fallback chain + in-game scenario presets
+
+**Status:** 📋 Planned
 
 **Depends on:** Phase 11 (Knowledge Graph), Phase 12 (UI/UX foundation)
 
