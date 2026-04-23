@@ -1,0 +1,6 @@
+[
+  {"name": "Briar", "cost": 3, "traits": [{"name": "Anima", "count": 1}]},
+  {"name": "Jinx", "cost": 3, "traits": [{"name": "Anima", "count": 1}]},
+  {"name": "Illaoi", "cost": 4, "traits": [{"name": "Anima", "count": 1}]},
+  {"name": "Garen", "cost": 1, "traits": [{"name": "Freljord", "count": 1}]}
+]

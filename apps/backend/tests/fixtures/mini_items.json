@@ -1,0 +1,5 @@
+[
+  {"name": "Bloodthirster", "recipe": ["B.F. Sword", "Negatron Cloak"], "stats": ["+15% AD", "+15% AP"]},
+  {"name": "B.F. Sword", "recipe": [], "stats": ["+10% AD"]},
+  {"name": "Negatron Cloak", "recipe": [], "stats": ["+20 MR"]}
+]

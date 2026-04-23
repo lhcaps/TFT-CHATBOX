@@ -1,0 +1,7 @@
+{
+  "Anima": {
+    "champions": ["Briar", "Jinx", "Illaoi"],
+    "text": "After losing a player combat, gain 15 Tech plus additional Tech equal to 5 times the length of your loss streak.",
+    "tiers": {"3": "Start Researching!", "6": "Gain a loot Orb upon win"}
+  }
+}

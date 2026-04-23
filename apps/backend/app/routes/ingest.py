@@ -9,6 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from app.config import settings
 from app.middleware.auth import verify_api_key
+from app.graph.events import trigger_reload
 
 router = APIRouter(prefix="/ingest", tags=["ingest"])
 logger = logging.getLogger(__name__)
@@ -46,6 +47,7 @@ async def ingest_tft_static_route(
 
     try:
         result = await do_ingest(patch=patch)
+        trigger_reload()
         return {"status": "ok", "result": result}
     except Exception as e:
         logger.exception("TFT static ingest failed")
@@ -146,6 +148,7 @@ async def ingest_patch_notes_route(
                 resolved_patch,
                 stats.get("patch_url"),
             )
+        trigger_reload()
         return {"status": "ok", "patch": resolved_patch, **stats}
     except Exception as e:
         logger.exception("Patch notes ingest failed")
@@ -195,7 +198,7 @@ async def ingest_metatft_route(
             set_stats = await scrape_set_overview_all()
             stats["set_overview"] = set_stats
 
-        return {
+        result = {
             "status": "ok",
             "source": source_mode,
             "patch": patch,
@@ -207,6 +210,8 @@ async def ingest_metatft_route(
                 s.get("skipped", 0) for s in stats.values()
             ),
         }
+        trigger_reload()
+        return result
     except Exception as e:
         logger.exception("MetaTFT ingest failed")
         raise HTTPException(
@@ -235,6 +240,7 @@ async def ingest_tft_set17_route() -> dict:
 
     try:
         result = await do_ingest()
+        trigger_reload()
         return {"status": "ok", "source": "tft_set17", **result}
     except FileNotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e))
