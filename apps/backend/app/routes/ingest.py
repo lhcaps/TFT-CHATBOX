@@ -250,3 +250,88 @@ async def ingest_tft_set17_route() -> dict:
             status_code=500,
             detail=f"TFT Set 17 ingest failed: {e}",
         )
+
+
+# ─── Batch Ingest Endpoints (RAG2-04) ─────────────────────────────────────────
+
+from pydantic import BaseModel
+
+
+class BatchIngestRequest(BaseModel):
+    """Request model for batch ingest endpoint (RAG2-04)."""
+    processor: str  # "augment" | "champion" | "item" | "trait" | "system" | "rolling_odds" | "data_pack"
+
+
+@router.post("/batch")
+async def ingest_batch(request: BatchIngestRequest) -> dict:
+    """Trigger batch ingestion from a specific data source.
+
+    Uses modular processor classes to ingest TFT data into vector DB.
+    Each processor handles one data file with entity_type metadata.
+
+    Available processors:
+    - augment: augments_full_user_verified.json
+    - champion: champions from data pack (~59 champions)
+    - item: items from data pack (45+ items)
+    - trait: origins + classes from data pack (30+ traits)
+    - system: Space Gods + Realm of the Gods from data pack
+    - rolling_odds: rolling odds (with embedded defaults fallback)
+    - data_pack: champions from data pack (alternative to champion processor)
+
+    All processors add entity_type metadata.
+    """
+    from scripts.ingest import PROCESSOR_MAP
+
+    processor_name = request.processor.lower()
+
+    if processor_name not in PROCESSOR_MAP:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unknown processor: {processor_name}. Available: {list(PROCESSOR_MAP.keys())}"
+        )
+
+    processor_class = PROCESSOR_MAP[processor_name]
+    processor = processor_class()
+
+    try:
+        result = await processor.ingest()
+        trigger_reload()
+        return {"status": "ok", **result}
+    except FileNotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        logger.exception(f"Batch ingest failed for {processor_name}")
+        raise HTTPException(status_code=500, detail=f"Ingest failed: {e}")
+
+
+@router.post("/batch/all")
+async def ingest_all_batches() -> dict:
+    """Trigger ingestion from all data sources.
+
+    Runs all 7 processors sequentially.
+    """
+    from scripts.ingest import PROCESSOR_MAP
+
+    results = {}
+    total_ingested = 0
+    total_skipped = 0
+
+    for name, processor_class in PROCESSOR_MAP.items():
+        try:
+            processor = processor_class()
+            result = await processor.ingest()
+            results[name] = result
+            total_ingested += result.get("ingested", 0)
+            total_skipped += result.get("skipped", 0)
+        except Exception as e:
+            logger.exception(f"Failed {name} processor")
+            results[name] = {"error": str(e)}
+
+    trigger_reload()
+
+    return {
+        "status": "ok",
+        "results": results,
+        "total_ingested": total_ingested,
+        "total_skipped": total_skipped,
+    }
