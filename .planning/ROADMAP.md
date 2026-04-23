@@ -146,7 +146,7 @@ The LLM produces structured JSON markers in the response that the frontend parse
 - [x] `13-04-PLAN.md` — Cross-entity query routing: graph-first, rag-fallback, metaTFT enrichment
 - [x] `13-05-PLAN.md` — Coach mode enhancement: pivot fallback chain + in-game scenario presets
 
-**Status:** 📋 Planned
+**Status:** 🔄 In Progress — Phase 13 executing (5/5 plans complete)
 
 **Depends on:** Phase 11 (Knowledge Graph), Phase 12 (UI/UX foundation)
 
@@ -220,7 +220,7 @@ tft_set17_patch17_1_enhanced_pack.json → Space Gods system details × 300 char
 |-------|-----------|-------|--------|---------|
 | 11 | v1.4 | 4/4 | ✅ Complete (2026-04-23) | KNOW-01..04 |
 | 12 | v1.4 | 5/5 | ✅ Complete (2026-04-23) | UI-01..05 |
-| 13 | v1.4 | 5/5 | 📋 Planned | SMART-01..05 |
+| 13 | v1.4 | 5/5 | ✅ In Progress (2026-04-23) | SMART-01..05 |
 | 14 | v1.4 | 5/5 | 📋 Planned | RAG2-01..05 |
 
 ---

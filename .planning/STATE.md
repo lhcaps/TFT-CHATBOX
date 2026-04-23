@@ -15,7 +15,7 @@
 
 ## Current Position
 
-**Active Phase:** Phase 13 — Smart Chat Engine (context gathered, ready for planning)
+**Active Phase:** Phase 13 — Smart Chat Engine (5/5 plans executed, verifying)
 
 **Phase 11 Status:** Complete — 486 nodes, 500 edges, 23 tests passing
 
@@ -27,13 +27,19 @@ Wave 1 (parallel-safe): 12-01 (MessageList), 12-03 (CompCard), 12-04 (ChatShell)
 Wave 2 (after 12-01): 12-02 (CitationCard v2), 12-05 (EmptyState)
 ```
 
+**Phase 13 Wave Structure:**
+```
+Wave 1 (parallel-safe): 13-01 (EntityMarkers), 13-02 (EntityCards), 13-03 (Suggestions)
+Wave 2 (after Wave 1): 13-04 (QueryRouter), 13-05 (CoachEnhancement)
+```
+
 **Milestone Progress:**
 ```
 ✅ v1.0 MVP — Phases 1-7 (shipped 2026-04-22)
 ✅ v1.1 TFT Meta Mastery — Phase 8 (shipped 2026-04-22)
 ✅ v1.2 MetaTFT Real-time Intelligence — Phase 9 (shipped 2026-04-23)
 ✅ v1.3 Hardening & Polish — Phase 10 (shipped 2026-04-23)
-✅ v1.4 Smart & Polished — Phases 11-14 (Phase 11 complete, Phase 12 complete, Phase 13 context gathered)
+✅ v1.4 Smart & Polished — Phases 11-14 (Phase 11 complete, Phase 12 complete, Phase 13 executing)
 ```
 
 ---
