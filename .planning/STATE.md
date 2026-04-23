@@ -251,4 +251,4 @@ When starting v1.4 Phase 11:
 ---
 
 *State tracked: 2026-04-23*
-*Last updated: 2026-04-23 — Phase 12 plans verified, wave structure established*
+*Last updated: 2026-04-23 — Phase 12 complete, UI-01..05 shipped*
