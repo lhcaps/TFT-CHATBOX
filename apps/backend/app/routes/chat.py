@@ -104,19 +104,31 @@ async def stream_ollama_tokens(
     usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
     effective_top_k = top_k if top_k is not None else settings.rag_top_k
 
-    # Emit citation events BEFORE streaming begins (rag/coach modes only)
+    # Track citations for streaming reveal (RAG2-03)
+    streaming_citations: dict = {}
+
+    # Emit citation_start events BEFORE streaming begins (rag/coach modes only)
     if mode in ("rag", "coach") and user_message:
         from app.services.retrieval import retrieve_chunks
         chunks = await retrieve_chunks(user_message, top_k=effective_top_k, patch=patch, entity_filter=entity_filter)
+
+        # Initialize tracking dict with citation metadata (no content yet)
         for chunk in chunks:
-            citation_data = {
-                "id": chunk["id"],
+            citation_id = str(chunk["id"])
+            streaming_citations[citation_id] = {
+                "id": citation_id,
                 "source": chunk["source"],
                 "heading": chunk.get("metadata", {}).get("heading_path", ""),
-                "text": chunk["content"],
+                "content": chunk["content"],  # Store full content for progressive reveal
                 "score": chunk["score"],
+                "revealed": False,
             }
-            yield f"event: citation\ndata: {json.dumps({'citation': citation_data})}\n\n"
+            # citation_start: metadata only, no content
+            yield f"event: citation_start\ndata: {json.dumps({'citation': {
+                'id': citation_id,
+                'source': chunk["source"],
+                'heading': chunk.get("metadata", {}).get("heading_path", ""),
+            })})\n\n"
 
     async with httpx.AsyncClient(timeout=120.0) as client:
         payload = {
@@ -143,6 +155,18 @@ async def stream_ollama_tokens(
                     content = chunk.get("message", {}).get("content", "")
                     if content:
                         full_text += content
+                        # Progressive citation reveal: if a citation marker appears in the token stream,
+                        # reveal that citation's content progressively (RAG2-03)
+                        for citation_id, cit in list(streaming_citations.items()):
+                            if not cit["revealed"] and citation_id in full_text:
+                                # Reveal first 100 chars as preview
+                                preview = cit["content"][:100]
+                                yield f"event: citation_progress\ndata: {json.dumps({'citation': {
+                                    'id': citation_id,
+                                    'text_preview': preview,
+                                })})\n\n"
+                                cit["revealed"] = True
+                                break
                         # Per D-04: token event format
                         yield f"event: token\ndata: {json.dumps({'token': content})}\n\n"
 
@@ -156,6 +180,16 @@ async def stream_ollama_tokens(
                         yield f"event: done\ndata: {json.dumps({'done': True, 'done_reason': done_reason, 'usage': usage})}\n\n"
                 except json.JSONDecodeError:
                     continue
+
+    # Emit citation_end events for all citations (RAG2-03)
+    for citation_id, cit in streaming_citations.items():
+        yield f"event: citation_end\ndata: {json.dumps({'citation': {
+            'id': citation_id,
+            'text': cit["content"],
+            'score': cit["score"],
+            'source': cit["source"],
+            'heading': cit["heading"],
+        })})\n\n"
 
     # Persist the assistant message (after stream completes)
     try:

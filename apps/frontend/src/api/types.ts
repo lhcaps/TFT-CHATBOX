@@ -39,8 +39,19 @@ export interface ChatOptions {
   entityFilter?: string;  // RAG2-01: 'champion' | 'item' | 'trait' | 'augment' | 'system'
 }
 
+export type SSEEventType =
+  | 'token'
+  | 'done'
+  | 'usage'
+  | 'citation'
+  | 'citation_start'   // RAG2-03: citation metadata at stream start (no content)
+  | 'citation_progress' // RAG2-03: citation content preview during stream
+  | 'citation_end'    // RAG2-03: final citation with full text + score
+  | 'error'
+  | 'entity_card';
+
 export interface SSEEvent {
-  type: 'token' | 'done' | 'usage' | 'citation' | 'error' | 'entity_card';
+  type: SSEEventType;
   data: Record<string, unknown>;
 }
 

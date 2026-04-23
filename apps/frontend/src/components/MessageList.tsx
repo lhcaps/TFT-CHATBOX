@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import type { Message, EntityCard } from '../api/types';
+import type { Message, EntityCard, StreamingCitation } from '../api/types';
 import { CitationCard } from './CitationCard';
 import { CitationModal } from './CitationModal';
 import { EmptyState } from './EmptyState';
@@ -14,9 +14,13 @@ import { parseEntityBlocks, parseCompCard, parseCoachBlocks, hasCoachContent } f
 interface MessageListProps {
   messages: Message[];
   isStreaming: boolean;
+  streamingCitations?: Record<string, StreamingCitation>;
+  onCitationStart?: (citation: { id: string; source: string; heading: string }) => void;
+  onCitationProgress?: (citation: { id: string; text_preview: string }) => void;
+  onCitationEnd?: (citation: { id: string; text: string; score: number; source: string; heading: string }) => void;
 }
 
-export function MessageList({ messages, isStreaming }: MessageListProps) {
+export function MessageList({ messages, isStreaming, streamingCitations = {} }: MessageListProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -108,6 +112,28 @@ export function MessageList({ messages, isStreaming }: MessageListProps) {
         </div>
       )}
 
+      {/* Streaming citations (RAG2-03 progressive reveal) */}
+      {isStreaming && Object.keys(streamingCitations).length > 0 && (
+        <div className="flex justify-start pl-4">
+          <div className="max-w-[70%] rounded-2xl rounded-bl-md px-4 py-3 bg-gray-800/40 border border-gray-700/50">
+            <div className="text-xs text-gray-400 mb-2 font-medium">
+              {Object.keys(streamingCitations).length} source{Object.keys(streamingCitations).length !== 1 ? 's' : ''} (loading...)
+            </div>
+            <div className="grid gap-2">
+              {Object.values(streamingCitations).map((cit) => (
+                <StreamingCitationCard key={cit.id} citation={cit} onClick={() => setSelectedCitation({
+                  id: cit.id,
+                  source: cit.source,
+                  heading: cit.heading,
+                  text: cit.text,
+                  score: cit.score,
+                })} />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div ref={bottomRef} />
 
       <CitationModal
@@ -155,7 +181,7 @@ function MessageContent({ content, messageRole }: { content: string; messageRole
         <>
           <CoachLineOfPlay lines={coach.lines} pivots={coach.pivots} />
           {coach.text && (
-            <p className="whitespace-pre-wrap break-words leading-relaxed">
+            <p className="whitespace-pre-wrap wrap-break-word leading-relaxed">
               {coach.text}
             </p>
           )}
@@ -179,12 +205,70 @@ function MessageContent({ content, messageRole }: { content: string; messageRole
           return <EntityCardRenderer key={i} entity={block.entity} />;
         }
         return (
-          <p key={i} className="whitespace-pre-wrap break-words leading-relaxed">
+          <p key={i} className="whitespace-pre-wrap wrap-break-word leading-relaxed">
             {block.raw.trim()}
           </p>
         );
       })}
     </>
+  );
+}
+
+// ─── Streaming Citation Card (RAG2-03) ────────────────────────────────────────────
+
+function StreamingCitationCard({ citation, onClick }: { citation: StreamingCitation; onClick?: () => void }) {
+  const isLoading = citation.status === 'loading';
+  const isProgress = citation.status === 'progress';
+
+  return (
+    <div
+      onClick={onClick}
+      className="border border-gray-700 rounded-xl p-3 bg-gray-800/50 transition-colors hover:border-gray-600"
+    >
+      <div className="flex items-center justify-between gap-2 mb-1">
+        <span className="text-xs font-mono text-gray-400 truncate flex-1" title={citation.source}>
+          {citation.source}
+        </span>
+        {citation.status === 'complete' && (
+          <span className="text-xs text-gray-500 shrink-0">
+            {Math.round(citation.score * 100)}%
+          </span>
+        )}
+        {isLoading && (
+          <span className="text-xs text-purple-400 animate-pulse shrink-0">
+            Loading...
+          </span>
+        )}
+        {isProgress && (
+          <span className="text-xs text-yellow-400 shrink-0">
+            ...
+          </span>
+        )}
+      </div>
+      {citation.heading && (
+        <div className="text-xs text-gray-500 truncate mb-1" title={citation.heading}>
+          {citation.heading}
+        </div>
+      )}
+      {isLoading && (
+        <div className="space-y-1">
+          <div className="h-3 bg-gray-700 rounded animate-pulse w-full" />
+          <div className="h-3 bg-gray-700 rounded animate-pulse w-3/4" />
+        </div>
+      )}
+      {isProgress && (
+        <p className="text-sm text-gray-400 italic">
+          {citation.textPreview || '...'}
+        </p>
+      )}
+      {citation.status === 'complete' && (
+        <p className="text-sm text-gray-300">
+          {citation.text.length > 200
+            ? citation.text.slice(0, 200) + '...'
+            : citation.text}
+        </p>
+      )}
+    </div>
   );
 }
 
