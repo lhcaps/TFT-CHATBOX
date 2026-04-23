@@ -37,7 +37,7 @@ export function Composer({ onSend, disabled, placeholder = 'Ask about TFT strate
   }, [submit]);
 
   return (
-    <div className="border-t border-gray-700 bg-gray-800 px-6 py-4">
+    <div className="border-t border-gray-700 bg-gray-800 px-4 md:px-6 py-4">
       <div className="flex gap-3 max-w-4xl mx-auto items-end">
         <Textarea
           ref={textareaRef}

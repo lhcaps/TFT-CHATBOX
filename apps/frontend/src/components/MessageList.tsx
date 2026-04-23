@@ -17,7 +17,7 @@ export function MessageList({ messages, isStreaming }: MessageListProps) {
   }, [messages, isStreaming]);
 
   return (
-    <div className="flex-1 overflow-y-auto space-y-4 p-6">
+    <div className="flex-1 overflow-y-auto overflow-x-hidden space-y-4 p-6">
       {messages.length === 0 && !isStreaming && (
         <div className="flex flex-col items-center justify-center h-full text-gray-500 gap-3 py-16">
           <svg className="w-12 h-12 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -32,10 +32,10 @@ export function MessageList({ messages, isStreaming }: MessageListProps) {
       {messages.map((msg, i) => (
         <div
           key={i}
-          className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+          className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} min-w-0`}
         >
           <div
-            className={`max-w-[70%] rounded-2xl px-4 py-3 ${
+            className={`max-w-[70%] md:max-w-[90%] lg:max-w-[70%] rounded-2xl px-4 py-3 ${
               msg.role === 'user'
                 ? 'bg-blue-600 text-white rounded-br-md'
                 : msg.role === 'assistant'
@@ -47,7 +47,7 @@ export function MessageList({ messages, isStreaming }: MessageListProps) {
               <MessageContent content={msg.content} />
             </div>
             {msg.citations && msg.citations.length > 0 && (
-              <div className="mt-2 pt-2 border-t border-gray-700">
+              <div className="mt-2 pt-2 border-t border-gray-700 overflow-x-auto">
                 <div className="text-xs text-gray-400 mb-2 font-medium">
                   {msg.citations.length} source{msg.citations.length !== 1 ? 's' : ''}
                 </div>
@@ -101,7 +101,7 @@ function MessageContent({ content }: { content: string }) {
           }
         }
         return (
-          <p key={i} className="whitespace-pre-wrap leading-relaxed">
+          <p key={i} className="whitespace-pre-wrap break-words leading-relaxed">
             {block.raw.trim()}
           </p>
         );
