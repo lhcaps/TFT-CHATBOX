@@ -4,6 +4,10 @@ import { CitationCard } from './CitationCard';
 import { CitationModal } from './CitationModal';
 import { EmptyState } from './EmptyState';
 import { CompCard } from './CompCard';
+import { ChampionProfile } from './ChampionProfile';
+import { ItemCard } from './ItemCard';
+import { TraitCard } from './TraitCard';
+import { AugmentCard } from './AugmentCard';
 import { parseEntityBlocks, parseCompCard } from '../utils/compParser';
 
 interface MessageListProps {
@@ -115,22 +119,30 @@ export function MessageList({ messages, isStreaming }: MessageListProps) {
 
 // ─── MessageContent ────────────────────────────────────────────────────────────
 
-// Placeholder import — SMART-02 will implement the actual card components
-// For now, entity cards render as styled code blocks
-function EntityCardPlaceholder({ entity }: { entity: EntityCard }) {
-  const colors: Record<string, string> = {
-    champion: 'border-blue-500/40 bg-blue-950/20',
-    item: 'border-red-500/40 bg-red-950/20',
-    trait: 'border-purple-500/40 bg-purple-950/20',
-    augment: 'border-yellow-500/40 bg-yellow-950/20',
-  };
-  const borderColor = colors[entity.type] || 'border-gray-600/40 bg-gray-800/20';
-
-  return (
-    <code className={`block rounded-lg border px-3 py-2 my-2 text-xs font-mono ${borderColor} max-w-[400px]`}>
-      {JSON.stringify(entity, null, 2)}
-    </code>
-  );
+function EntityCardRenderer({ entity }: { entity: EntityCard }) {
+  switch (entity.type) {
+    case 'champion':
+      return <ChampionProfile champion={entity} />;
+    case 'item':
+      return <ItemCard item={entity} />;
+    case 'trait':
+      return <TraitCard name={entity.name} count={entity.count} bonus={entity.bonus} />;
+    case 'augment':
+      return (
+        <AugmentCard
+          name={entity.name}
+          tier={entity.tier}
+          effect={entity.effect}
+          relatedChampions={entity.relatedChampions}
+        />
+      );
+    default:
+      return (
+        <code className="block rounded border border-gray-600/40 bg-gray-800/50 px-2 py-1 my-1 text-xs font-mono text-gray-400">
+          {JSON.stringify(entity)}
+        </code>
+      );
+  }
 }
 
 function MessageContent({ content }: { content: string }) {
@@ -146,7 +158,7 @@ function MessageContent({ content }: { content: string }) {
           }
         }
         if (block.kind === 'entity' && block.entity) {
-          return <EntityCardPlaceholder key={i} entity={block.entity} />;
+          return <EntityCardRenderer key={i} entity={block.entity} />;
         }
         return (
           <p key={i} className="whitespace-pre-wrap break-words leading-relaxed">
