@@ -36,6 +36,7 @@ export interface ChatOptions {
   mode: Mode;
   stream?: boolean;
   signal?: AbortSignal;
+  entityFilter?: string;  // RAG2-01: 'champion' | 'item' | 'trait' | 'augment' | 'system'
 }
 
 export interface SSEEvent {

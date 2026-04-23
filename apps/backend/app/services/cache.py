@@ -24,14 +24,15 @@ class CacheEntry:
     chunks: list["RetrievedChunk"]
 
 
-def _make_cache_key(query: str, mode: str, patch: str | None) -> str:
-    """Build a cache key from query, mode, and optional patch filter.
+def _make_cache_key(query: str, mode: str, patch: str | None, entity_filter: str | None) -> str:
+    """Build a cache key from query, mode, patch, and optional entity_filter.
 
     Query is truncated to MAX_QUERY_LENGTH to prevent unbounded key sizes.
     """
     patch_part = patch if patch else "all"
+    entity_part = entity_filter if entity_filter else "all"
     truncated = query[:MAX_QUERY_LENGTH] if len(query) > MAX_QUERY_LENGTH else query
-    return f"{mode}:{patch_part}:{truncated}"
+    return f"{mode}:{patch_part}:{entity_part}:{truncated}"
 
 
 class EmbeddingCache:
@@ -46,14 +47,14 @@ class EmbeddingCache:
             maxsize=max_size, ttl=ttl_seconds
         )
 
-    def get(self, query: str, mode: str, patch: str | None) -> CacheEntry | None:
-        """Return cached entry for (query, mode, patch), or None if not found or expired."""
-        key = _make_cache_key(query, mode, patch)
+    def get(self, query: str, mode: str, patch: str | None, entity_filter: str | None = None) -> CacheEntry | None:
+        """Return cached entry for (query, mode, patch, entity_filter), or None if not found or expired."""
+        key = _make_cache_key(query, mode, patch, entity_filter)
         return self._embedding_cache.get(key)  # type: ignore[return-value]
 
-    def set(self, query: str, mode: str, patch: str | None, entry: CacheEntry) -> None:
+    def set(self, query: str, mode: str, patch: str | None, entity_filter: str | None, entry: CacheEntry) -> None:
         """Store an entry in the cache."""
-        key = _make_cache_key(query, mode, patch)
+        key = _make_cache_key(query, mode, patch, entity_filter)
         self._embedding_cache[key] = entry
 
     def clear(self) -> None:

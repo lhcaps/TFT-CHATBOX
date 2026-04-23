@@ -26,6 +26,7 @@ async def build_messages(
     patch: str | None = None,
     top_k: int | None = None,
     router_result: RoutedQuery | None = None,  # RoutedQuery dataclass from QueryRouter
+    entity_filter: str | None = None,  # RAG2-01
 ) -> list[dict]:
     """Build the messages array for Ollama: system + recent history + optional RAG context."""
     pool = await get_pool()
@@ -48,7 +49,7 @@ async def build_messages(
     effective_top_k = top_k if top_k is not None else settings.rag_top_k
     if mode in ("rag", "coach"):
         from app.services.retrieval import retrieve_chunks
-        chunks = await retrieve_chunks(user_message, top_k=effective_top_k, patch=patch)
+        chunks = await retrieve_chunks(user_message, top_k=effective_top_k, patch=patch, entity_filter=entity_filter)
         if chunks:
             context_lines = ["---CONTEXT---"]
             for i, chunk in enumerate(chunks, 1):
@@ -93,6 +94,7 @@ async def stream_ollama_tokens(
     user_message: str = "",
     patch: str | None = None,
     top_k: int | None = None,
+    entity_filter: str | None = None,  # RAG2-01
 ) -> AsyncIterable[str]:
     """Stream tokens from Ollama as structured SSE events.
 
@@ -105,7 +107,7 @@ async def stream_ollama_tokens(
     # Emit citation events BEFORE streaming begins (rag/coach modes only)
     if mode in ("rag", "coach") and user_message:
         from app.services.retrieval import retrieve_chunks
-        chunks = await retrieve_chunks(user_message, top_k=effective_top_k, patch=patch)
+        chunks = await retrieve_chunks(user_message, top_k=effective_top_k, patch=patch, entity_filter=entity_filter)
         for chunk in chunks:
             citation_data = {
                 "id": chunk["id"],
@@ -251,6 +253,7 @@ async def chat(request: ChatRequest) -> StreamingResponse | JSONResponse:
             patch=request.patch,
             top_k=request.top_k,
             router_result=router_result,
+            entity_filter=request.entity_filter,  # RAG2-01
         )
     except Exception as e:
         logger.exception("build_messages failed")
@@ -281,7 +284,7 @@ async def chat(request: ChatRequest) -> StreamingResponse | JSONResponse:
     if request.stream:
         # Streaming mode: SSE with structured events
         return StreamingResponse(
-            stream_ollama_tokens(messages, request.session_id, request.mode, request.message, request.patch, request.top_k),
+            stream_ollama_tokens(messages, request.session_id, request.mode, request.message, request.patch, request.top_k, request.entity_filter),  # RAG2-01
             media_type="text/event-stream",
         )
     else:

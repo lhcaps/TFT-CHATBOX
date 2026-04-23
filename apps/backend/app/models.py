@@ -42,6 +42,10 @@ class ChatRequest(BaseModel):
     top_k: int = Field(default=15, ge=1, le=50, description="Number of context chunks to retrieve (1–50)")
     patch: Optional[str] = None
     season: Optional[str] = None
+    entity_filter: Optional[str] = Field(
+        default=None,
+        description="Filter chunks by entity type: 'champion', 'item', 'trait', 'augment', 'system'. Per RAG2-01.",
+    )
     stream: bool = True
 
     @field_validator("session_id")
