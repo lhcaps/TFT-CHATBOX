@@ -46,6 +46,11 @@
 **User's choice:** tier_color
 **Notes:** Simpler, cleaner approach — no badge icons needed
 
+### Champion Glow Effects (added during plan)
+
+**User's choice:** framer-motion glow pulse on border for 4-cost and 5-cost champions
+**Notes:** Premium feel — subtle border glow animation (2-3s loop) on high-cost champion cards only.
+
 ### Item Category Display
 
 | Option | Description | Selected |
@@ -97,6 +102,15 @@
 
 **User's choice:** merge
 **Notes:** Best of all worlds — leverage multiple sources when available
+
+### Source Attribution (added during plan)
+
+**User's choice:** Small inline icons to show data origin
+**Notes:**
+- Graph icon (🧠/network SVG) — hard knowledge (stats, recipes, breakpoints)
+- Document icon (📄/document SVG) — RAG context (patch notes)
+- MetaTFT logo — meta data (comps, tiers, win rates)
+- Subtle badges in card or card footer
 
 ---
 

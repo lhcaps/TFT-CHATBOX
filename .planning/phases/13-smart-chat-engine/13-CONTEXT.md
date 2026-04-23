@@ -34,6 +34,7 @@ Upgrade the chat system to deliver intelligent, cross-entity answers that levera
 
 ### Card Design System (D-02)
 - **Theme:** Cosmic accents on minimal layout — cosmic color palette (purple/blue hues) and themed icons/colors, but clean minimal card structure (not full cosmic gradient backgrounds). **"Đủ để biết là mùa gì nhưng vẫn ấn tượng"**
+- **Card Glow Effects:** Use framer-motion for subtle glow pulse on ChampionProfile cards for 4-cost and 5-cost champions — premium feel. Glow animation: border color pulses between base color and lighter shade (e.g., `border-purple-400` → `border-purple-300`) on a 2-3s loop. Only applies to champion cards at those cost tiers.
 - **ChampionProfile:**
   - Cost: tier-colored text (1=gray-400, 2=green-400, 3=blue-400, 4=purple-400, 5=yellow-400) — NO badge icons
   - Trait badges: small colored pills
@@ -65,6 +66,11 @@ Upgrade the chat system to deliver intelligent, cross-entity answers that levera
 - **Approach:** Graph-first, RAG fallback, MetaTFT enrichment
 - **Pattern:** Knowledge Graph for direct entity lookups (champion stats, trait breakpoints, item recipe); RAG for complex questions (patch notes, strategy); MetaTFT for meta/comp queries
 - **Result merging:** Merge all results from multiple sources with source attribution and deduplication
+- **Source Attribution:** Use small inline icons next to information to show origin:
+  - Graph icon (🧠 or network SVG) — for hard knowledge (stats, recipes, trait breakpoints)
+  - Document icon (📄 or document SVG) — for RAG context (patch notes, notes)
+  - MetaTFT logo/brand — for meta data (comps, tier lists, win rates)
+  - Icons appear as subtle badges next to the card or within the card footer
 - **Routing examples:**
   - `"best items for Briar?"` → Graph (Briar → items) → RAG fallback
   - `"is Anima good?"` → Graph + RAG (patch context)
