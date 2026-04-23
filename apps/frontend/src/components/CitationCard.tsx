@@ -1,36 +1,38 @@
-import { Card, CardHeader, CardContent } from '~/components/ui/card';
+import type { Citation } from '~/api/types';
 
 interface CitationCardProps {
-  id: string;
-  source: string;
-  heading: string;
-  text: string;
-  score: number;
+  citation: Citation;
   onClick?: () => void;
 }
 
-export function CitationCard({ source, heading, text, score, onClick }: CitationCardProps) {
-  const percent = Math.round(score * 100);
+export function CitationCard({ citation, onClick }: CitationCardProps) {
+  const percent = Math.round(citation.score * 100);
+
+  // Truncate text to ~200 chars
+  const truncatedText = citation.text.length > 200
+    ? citation.text.slice(0, 200).trimEnd() + '...'
+    : citation.text;
 
   return (
-    <Card
+    <div
       onClick={onClick}
-      className="cursor-pointer hover:border-gray-600 transition-colors"
+      className="cursor-pointer hover:border-gray-600 transition-colors border border-gray-700 rounded-xl p-3 bg-gray-800/50"
     >
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3 pb-1">
-        <span className="text-xs font-mono text-gray-400 truncate" title={source}>
-          {source}
+      <div className="flex items-center justify-between gap-2 mb-1">
+        <span className="text-xs font-mono text-gray-400 truncate flex-1" title={citation.source}>
+          {citation.source}
         </span>
-        <span className="text-xs text-gray-500">{percent}% match</span>
-      </CardHeader>
-      <CardContent className="p-3 pt-1">
-        {heading && (
-          <div className="text-xs text-gray-500 truncate mb-1" title={heading}>
-            {heading}
-          </div>
-        )}
-        <p className="text-sm text-gray-300 line-clamp-3">{text}</p>
-      </CardContent>
-    </Card>
+        <span className="text-xs text-gray-500 flex-shrink-0">{percent}%</span>
+      </div>
+      {citation.heading && (
+        <div className="text-xs text-gray-500 truncate mb-1" title={citation.heading}>
+          {citation.heading}
+        </div>
+      )}
+      <p className="text-sm text-gray-300">{truncatedText}</p>
+      {citation.text.length > 200 && (
+        <div className="text-xs text-purple-400 mt-1">Click to read more</div>
+      )}
+    </div>
   );
 }
