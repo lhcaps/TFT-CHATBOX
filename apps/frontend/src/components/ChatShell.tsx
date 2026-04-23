@@ -3,6 +3,7 @@ import { Button } from '~/components/ui/button';
 import { MessageList } from './MessageList';
 import { Composer } from './Composer';
 import { ModeTabs } from './ModeTabs';
+import { SuggestionChips } from './SuggestionChips';
 import { Plus, Trash2, Square } from 'lucide-react';
 import type { Message, Mode } from '../api/types';
 
@@ -48,6 +49,17 @@ export function ChatShell({
   loading,
 }: ChatShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [lastUserMessage, setLastUserMessage] = useState('');
+
+  const handleShellSend = (message: string) => {
+    setLastUserMessage(message);
+    onSend(message);
+  };
+
+  const handleSuggestionSelect = (text: string) => {
+    setLastUserMessage(text);
+    onSend(text);
+  };
 
   return (
     <div className="flex h-screen bg-gray-900 text-white overflow-hidden">
@@ -217,12 +229,13 @@ export function ChatShell({
               </div>
             </div>
           )}
+          <SuggestionChips lastMessage={lastUserMessage} onSelect={handleSuggestionSelect} />
           <MessageList messages={messages} isStreaming={isStreaming} />
         </div>
 
         {/* Composer */}
         <Composer
-          onSend={onSend}
+          onSend={handleShellSend}
           disabled={isStreaming || !currentSession}
           placeholder={currentSession ? undefined : 'Start a new chat to begin...'}
         />

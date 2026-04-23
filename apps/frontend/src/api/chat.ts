@@ -1,4 +1,4 @@
-import type { ChatOptions } from './types';
+import type { ChatOptions, Suggestion } from './types';
 
 const BASE = '/api';
 const CHAT_TIMEOUT_MS = 60_000;
@@ -180,4 +180,36 @@ function processChunk(chunk: string, handlers: {
     case 'done': handlers.onDone(ev.usage); break;
     case 'error': handlers.onError(new Error(ev.message)); break;
   }
+}
+
+const SUGGESTIONS_BASE = '/api';
+
+/** Fetch suggestions from the knowledge graph based on user message */
+export async function getSuggestions(message: string, limit = 3): Promise<Suggestion[]> {
+  try {
+    const params = new URLSearchParams({
+      context: message.slice(0, 200),
+      limit: String(limit),
+    });
+    const res = await fetch(`${SUGGESTIONS_BASE}/graph/suggest?${params}`);
+    if (!res.ok) {
+      return getStaticSuggestions();
+    }
+    const data = await res.json();
+    if (!Array.isArray(data.suggestions) || data.suggestions.length === 0) {
+      return getStaticSuggestions();
+    }
+    return data.suggestions as Suggestion[];
+  } catch {
+    return getStaticSuggestions();
+  }
+}
+
+/** Static fallback suggestions when API is unavailable */
+function getStaticSuggestions(): Suggestion[] {
+  return [
+    { text: 'Best items for Briar?', type: 'champion' },
+    { text: 'Anima trait breakdown', type: 'trait' },
+    { text: 'Top S-tier comps', type: 'general' },
+  ];
 }
