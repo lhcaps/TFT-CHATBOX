@@ -15,9 +15,15 @@
 
 ## Current Position
 
-**Active Phase:** Phase 12 — UI/UX Core Redesign (context gathered 2026-04-23)
+**Active Phase:** Phase 12 — UI/UX Core Redesign (plans verified 2026-04-23)
 
 **Phase 11 Status:** Complete — 486 nodes, 500 edges, 23 tests passing
+
+**Phase 12 Wave Structure:**
+```
+Wave 1 (parallel-safe): 12-01 (MessageList), 12-03 (CompCard), 12-04 (ChatShell)
+Wave 2 (after 12-01):   12-02 (CitationCard v2), 12-05 (EmptyState)
+```
 
 **Milestone Progress:**
 ```
@@ -243,4 +249,4 @@ When starting v1.4 Phase 11:
 ---
 
 *State tracked: 2026-04-23*
-*Last updated: 2026-04-23 — Phase 12 context gathered (discuss-phase)*
+*Last updated: 2026-04-23 — Phase 12 plans verified, wave structure established*
