@@ -1,5 +1,3 @@
-import type { CompTrait } from './CompCard';
-
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface CompTrait {

@@ -1,6 +1,6 @@
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-import type { EntityCard, ChampionEntity, ItemEntity, TraitEntity, AugmentEntity, ContentBlock } from '../api/types';
+import type { EntityCard, ContentBlock } from '../api/types';
 
 export interface CompTrait {
   name: string;

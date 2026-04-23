@@ -1,6 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import type { Message, Mode } from '../api/types';
-import type { Citation } from '../api/types';
+import type { Message, Mode, Citation } from '../api/types';
 import { streamChat } from '../api/chat';
 
 export interface UseChatReturn {
@@ -20,6 +19,7 @@ export function useChat(): UseChatReturn {
   const abortControllerRef = useRef<AbortController | null>(null);
   const streamingTokenRef = useRef<string>('');
   const streamEndedRef = useRef(false);
+  const citationsRef = useRef<Citation[]>([]);
 
   const clearMessages = useCallback(() => {
     setMessages([]);
@@ -27,9 +27,9 @@ export function useChat(): UseChatReturn {
 
   const sendMessage = useCallback(
     ({ sessionId, message, mode }: { sessionId: string; message: string; mode: Mode }) => {
-      // Reset stream state before starting a new stream
       streamEndedRef.current = false;
       streamingTokenRef.current = '';
+      citationsRef.current = [];
 
       const userMsg: Message = { role: 'user', content: message };
       const assistantPlaceholder: Message = {
@@ -53,6 +53,35 @@ export function useChat(): UseChatReturn {
           signal: abortControllerRef.current.signal,
         },
         {
+          onCitationStart: (citation) => {
+            const cit: Citation = {
+              id: citation.id,
+              source: citation.source,
+              heading: citation.heading || '',
+              text: '',
+              score: 0,
+            };
+            citationsRef.current.push(cit);
+          },
+          onCitationProgress: (citation) => {
+            const idx = citationsRef.current.findIndex(c => c.id === citation.id);
+            if (idx >= 0) {
+              citationsRef.current[idx] = {
+                ...citationsRef.current[idx],
+                text: citation.text_preview || '',
+              };
+            }
+          },
+          onCitationEnd: (citation) => {
+            const idx = citationsRef.current.findIndex(c => c.id === citation.id);
+            if (idx >= 0) {
+              citationsRef.current[idx] = {
+                ...citationsRef.current[idx],
+                text: citation.text,
+                score: citation.score,
+              };
+            }
+          },
           onToken: (token) => {
             streamingTokenRef.current += token;
             setMessages((prev) => {
@@ -63,25 +92,15 @@ export function useChat(): UseChatReturn {
               return prev;
             });
           },
-          onCitation: (citation) => {
-            setMessages((prev) => {
-              const last = prev[prev.length - 1];
-              if (last) {
-                const existing: Citation[] = (last.citations ?? []) as Citation[];
-                return [...prev.slice(0, -1), { ...last, citations: [...existing, citation as unknown as Citation] }];
-              }
-              return prev;
-            });
-          },
           onDone: (_usage) => {
-            if (streamEndedRef.current) return; // guard against double-call
+            if (streamEndedRef.current) return;
             streamEndedRef.current = true;
             setMessages((prev) => {
               const last = prev[prev.length - 1];
               if (last?.isStreaming) {
                 return [
                   ...prev.slice(0, -1),
-                  { ...last, content: streamingTokenRef.current, isStreaming: false, citations: (last.citations ?? []) as Citation[] },
+                  { ...last, content: streamingTokenRef.current, isStreaming: false, citations: [...citationsRef.current] as Citation[] },
                 ];
               }
               return prev;
@@ -89,17 +108,16 @@ export function useChat(): UseChatReturn {
             setIsStreaming(false);
           },
           onError: (err) => {
-            if (streamEndedRef.current) return; // guard against double-call
+            if (streamEndedRef.current) return;
             streamEndedRef.current = true;
             const isAbort = (err as Error).name === 'AbortError';
             if (isAbort) {
-              // Abort is user-initiated — don't show as an error, just stop streaming
               setMessages((prev) => {
                 const last = prev[prev.length - 1];
                 if (last?.isStreaming) {
                   return [
                     ...prev.slice(0, -1),
-                    { ...last, content: streamingTokenRef.current, isStreaming: false },
+                    { ...last, content: streamingTokenRef.current, isStreaming: false, citations: [...citationsRef.current] as Citation[] },
                   ];
                 }
                 return prev;
@@ -131,7 +149,6 @@ export function useChat(): UseChatReturn {
 
   const clearError = useCallback(() => setError(null), []);
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => abortControllerRef.current?.abort();
   }, []);

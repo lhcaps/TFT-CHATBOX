@@ -9,7 +9,7 @@ const COST_COLORS: Record<number, string> = {
   5: 'text-yellow-400',
 };
 
-const COST_GLOW_COLORS: Record<number, string> = {
+const COST_GLOW_COLORS: Record<number, { from: string; to: string }> = {
   4: { from: 'rgba(168,85,247,0.5)', to: 'rgba(168,85,247,0.8)' },
   5: { from: 'rgba(250,204,21,0.5)', to: 'rgba(250,204,21,0.8)' },
 };

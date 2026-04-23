@@ -65,7 +65,7 @@ export function ChatShell({
   return (
     <div className="flex h-screen bg-gray-900 text-white overflow-hidden">
       {/* Desktop Sidebar (always visible on md+) */}
-      <aside className="hidden md:flex w-64 flex-shrink-0 flex-col border-r border-gray-700 bg-gray-800">
+      <aside className="hidden md:flex w-64 shrink-0 flex-col border-r border-gray-700 bg-gray-800">
         <div className="p-4 border-b border-gray-700">
           <Button onClick={onNewSession} className="w-full">
             <Plus className="w-4 h-4" />
@@ -87,7 +87,7 @@ export function ChatShell({
                 onClick={() => onSelectSession(s.id)}
               >
                 <span className="flex-1 truncate">{s.title ?? 'New conversation'}</span>
-                <span className="hidden group-hover:flex items-center gap-1 flex-shrink-0">
+                <span className="hidden group-hover:flex items-center gap-1 shrink-0">
                   <span className="text-xs bg-gray-600 px-1.5 py-0.5 rounded">{s.mode}</span>
                   <Button
                     variant="ghost"
@@ -114,7 +114,7 @@ export function ChatShell({
             onClick={() => setSidebarOpen(false)}
           />
           {/* Drawer Panel */}
-          <aside className="relative z-10 w-64 flex-shrink-0 flex flex-col border-r border-gray-700 bg-gray-800 transform transition-transform duration-300 ease-out"
+          <aside className="relative z-10 w-64 shrink-0 flex flex-col border-r border-gray-700 bg-gray-800 transform transition-transform duration-300 ease-out"
             style={{ transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)' }}
           >
             {/* Drawer Header */}
@@ -157,7 +157,7 @@ export function ChatShell({
                     }}
                   >
                     <span className="flex-1 truncate">{s.title ?? 'New conversation'}</span>
-                    <span className="flex items-center gap-1 flex-shrink-0">
+                    <span className="flex items-center gap-1 shrink-0">
                       <span className="text-xs bg-gray-600 px-1.5 py-0.5 rounded">{s.mode}</span>
                       <Button
                         variant="ghost"
@@ -183,7 +183,7 @@ export function ChatShell({
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
-        <header className="flex-shrink-0 flex items-center px-4 md:px-6 py-3 border-b border-gray-700 bg-gray-800 gap-4">
+        <header className="shrink-0 flex items-center px-4 md:px-6 py-3 border-b border-gray-700 bg-gray-800 gap-4">
           {/* Hamburger — mobile only */}
           <button
             className="md:hidden text-gray-400 hover:text-white p-1 -ml-1"
@@ -206,13 +206,13 @@ export function ChatShell({
 
         {/* Error Banner */}
         {error && (
-          <div className="flex-shrink-0 flex items-center gap-3 px-4 md:px-6 py-2 bg-red-900/40 border-b border-red-800 text-red-300 text-sm">
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="shrink-0 flex items-center gap-3 px-4 md:px-6 py-2 bg-red-900/40 border-b border-red-800 text-red-300 text-sm">
+            <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                 d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <span className="flex-1">{error}</span>
-            <button onClick={onClearError} className="hover:text-white flex-shrink-0">
+            <button onClick={onClearError} className="hover:text-white shrink-0">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
@@ -246,7 +246,7 @@ export function ChatShell({
 
         {/* Stop Button */}
         {isStreaming && (
-          <div className="flex-shrink-0 flex justify-center pb-2">
+          <div className="shrink-0 flex justify-center pb-2">
             <Button variant="destructive" onClick={onAbort}>
               <Square className="w-4 h-4 fill-current" />
               Stop

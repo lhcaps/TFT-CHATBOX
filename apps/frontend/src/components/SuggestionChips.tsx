@@ -59,7 +59,7 @@ export function SuggestionChips({ lastMessage, onSelect }: SuggestionChipsProps)
           className="sticky top-0 z-20 bg-gray-900/95 backdrop-blur-sm border-b border-gray-800 px-4 py-2"
         >
           <div className="flex items-center gap-2 max-w-4xl mx-auto">
-            <span className="text-xs text-gray-500 flex-shrink-0">Try:</span>
+            <span className="text-xs text-gray-500 shrink-0">Try:</span>
             <div className="flex flex-wrap gap-2 flex-1">
               {suggestions.map((s, i) => {
                 const colorClass = TYPE_COLORS[s.type] || TYPE_COLORS.general;

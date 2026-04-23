@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import type { Message, EntityCard, StreamingCitation } from '../api/types';
+import type { Message, EntityCard } from '../api/types';
 import { CitationCard } from './CitationCard';
+import type { StreamingCitation } from '../api/chat';
 import { CitationModal } from './CitationModal';
 import { EmptyState } from './EmptyState';
 import { CompCard } from './CompCard';

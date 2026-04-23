@@ -23,7 +23,6 @@ function toMessages(apiMessages: MessageOut[]): Message[] {
 }
 
 export function useStreamingMessages(history: MessageOut[]): UseStreamingMessagesReturn {
-  // Base messages = persisted history
   const [messages, setMessages] = useState<Message[]>(() => toMessages(history));
   const [isStreaming, setIsStreaming] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -31,6 +30,7 @@ export function useStreamingMessages(history: MessageOut[]): UseStreamingMessage
   const acRef = useRef<AbortController | null>(null);
   const tokenAccRef = useRef('');
   const endedRef = useRef(false);
+  const citationsRef = useRef<Citation[]>([]);
 
   // Sync when history prop changes
   useEffect(() => {
@@ -47,6 +47,7 @@ export function useStreamingMessages(history: MessageOut[]): UseStreamingMessage
     ({ sessionId, message, mode }: { sessionId: string; message: string; mode: Mode }) => {
       endedRef.current = false;
       tokenAccRef.current = '';
+      citationsRef.current = [];
       setError(null);
       setIsStreaming(true);
 
@@ -59,6 +60,35 @@ export function useStreamingMessages(history: MessageOut[]): UseStreamingMessage
       streamChat(
         { sessionId, message, mode, stream: true, signal: acRef.current.signal },
         {
+          onCitationStart: (citation) => {
+            const cit: Citation = {
+              id: citation.id,
+              source: citation.source,
+              heading: citation.heading || '',
+              text: '',
+              score: 0,
+            };
+            citationsRef.current.push(cit);
+          },
+          onCitationProgress: (citation) => {
+            const idx = citationsRef.current.findIndex(c => c.id === citation.id);
+            if (idx >= 0) {
+              citationsRef.current[idx] = {
+                ...citationsRef.current[idx],
+                text: citation.text_preview || '',
+              };
+            }
+          },
+          onCitationEnd: (citation) => {
+            const idx = citationsRef.current.findIndex(c => c.id === citation.id);
+            if (idx >= 0) {
+              citationsRef.current[idx] = {
+                ...citationsRef.current[idx],
+                text: citation.text,
+                score: citation.score,
+              };
+            }
+          },
           onToken: (token) => {
             tokenAccRef.current += token;
             setMessages((prev) => {
@@ -69,25 +99,13 @@ export function useStreamingMessages(history: MessageOut[]): UseStreamingMessage
               return prev;
             });
           },
-          onCitation: (citation) => {
-            setMessages((prev) => {
-              const last = prev[prev.length - 1];
-              if (last) {
-                return [
-                  ...prev.slice(0, -1),
-                  { ...last, citations: [...(last.citations ?? []), citation as unknown as Citation] },
-                ];
-              }
-              return prev;
-            });
-          },
           onDone: (_usage) => {
             if (endedRef.current) return;
             endedRef.current = true;
             setMessages((prev) => {
               const last = prev[prev.length - 1];
               if (last?.isStreaming) {
-                return [...prev.slice(0, -1), { ...last, content: tokenAccRef.current, isStreaming: false }];
+                return [...prev.slice(0, -1), { ...last, content: tokenAccRef.current, isStreaming: false, citations: [...citationsRef.current] as Citation[] }];
               }
               return prev;
             });
@@ -97,7 +115,6 @@ export function useStreamingMessages(history: MessageOut[]): UseStreamingMessage
             if (endedRef.current) return;
             endedRef.current = true;
             const isAbort = err.name === 'AbortError';
-            // True timeout = abort with zero tokens accumulated
             const isTimeout = isAbort && !tokenAccRef.current;
             if (isAbort) {
               setMessages((prev) => {
@@ -106,7 +123,7 @@ export function useStreamingMessages(history: MessageOut[]): UseStreamingMessage
                   const msg = isTimeout
                     ? 'Request timed out after 60s — Ollama may be slow. Try again.'
                     : tokenAccRef.current;
-                  return [...prev.slice(0, -1), { ...last, content: msg, isStreaming: false }];
+                  return [...prev.slice(0, -1), { ...last, content: msg, isStreaming: false, citations: [...citationsRef.current] as Citation[] }];
                 }
                 return prev;
               });
