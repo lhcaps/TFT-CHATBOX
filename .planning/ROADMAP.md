@@ -202,11 +202,13 @@ tft_set17_patch17_1_enhanced_pack.json → Space Gods system details × 300 char
 **Total target:** 500+ high-quality chunks with entity-type metadata
 
 **Plans:**
-- [ ] `14-01-PLAN.md` — Metadata filtering: add entity_type column + enhanced hybrid_search function
-- [ ] `14-02-PLAN.md` — Heuristic reranking: patch/season/entity priority boost before RRF
-- [ ] `14-03-PLAN.md` — Streaming citations: SSE events for citation_start/citation_end
-- [ ] `14-04-PLAN.md` — Full ingest pipeline: 252 augments + 59 champions + items + traits + systems
-- [ ] `14-05-PLAN.md` — Obsidian file watcher for real-time reactive sync (RAG-12 from v2 deferred)
+- [x] `14-01-PLAN.md` — Metadata filtering: add entity_type column + enhanced hybrid_search function
+- [x] `14-02-PLAN.md` — Heuristic reranking: patch/season/entity priority boost before RRF
+- [x] `14-03-PLAN.md` — Streaming citations: SSE events for citation_start/citation_end
+- [x] `14-04-PLAN.md` — Full ingest pipeline: 252 augments + 59 champions + items + traits + systems
+- [x] `14-05-PLAN.md` — Obsidian file watcher for real-time reactive sync
+
+**Status:** 📋 Planned (2026-04-23)
 
 **Depends on:** Phase 4 (RAG Foundation), Phase 5 (TFT Static Data)
 
